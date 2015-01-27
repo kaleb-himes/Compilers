@@ -18,15 +18,15 @@ import java.nio.charset.Charset;
  */
 class identifier_FSA extends C_A {
 
-    private static void readFile() throws FileNotFoundException, IOException {
+    public void readFile() throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(
                                 new InputStreamReader(
-                                new FileInputStream(fName),
+                                new FileInputStream(fLocation),
                                 Charset.forName("UTF-8")));
         int c;
         while ((c = reader.read()) != -1) {
             char character = (char) c;
-            System.out.println(character);
+            System.out.println(character + " :: " + c);
             // Do something with your character
         }
     }

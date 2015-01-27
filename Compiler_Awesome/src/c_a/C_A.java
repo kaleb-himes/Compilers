@@ -1,5 +1,7 @@
 package c_a;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -18,21 +20,34 @@ public class C_A {
      */
 
     public static String fLocation = "";
-    public static String fName = "";
 
     /**
      * @param args the command line arguments if any
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        /* Scanner will get user input */
         Scanner reader = new Scanner(System.in);
-        System.out.println("Example: C:/somedirectory/file.xxx");
-        System.out.println("file Location = C:/somedirectory/");
-        System.out.println("file Name = file.xxx\n");
+
+        System.out.println("Enter the file relevant to Compiler_Awesome");
+        System.out.println("Example: src/testStuff/test.file");
+        
+        File currentDirFile = new File(".");
+        String helper = currentDirFile.getAbsolutePath();
+        
+        System.out.println(helper);
         System.out.println("Enter the file Location: ");
         fLocation = reader.nextLine();
-        System.out.println("Enter the file Name: ");
-        fName = reader.nextLine();
-        identifier_FSA ident = new identifier_FSA();
+
+        File f = new File(fLocation);
+
+        /* If user entered a real file and file is not a directory */
+        if (f.exists() && !f.isDirectory()) {
+            /* initialize the identifier since file exists */
+            identifier_FSA ident = new identifier_FSA();
+            ident.readFile();
+        } else {
+            System.out.println("Error: file not found exception.");
+        }
     }
 
 }
