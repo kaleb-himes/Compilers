@@ -10,7 +10,7 @@ import java.util.Set;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class Token {
+public class Dispatcher {
 
     public enum TokenNames {
 
@@ -28,7 +28,7 @@ public class Token {
     private int column;
     private String lexeme;
 
-    Token(TokenNames inputToken, int inputLine, int inputColumn, String inputLexeme) {
+    Dispatcher(TokenNames inputToken, int inputLine, int inputColumn, String inputLexeme) {
         token = inputToken;
         line = inputLine;
         column = inputColumn;
