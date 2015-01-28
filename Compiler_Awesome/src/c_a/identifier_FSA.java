@@ -13,8 +13,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- *
- * @author khimes
+ * @title c_a = compiler_awesome
+ * @version 0.1
+ * @author monica, tabetha, kaleb
+ * @team ∀wesome
  */
 class identifier_FSA extends C_A {
 
