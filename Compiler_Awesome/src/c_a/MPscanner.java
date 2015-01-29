@@ -21,7 +21,7 @@ public class MPscanner extends C_A {
     private int startColumn;
     private String file;
     private BufferedReader reader;
-    private Token token;
+    private Dispatcher token;
     private List<String> line = new ArrayList<String>();
     private StringBuilder lexeme = new StringBuilder();
     private int checkedLine;
@@ -32,62 +32,62 @@ public class MPscanner extends C_A {
 
     }
 
-    public Token getToken() {
+    public Dispatcher getToken() {
         lexeme = new StringBuilder();
         startLine = lineNumber;
         startColumn = columnNumber;
         char ch = getNextCharacter();
         if (ch == '=') {
-            return returnToken(Token.TokenNames.MP_EQUAL);
+            return returnToken(Dispatcher.TokenNames.MP_EQUAL);
         } else if (ch == '+') {
-            return returnToken(Token.TokenNames.MP_PLUS);
+            return returnToken(Dispatcher.TokenNames.MP_PLUS);
         } else if (ch == '-') {
-            return returnToken(Token.TokenNames.MP_MINUS);
+            return returnToken(Dispatcher.TokenNames.MP_MINUS);
         } else if (ch == '*') {
-            return returnToken(Token.TokenNames.MP_TIMES);
+            return returnToken(Dispatcher.TokenNames.MP_TIMES);
         } else if (ch == '/') {
-            return returnToken(Token.TokenNames.MP_FP_DIV);
+            return returnToken(Dispatcher.TokenNames.MP_FP_DIV);
         } else if (ch == '(') {
-            return returnToken(Token.TokenNames.MP_LPAREN);
+            return returnToken(Dispatcher.TokenNames.MP_LPAREN);
         } else if (ch == ')') {
-            return returnToken(Token.TokenNames.MP_RPAREN);
+            return returnToken(Dispatcher.TokenNames.MP_RPAREN);
         } else if (ch == '<') {
             checkBuffer();
             ch = getNextCharacter();
             if (ch == '=') {
-                return returnToken(Token.TokenNames.MP_LEQUAL);
+                return returnToken(Dispatcher.TokenNames.MP_LEQUAL);
             } else if (ch == '>') {
-                return returnToken(Token.TokenNames.MP_NEQUAL);
+                return returnToken(Dispatcher.TokenNames.MP_NEQUAL);
             } else {
                 resetBuffer();
-                return returnToken(Token.TokenNames.MP_LTHAN);
+                return returnToken(Dispatcher.TokenNames.MP_LTHAN);
             }
         } else if (ch == '>') {
             checkBuffer();
             ch = getNextCharacter();
             if (ch == '=') {
-                return returnToken(Token.TokenNames.MP_GEQUAL);
+                return returnToken(Dispatcher.TokenNames.MP_GEQUAL);
             } else {
                 resetBuffer();
-                return returnToken(Token.TokenNames.MP_GTHAN);
+                return returnToken(Dispatcher.TokenNames.MP_GTHAN);
             }
         } else if (ch == '.') {
-            return returnToken(Token.TokenNames.MP_PERIOD);
+            return returnToken(Dispatcher.TokenNames.MP_PERIOD);
         } else if (ch == ',') {
-            return returnToken(Token.TokenNames.MP_COMMA);
+            return returnToken(Dispatcher.TokenNames.MP_COMMA);
         } else if (ch == ';') {
-            return returnToken(Token.TokenNames.MP_SCOLON);
+            return returnToken(Dispatcher.TokenNames.MP_SCOLON);
         } else if (ch == ':') {
             checkBuffer();
             ch = getNextCharacter();
             if (ch == '=') {
-                return returnToken(Token.TokenNames.MP_ASSIGN);
+                return returnToken(Dispatcher.TokenNames.MP_ASSIGN);
             } else {
                 resetBuffer();
-                return returnToken(Token.TokenNames.MP_COLON);
+                return returnToken(Dispatcher.TokenNames.MP_COLON);
             }
         } else {
-            return returnToken(Token.TokenNames.MP_ERROR);
+            return returnToken(Dispatcher.TokenNames.MP_ERROR);
         }
     }
 
@@ -104,7 +104,7 @@ public class MPscanner extends C_A {
         return error;
     }
 
-    public String getError(Token inputToken, String inputError) {
+    public String getError(Dispatcher inputToken, String inputError) {
         return getError(file, inputToken.getLineNumber(), inputToken.getColumnNumber(), inputError);
     }
 
@@ -165,8 +165,8 @@ public class MPscanner extends C_A {
         }
     }
 
-    private Token returnToken(Token.TokenNames inputTokenNames) {
-        token = new Token(inputTokenNames, startLine, startColumn, lexeme.toString());
+    private Dispatcher returnToken(Dispatcher.TokenNames inputTokenNames) {
+        token = new Dispatcher(inputTokenNames, startLine, startColumn, lexeme.toString());
         return token;
     }
 }
