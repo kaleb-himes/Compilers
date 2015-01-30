@@ -80,7 +80,9 @@ class digit_FSA extends C_A {
                         //checks if the character is a . which would indicate a 
                         //float or fixed point number
                         reader.mark(2);
-                        state = State.S0;                                                
+                        state = State.S0;
+                        //lexeme = lexeme.concat(Character.toString(character));
+                        lexeme = lexeme;
                     } else {
                         //not a digit or a period, set the reader back and exit
                         reader.reset();
@@ -97,18 +99,12 @@ class digit_FSA extends C_A {
                 //S0 State, indicates (at least) 1 digit and (exactly) 1 period
                 //has been read       
                 case S0:
-                    //store the decimal point in a variable
-                    String decimalpt = Character.toString(character);
-                    
                     //read the next character
                     character = (char) reader.read();
                     
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
-                        //if it was a digit, concatenate the decimal pt to the lexeme
-                        lexeme = lexeme.concat(decimalpt);
-                        
-                        //concatenate the digit after the decimal point 
+                        //if it was a digit, concatenate it to the lexeme
                         lexeme = lexeme.concat(Character.toString(character));
                         //change states, to indicate that it is a fixed pt. number
                         state = State.FIXEDACCEPT;
@@ -117,51 +113,22 @@ class digit_FSA extends C_A {
                         reader.reset();
                         
                         //sets info back to last traversed accept state
-                        state = State.INTACCEPT;   
+                        state = State.INTACCEPT;
+                       
                     }
                     
                     //end of S0 case
                     break;
 
-                //FIXEDACCEPT state, accepts a fixed point literal number (digit+.digit+)    
                 case FIXEDACCEPT:
                     //read the next character     
                     character = (char) reader.read();
-                    
-                     if (Character.isDigit(character)) {
-                        //if it was an integer, concatenate it to the lexeme
-                        lexeme = lexeme.concat(Character.toString(character));
-                    } else if (character == 'e' || character == 'E') {
-                        //checks if the character is an e or E, which would indicate a 
-                        //floating point number
-                        reader.mark(2);
-                        state = State.S1;                                                
-                    } else {
-                        //not a digit or e|E, set the reader back and exit
-                        reader.reset();
-                        token = "MP_FIXED";
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
-                        //exits the FSA, as we have found a valid token
-                        System.exit(0);
-                    }
-                    
-                    //end of FIXEDACCEPT case
-                    break;
-
-                //S1 state indicates that    
-                case S1:
-                    
-                    
-                    
-                    
-                    //end of S1 case
                     break;
 
                 case S2:
-                    
-                    //end of S2
+                    break;
+
+                case S3:
                     break;
 
                 case FLOATACCEPT:
