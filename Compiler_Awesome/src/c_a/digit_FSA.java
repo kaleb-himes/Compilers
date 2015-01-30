@@ -177,7 +177,6 @@ class digit_FSA extends C_A {
                     //end of S0 case
                     break;
 
-                //FIXEDACCEPT state, accepts a fixed point literal number (digit+.digit+)    
                 case FIXEDACCEPT:
                     //MT just added
                     //reader.mark(2);
