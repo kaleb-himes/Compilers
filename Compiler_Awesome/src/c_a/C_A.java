@@ -39,16 +39,19 @@ public class C_A {
         fLocation = reader.nextLine();
 
         File f = new File(fLocation);
-
+       
+        //Monica added, just for testing the digi FSA
+        digit_FSA digi = new digit_FSA();
+        digi.readFile();
+       
         /* If user entered a real file and file is not a directory */
         if (f.exists() && !f.isDirectory()) {
             /* initialize the identifier since file exists */
-            identifier_FSA ident = new identifier_FSA();
-            ident.readFile();
+            //Monica blocked out to make sure mine was working
+            //identifier_FSA ident = new identifier_FSA();
+            //ident.readFile();
         } else {
             System.out.println("Error: file not found exception.");
         }
     }
-    
-
 }
