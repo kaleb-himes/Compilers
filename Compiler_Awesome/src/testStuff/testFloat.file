@@ -1,5 +1,14 @@
-12.3456789
-12.e1
-12.3456789
-12..
+1.2e+-1
 
+//valid cases
+1.234E-5602     //returns MP_FLOAT 1.234E-5602, next read is " " 
+123.4e-502      //returns MP_FLOAT 123.4e-502, next read is " " 
+12.34E+5602     //returns MP_FLOAT 12.34E+5602, next read is " " 
+
+
+//invalid cases
+1.e             //returns MP_INTEGER 1, next read is .
+1.2e            //returns MP_FIXED 1.2, next read is e    
+1.2e+g          //returns MP_FIXED 1.2, next read is e 
+1.2e+-1
+1.2eE+-1
