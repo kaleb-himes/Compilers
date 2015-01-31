@@ -190,14 +190,21 @@ class digit_FSA extends C_A {
                         state = State.S1;
                     } else {
                         //not a digit or e|E, set the reader back and exit
-                        //reader.reset();
-                        token = "MP_FIXED";
+                        charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
+                        pbr.unread(charBuffer, 2, 1);
+                                              
+                        //remove the last character, set to correct token
+                        lexeme = lexeme.substring(0, lexeme.length() - 1);
+                        token = "MP_FIXED";    
+
+                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.println(state);
                         System.out.println(lexeme);
                         System.out.println(token);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
                         character = (char) pbr.read();
+                        System.out.println("--------Reader is at");
                         System.out.println(Character.toString(character));
                         //////////////////////////////////
 
@@ -211,8 +218,6 @@ class digit_FSA extends C_A {
                 //S1 state indicates that a fixed point number has been read
                 //along with an E or e, which would indicate a floating point    
                 case S1:
-                    //reader.mark(1);
-
                     //read the next character
                     character = (char) pbr.read();
 
@@ -220,15 +225,12 @@ class digit_FSA extends C_A {
                     if (character == '+' || character == '-') {
                         readOperator = true;
 
-                        //add flag to detect for ++ or -- or +- or -+    !!!!!!!!
-                        //if it was a digit, concatenate the exponential notation to the lexeme
-
                         //change states
                         state = State.S2;
 
                     } else {
                         //not a digit, set the reader back and exit
-                        //reader.reset();
+                        pbr.unread(character);
 
                         //sets info back to last traversed accept state
                         state = State.FIXEDACCEPT;
@@ -276,6 +278,7 @@ class digit_FSA extends C_A {
                     } else {
                         //not a digit, set the reader back and exit
                         //reader.reset();
+                        //add flag/if statement to detect for ++ or -- or +- or -+    !!!!!!!!
                         token = "MP_FLOAT";
                         System.out.println(state);
                         System.out.println(lexeme);
