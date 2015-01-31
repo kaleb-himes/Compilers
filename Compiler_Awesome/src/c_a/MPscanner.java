@@ -33,6 +33,7 @@ public class MPscanner extends C_A {
     }
 
     public Dispatcher getToken() {
+        
         lexeme = new StringBuilder();
         startLine = lineNumber;
         startColumn = columnNumber;

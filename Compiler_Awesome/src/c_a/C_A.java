@@ -40,9 +40,13 @@ public class C_A {
 
         File f = new File(fLocation);
        
+        /* Kaleb added, just for testing the identifier FSA */
+        identifier_FSA id = new identifier_FSA();
+        id.readFile();
+        
         //Monica added, just for testing the digi FSA
-        digit_FSA digi = new digit_FSA();
-        digi.readFile();
+//        digit_FSA digi = new digit_FSA();
+//        digi.readFile();
        
         /* If user entered a real file and file is not a directory */
         if (f.exists() && !f.isDirectory()) {
