@@ -1,1 +1,2 @@
 some_variable;
+should_not_read_this_variable;
