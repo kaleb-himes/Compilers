@@ -22,36 +22,37 @@ import java.nio.charset.Charset;
 class digit_FSA extends C_A {
 //BE SURE TO INCLUDE PRE AND POST CONDITIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //ADD COMMENTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-    
+
     String lexeme = "";
     String token = "";
     char character;
-    
+    char charBuffer[] = new char[4];
+
     //flags to indicate whether or not a particular character has already been scanned
     Boolean readPeriod = false;
     Boolean readOperator = false;
-    
+
     //enumerated types for all possible states of FSA
     public enum State {
+
         START, INTACCEPT, S0, S1,
         FIXEDACCEPT, S2, S3, FLOATACCEPT
     }
 
     //Initializes the State variable to the START state
     State state = State.START;
-   
+
     public void readFile() throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(
                         new FileInputStream(fLocation),
                         Charset.forName("UTF-8")));
-    
+
         //Initializes a pushback reader, so that characters can be put back in the reader
-        PushbackReader pbr = new PushbackReader(reader, 2);
-        
+        PushbackReader pbr = new PushbackReader(reader, 4);
+
         int c;
-      
+
         while ((c = pbr.read()) != -1) {
             //unreads this character, which is just checking if we are at end of file
             pbr.unread(c);
@@ -79,7 +80,6 @@ class digit_FSA extends C_A {
                     //read the next character     
                     character = (char) pbr.read();
 
-                    //MT NOTE ===== DO I NEED TO CHECK THAT THE INT DOES NOT BEGIN WITH 0?
                     //MT NOTE ===== WHAT ABOUT SIGNS, IS THIS COVERED IN THE SYMBOLS?                    
                     if (Character.isDigit(character)) {
                         //if it was an integer, concatenate it to the lexeme
@@ -87,39 +87,43 @@ class digit_FSA extends C_A {
                     } else if (character == '.') {
                         //checks if the character is a . which would indicate a 
                         //float or fixed point number, makes sure has not been read 
-                        //before
+                        
+                        //no period has been read previously, so move to next state
                         if (readPeriod == false) {
-                            //reader.mark(2);
-                            //HERE!!!!!!!!!!!!!!!!!!!!!!
-                            pbr.unread(character);
+                            lexeme = lexeme.concat(Character.toString(character));
                             state = State.S0;
                         } else {
-                            //reader.reset();
-                            //a period has already been read
-                            pbr.unread(1);
+                            //a period has already been read, reset the reader and exit
+                            charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
+                            pbr.unread(charBuffer, 2, 1);
                             
+                            //remove the last period, set to correct token
+                            lexeme = lexeme.substring(0, lexeme.length() - 1);
                             token = "MP_INTEGER";
-                            
-                            //for testing only, we can remove this!!!!!!!!!!!!!!!!!
+
+                            //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                             System.out.println(state);
                             System.out.println(lexeme);
                             System.out.println(token);
-                            
+
                             //for testing only, remove before combining!!!!!!!!!!!!!!!
-                            System.out.println("----------------");
                             character = (char) pbr.read();
-                            System.out.println(character);
-                            //////////////////////////////////
-                            
+                            System.out.println("--------Reader is at");
+                            System.out.println(Character.toString(character));
+                             //////////////////////////////////
+
                             //exits the FSA, as we have found a valid token
                             System.exit(0);
                         }
                     } else {
-                        //not a digit or a period, set the reader back and exit
-                        pbr.unread(character);
-                        
+                        //not a digit or a period, set the reader back and exit                      
+                        charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
+                        pbr.unread(charBuffer, 2, 1);
+
+                        //remove the last character, set to correct token
+                        lexeme = lexeme.substring(0, lexeme.length() - 1);
                         token = "MP_INTEGER";
-                        
+
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.println(state);
                         System.out.println(lexeme);
@@ -130,45 +134,36 @@ class digit_FSA extends C_A {
                         System.out.println("--------Reader is at");
                         System.out.println(Character.toString(character));
                         //////////////////////////////////
-                    
+
                         //exits the FSA, as we have found a valid token
                         System.exit(0);
                     }
-                    
+
                     //end of INTACCEPT case
                     break;
 
-                //S0 State, indicates (at least) 1 digit and (exactly) 1 period
-                //has been read       
-                //DO I NEED TO ACCEPT VALUES LIKE .5????????????????????????????    
+                //S0 State, indicates (at least) 1 digit and (exactly) 1 period read        
                 case S0:
-                    //store the decimal point in a variable
-                    String decimalpt = Character.toString(character);
-
                     //read the next character
                     character = (char) pbr.read();
 
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
-                        //if it was a digit, concatenate the decimal pt to the lexeme
-                        lexeme = lexeme.concat(decimalpt);
 
                         //concatenate the digit after the decimal point 
                         lexeme = lexeme.concat(Character.toString(character));
+
                         //change states, to indicate that it is a fixed pt. number
                         state = State.FIXEDACCEPT;
                     } else if (character == '.') {
-                        //add comments here, avoiding stuff like 12..0
-                        System.out.println("You have detected two periods");
-                        //reader.reset();
+                        //in the case 2 consecutive periods have been read, unread and flag
                         pbr.unread(character);
                         readPeriod = true;
+                        //move back to the last traversed accept state
                         state = State.INTACCEPT;
                     } else {
-                        //not a digit, set the reader back and exit
+                        //sets info back to last traversed accept state
                         pbr.unread(character);
-                        
-                        //reader.reset();
 
                         //sets info back to last traversed accept state
                         state = State.INTACCEPT;
@@ -176,10 +171,10 @@ class digit_FSA extends C_A {
 
                     //end of S0 case
                     break;
-
+                    
+                //FIXEDACCEPT, indicates (at least) 1 digit and (exactly) 1 period 
+                //and (at least one digit) read  
                 case FIXEDACCEPT:
-                    //MT just added
-                    //reader.mark(2);
                     //read the next character     
                     character = (char) pbr.read();
 
@@ -190,7 +185,7 @@ class digit_FSA extends C_A {
                         //add flag to prevent ee, eE, EE, or Ee!!!!!!!!!!!!!!!!!!!!!
                         //checks if the character is an e or E, which would indicate a 
                         //floating point number
-                        //lexeme = lexeme.concat(Character.toString(character));
+                        lexeme = lexeme.concat(Character.toString(character));
                         //reader.mark(2);
                         state = State.S1;
                     } else {
@@ -202,7 +197,7 @@ class digit_FSA extends C_A {
                         System.out.println(token);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) reader.read();
+                        character = (char) pbr.read();
                         System.out.println(Character.toString(character));
                         //////////////////////////////////
 
@@ -218,23 +213,19 @@ class digit_FSA extends C_A {
                 case S1:
                     //reader.mark(1);
 
-                    //store the exponential character in a variable
-                    String exponential = Character.toString(character);
-
                     //read the next character
-                    character = (char) reader.read();
+                    character = (char) pbr.read();
 
                     //Check that the character read is of a valid type
                     if (character == '+' || character == '-') {
-                        readOperator = true;    
-                        
-                            //add flag to detect for ++ or -- or +- or -+    !!!!!!!!
-                            //if it was a digit, concatenate the exponential notation to the lexeme
-                            lexeme = lexeme.concat(exponential);
+                        readOperator = true;
 
-                            //change states
-                            state = State.S2;
-    
+                        //add flag to detect for ++ or -- or +- or -+    !!!!!!!!
+                        //if it was a digit, concatenate the exponential notation to the lexeme
+
+                        //change states
+                        state = State.S2;
+
                     } else {
                         //not a digit, set the reader back and exit
                         //reader.reset();
@@ -252,7 +243,7 @@ class digit_FSA extends C_A {
                     String operator = Character.toString(character);
 
                     //read the next character
-                    character = (char) reader.read();
+                    character = (char) pbr.read();
 
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
@@ -277,7 +268,7 @@ class digit_FSA extends C_A {
 
                 case FLOATACCEPT:
                     //read the next character     
-                    character = (char) reader.read();
+                    character = (char) pbr.read();
 
                     if (Character.isDigit(character)) {
                         //if it was an integer, concatenate it to the lexeme
@@ -290,6 +281,11 @@ class digit_FSA extends C_A {
                         System.out.println(lexeme);
                         System.out.println(token);
 
+                        //for testing only, remove before combining!!!!!!!!!!!!!!!
+                        character = (char) pbr.read();
+                        System.out.println("--------Reader is at");
+                        System.out.println(Character.toString(character));
+                        
                         //exits the FSA, as we have found a valid token
                         System.exit(0);
                     }
