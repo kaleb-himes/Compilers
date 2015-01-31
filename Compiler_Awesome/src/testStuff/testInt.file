@@ -1,1 +1,10 @@
-0123456789bat
+1b234 
+
+//valid cases
+125                         //returns MP_INTEGER 125, next read is " "                          
+9963                        //returns MP_INTEGER 9963, next read is " "
+125665742                   //returns MP_INTEGER 125665742, next read is " "
+
+//invalid cases
+0123456789!at               //returns MP_INTEGER = 0123456789, next read is ! - success!
+1b234                       //returns MP_INTEGER = 1, next read is b - success!
