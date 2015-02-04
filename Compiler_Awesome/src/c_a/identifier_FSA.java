@@ -21,14 +21,15 @@ import java.nio.charset.Charset;
  * @team ∀wesome
  */
 class identifier_FSA extends C_A {
-    //BE SURE TO INCLUDE PRE AND POST CONDITIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//ADD COMMENTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    
     String lexeme = "";
     String token = "";
     char character;
 
-    //flags to indicate whether or not a particular character has already been scanned
+    /* 
+     * flags to indicate whether or not a particular character
+     * has already been scanned
+     */
     Boolean readPeriod = false;
     Boolean readOperator = false;
 
@@ -56,7 +57,10 @@ class identifier_FSA extends C_A {
         int c;
 
         while ((c = pbr.read()) != -1) {
-            //unreads this character, which is just checking if we are at end of file
+            /* 
+             * unreads this character, which is just checking
+             * if we are at end of file
+             */
             pbr.unread(c);
             c++;
 
@@ -101,21 +105,9 @@ class identifier_FSA extends C_A {
                          * previously
                          */
                         if (readPeriod == false) {
-                            /*
-                             * I think we will eventually have a function
-                             * called "mark" but it has not yet been 
-                             * implemented
-                             */
-                            //reader.mark(2);
                             pbr.unread(character);
                             state = State.S0;
                         } else {
-                            /*
-                             * I think we will eventually have a function
-                             * called "reset" but it has not yet been 
-                             * implemented
-                             */
-                            //reader.reset();
                             /* a bad value has already been read */
                             pbr.unread(1);
 
@@ -165,12 +157,6 @@ class identifier_FSA extends C_A {
                  */
                 case S0:
                     token = "MP_IDENTIFIER";
-                    /*
-                     * I think we will eventually have a function
-                     * called "mark" but it has not yet been 
-                     * implemented
-                     */
-                    //reader.mark(1);
                     /* test print-outs */
                     System.out.println(state);
                     System.out.println(lexeme);
