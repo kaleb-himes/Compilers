@@ -25,7 +25,7 @@ public class symbol_FSA extends C_A {
     String lexeme = "";
     String token = "";
     char character;
-    String[] chars = {":=", ":", ",", "=", "/", ">=", ">", "<=", "<", "(", "-", "<>", ".", "+", ")", ";", "*"};
+    String[] chars = {":", ",", "=", "/", ">", "<", "(", "-", ".", "+", ")", ";", "*"};
 
     /* 
      * flags to indicate whether or not a particular character
@@ -92,7 +92,63 @@ public class symbol_FSA extends C_A {
                     character = (char) pbr.read();
 
                     for (int i = 0; i < chars.length; i++) {
+                        
+                        // if the character is in the array of characters above do this
                         if (Character.toString(character) == chars[i]) {
+                            if (character == ':') {
+                                //read the next character
+                                character = (char) pbr.read();
+
+                                //check to see if the next character is =
+                                if (character == '=') {
+                                    token = "MP_ASSIGN";
+                                } else {
+                                    token = "MP_COLON";
+                                }
+                            } else if (character == ',') {
+                                token = "MP_COMMA";
+                            } else if (character == '=') {
+                                token = "MP_EQUAL";
+                            } else if (character == '/') {
+                                token = "MP_FLOAT_DIVIDE";
+                            } else if (character == '>') {
+                                //read the next character
+                                character = (char) pbr.read();
+
+                                //check to see if the next character is =
+                                if (character == '=') {
+                                    token = "MP_GEQUAL";
+                                } else {
+                                    token = "MP_GTHAN";
+                                }
+                            } else if (character == '<') {
+                                //read the next character
+                                character = (char) pbr.read();
+
+                                //check to see if the next character is =
+                                if (character == '=') {
+                                    token = "MP_LEQUAL";
+                                //check to see if the next character is >
+                                } else if (character == '>') {
+                                    token = "MP_NEQUAL";
+                                } else {
+                                    token = "MP_LTHAN";
+                                }
+                            } else if (character == '(') {
+                                token = "MP_LPAREN";
+                            } else if (character == '-') {
+                                token = "MP_MINUS";
+                            } else if (character == '.') {
+                                token = "MP_PERIOD";
+                            } else if (character == '+') { 
+                                token = "MP_PLUS";
+                            } else if (character == ')') { 
+                                token = "MP_RPAREN";
+                            } else if (character == ';') { 
+                                token = "MP_SCOLON";
+                            } else { 
+                                token = "MP_TIMES";
+                            }
                             /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
                             lexeme = lexeme.concat(Character.toString(character));
                         } else if (!Character.isAlphabetic(character)
@@ -107,7 +163,7 @@ public class symbol_FSA extends C_A {
                                 pbr.unread(character);
                                 state = State.S0;
                             } else {
-                            /* a bad value has already been read */
+                                /* a bad value has already been read */
                                 pbr.unread(1);
 
                                 token = "MP_IDENTIFIER";
@@ -126,7 +182,7 @@ public class symbol_FSA extends C_A {
                                 System.exit(0);
                             }
                         } else {
-                            /* invalid nex character, reset */
+                            /* invalid next character, reset */
                             pbr.unread(character);
 
                             token = "MP_IDENTIFIER";
