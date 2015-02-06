@@ -104,28 +104,9 @@ class identifier_FSA extends C_A {
                          * Identifier value and ensures it has not been read
                          * previously
                          */
-                        if (readPeriod == false) {
-                            pbr.unread(character);
-                            state = State.S0;
-                        } else {
-                            /* a bad value has already been read */
-                            pbr.unread(1);
 
-                            token = "MP_IDENTIFIER";
-
-                            /* test print-outs */
-                            System.out.println(state);
-                            System.out.println(lexeme);
-                            System.out.println(token);
-
-                            /* test print-outs */
-                            System.out.println("----------------");
-                            character = (char) pbr.read();
-                            System.out.println(character);
-
-                            /* need to return to dispatcher here but for now exit */
-                            System.exit(0);
-                        }
+                        pbr.unread(character);
+                        state = State.S0;
                     } else {
                         /* invalid nex character, reset */
                         pbr.unread(character);

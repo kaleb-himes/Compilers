@@ -25,7 +25,7 @@ public class symbol_FSA extends C_A {
     String lexeme = "";
     String token = "";
     char character;
-    String[] chars = {":", ",", "=", "/", ">", "<", "(", "-", ".", "+", ")", ";", "*"};
+    String[] chars = {":=", "<=", ">=", ":", ",", "=", "/", ">", "<", "(", "-", ".", "+", ")", ";", "*"};
 
     /* 
      * flags to indicate whether or not a particular character
