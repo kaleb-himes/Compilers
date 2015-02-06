@@ -43,14 +43,17 @@ public class C_A {
         /* Kaleb added, just for testing the identifier FSA */
 //        identifier_FSA id = new identifier_FSA();
 //        id.readFile();
+        /* Kaleb added to test string FSA */
+        string_FSA str = new string_FSA();
+        str.readFile();
         
         //Monica added, just for testing the digi FSA
 //        digit_FSA digi = new digit_FSA();
 //        digi.readFile();
        
         //Tab added, just for testing the symbol FSA
-        symbol_FSA symbol = new symbol_FSA();
-        symbol.readFile();
+//        symbol_FSA symbol = new symbol_FSA();
+//        symbol.readFile();
         
         /* If user entered a real file and file is not a directory */
         if (f.exists() && !f.isDirectory()) {
