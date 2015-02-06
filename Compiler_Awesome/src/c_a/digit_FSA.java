@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package c_a;
 
 import java.io.BufferedReader;
@@ -23,24 +18,41 @@ class digit_FSA extends C_A {
 //BE SURE TO INCLUDE PRE AND POST CONDITIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //ADD COMMENTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    String lexeme = "";
-    String token = "";
-    char character;
-    char charBuffer[] = new char[4];
-
-    //flags to indicate whether or not a particular character has already been scanned
-    Boolean readPeriod = false;
-    Boolean readOperator = false;
-
-    //enumerated types for all possible states of FSA
-    public enum State {
-
-        START, INTACCEPT, S0, S1,
-        FIXEDACCEPT, S2, S3, FLOATACCEPT
-    }
-
     //Initializes the State variable to the START state
     State state = State.START;
+
+    //Strings corresponding to the lexeme (i.e. 27) and token(i.e. MP_INTEGER_LIT)
+    String lexeme = "";
+    String token = "";
+
+    //variable to store the character most recently read
+    char character;
+
+    //buffer to store a particular character
+    char charBuffer[] = {0, 0, 0, 0, 0};
+
+    //integers corresponding to space in the buffer for these 3 characters
+    int decimalPt = 0;
+    //int decimalPt2 = 3;
+    int exponential = 1;
+    int sign = 2;
+
+    //flags to indicate whether or not a particular character has already been scanned
+    Boolean readDecimalPt = false;
+    Boolean readOperator = false; //need???????????????????????????????????????
+    Boolean readExponential = false;
+
+    //flags to indicate whether or not a particular state has already been reached
+    Boolean fromSO = false;
+    Boolean fromS1 = false;
+    Boolean fromS2 = false;
+
+//enumerated types for all possible states of FSA
+    public enum State {
+
+        START, INTACCEPT, S0,
+        FIXEDACCEPT, S1, S2, FLOATACCEPT
+    }
 
     public void readFile() throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(
@@ -49,8 +61,9 @@ class digit_FSA extends C_A {
                         Charset.forName("UTF-8")));
 
         //Initializes a pushback reader, so that characters can be put back in the reader
-        PushbackReader pbr = new PushbackReader(reader, 4);
+        PushbackReader pbr = new PushbackReader(reader, 5);
 
+        //need this??????????????????????????????????????????????????????????????
         int c;
 
         while ((c = pbr.read()) != -1) {
@@ -66,40 +79,62 @@ class digit_FSA extends C_A {
                      */
                     character = (char) pbr.read();
 
-                    //puts the character in the lexeme
-                    lexeme = Character.toString(character);
+                    if (Character.isDigit(character)) {
+                        //puts the character in the lexeme
+                        lexeme = Character.toString(character);
 
-                    //transitions to INTACCEPT state (because an integer has been read)
-                    state = State.INTACCEPT;
+                        //transitions to INTACCEPT state (because an integer has been read)
+                        state = State.INTACCEPT;
+                    }
 
                     //end of START case
                     break;
 
                 //Accept State for an Integer Value   
                 case INTACCEPT:
-                    //read the next character     
-                    character = (char) pbr.read();
 
-                    //MT NOTE ===== WHAT ABOUT SIGNS, IS THIS COVERED IN THE SYMBOLS?                    
+                    //checks if we are coming from a state further in the FSA
+                    if (fromSO == false) {
+                        //read the next character     
+                        character = (char) pbr.read();
+                    } else {
+                        pbr.unread(character);
+                        pbr.unread(charBuffer[decimalPt]);
+
+                        token = "MP_INTEGER_LIT";
+
+                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
+                        System.out.println(state);
+                        System.out.println(lexeme);
+                        System.out.println(token);
+
+                        //for testing only, remove before combining!!!!!!!!!!!!!!!
+                        character = (char) pbr.read();
+                        System.out.println("--------Reader is at");
+                        System.out.println(Character.toString(character));
+                        //////////////////////////////////
+
+                        //exits the FSA, as we have found a valid token
+                        System.exit(0);
+                    }
+
                     if (Character.isDigit(character)) {
                         //if it was an integer, concatenate it to the lexeme
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == '.') {
-                        //checks if the character is a . which would indicate a 
-                        //float or fixed point number, makes sure has not been read 
-                        
                         //no period has been read previously, so move to next state
-                        if (readPeriod == false) {
+                        if (readDecimalPt == false) {
+                            readDecimalPt = true;
+                            charBuffer[decimalPt] = character;
                             lexeme = lexeme.concat(Character.toString(character));
+
+                            //as we have read a period, move toward float/fixed states
                             state = State.S0;
                         } else {
-                            //a period has already been read, reset the reader and exit
-                            charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
-                            pbr.unread(charBuffer, 2, 1);
-                            
-                            //remove the last period, set to correct token
-                            lexeme = lexeme.substring(0, lexeme.length() - 1);
-                            token = "MP_INTEGER";
+                            //a period has already been read, reset the reader, change token, fix lexeme
+                            pbr.unread(character);
+
+                            token = "MP_INTEGER_LIT";
 
                             //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                             System.out.println(state);
@@ -116,13 +151,10 @@ class digit_FSA extends C_A {
                             System.exit(0);
                         }
                     } else {
-                        //not a digit or a period, set the reader back and exit                      
-                        charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
-                        pbr.unread(charBuffer, 2, 1);
-
-                        //remove the last character, set to correct token
-                        lexeme = lexeme.substring(0, lexeme.length() - 1);
-                        token = "MP_INTEGER";
+                        //unread the last character, which does not contribute to a valid token 
+                        pbr.unread(character);
+//                        
+                        token = "MP_INTEGER_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.println(state);
@@ -144,6 +176,9 @@ class digit_FSA extends C_A {
 
                 //S0 State, indicates (at least) 1 digit and (exactly) 1 period read        
                 case S0:
+                    fromSO = true;
+
+                    //push decimal point into buffer before we read new character, charBuffer[0] = .
                     //read the next character
                     character = (char) pbr.read();
 
@@ -155,15 +190,13 @@ class digit_FSA extends C_A {
 
                         //change states, to indicate that it is a fixed pt. number
                         state = State.FIXEDACCEPT;
-                    } else if (character == '.') {
-                        //in the case 2 consecutive periods have been read, unread and flag
-                        pbr.unread(character);
-                        readPeriod = true;
-                        //move back to the last traversed accept state
-                        state = State.INTACCEPT;
                     } else {
+                        fromSO = true;
                         //sets info back to last traversed accept state
                         pbr.unread(character);
+
+                        //remove the last character, set to correct token
+                        lexeme = lexeme.substring(0, lexeme.length() - 1);
 
                         //sets info back to last traversed accept state
                         state = State.INTACCEPT;
@@ -171,31 +204,88 @@ class digit_FSA extends C_A {
 
                     //end of S0 case
                     break;
-                    
+
                 //FIXEDACCEPT, indicates (at least) 1 digit and (exactly) 1 period 
                 //and (at least one digit) read  
                 case FIXEDACCEPT:
+                    System.out.println(fromS2);
+
+                    if (fromS1 == false && fromS2 == false) {
+                        //read the next character     
+                        character = (char) pbr.read();
+                    } else {
+                        lexeme = lexeme.substring(0, lexeme.length() - 1);
+
+                        pbr.unread(character);
+                        pbr.unread(charBuffer[exponential]);
+
+                        if (fromS2 == true) {
+                            lexeme = lexeme.substring(0, lexeme.length() - 1);
+                        }
+                        token = "MP_FIXED_LIT";
+
+                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
+                        System.out.println(state);
+                        System.out.println(lexeme);
+                        System.out.println(token);
+
+                        //for testing only, remove before combining!!!!!!!!!!!!!!!
+                        character = (char) pbr.read();
+                        System.out.println("--------Reader is at");
+                        System.out.println(Character.toString(character));
+                         //////////////////////////////////
+
+                        //exits the FSA, as we have found a valid token
+                        System.exit(0);
+                    }
                     //read the next character     
-                    character = (char) pbr.read();
+                    //character = (char) pbr.read();
 
                     if (Character.isDigit(character)) {
                         //if it was an integer, concatenate it to the lexeme
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == 'e' || character == 'E') {
-                        //add flag to prevent ee, eE, EE, or Ee!!!!!!!!!!!!!!!!!!!!!
-                        //checks if the character is an e or E, which would indicate a 
-                        //floating point number
-                        lexeme = lexeme.concat(Character.toString(character));
-                        //reader.mark(2);
-                        state = State.S1;
+
+                        if (readExponential == false) {
+                            charBuffer[exponential] = character;
+                            readExponential = true;
+                            //readOperator = true;
+                            lexeme = lexeme.concat(Character.toString(character));
+                            state = State.S1;
+                        } else {
+
+                            //add flag to prevent ee, eE, EE, or Ee!!!!!!!!!!!!!!!!!!!!!
+                            //checks if the character is an e or E, which would indicate a 
+                            //floating point number
+                            pbr.unread(character);
+
+//                            if (charBuffer[2] != 0) {
+//                            
+                            //remove the last character, set to correct token
+                            //lexeme = lexeme.substring(0, lexeme.length() - 1);
+                            token = "MP_FIXED_LIT";
+
+                            //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
+                            System.out.println(state);
+                            System.out.println(lexeme);
+                            System.out.println(token);
+
+                            //for testing only, remove before combining!!!!!!!!!!!!!!!
+                            character = (char) pbr.read();
+                            System.out.println("--------Reader is at");
+                            System.out.println(Character.toString(character));
+                         //////////////////////////////////
+
+                            //exits the FSA, as we have found a valid token
+                            System.exit(0);
+                        }
+
                     } else {
                         //not a digit or e|E, set the reader back and exit
-                        charBuffer[2] = lexeme.charAt(lexeme.length() - 1);
-                        pbr.unread(charBuffer, 2, 1);
-                                              
-                        //remove the last character, set to correct token
-                        lexeme = lexeme.substring(0, lexeme.length() - 1);
-                        token = "MP_FIXED";    
+
+                        pbr.unread(character);
+
+                        token = "MP_FIXED_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.println(state);
@@ -218,20 +308,28 @@ class digit_FSA extends C_A {
                 //S1 state indicates that a fixed point number has been read
                 //along with an E or e, which would indicate a floating point    
                 case S1:
+                    fromS1 = true;
+
                     //read the next character
                     character = (char) pbr.read();
 
                     //Check that the character read is of a valid type
                     if (character == '+' || character == '-') {
+                        //charBuffer[2] = character;
                         readOperator = true;
-
+                        lexeme = lexeme.concat(Character.toString(character));
                         //change states
                         state = State.S2;
-
+                    } else if (character == 'E' || character == 'e') {
+                        pbr.unread(character);
+                        //lexeme = lexeme.substring(0, lexeme.length() - 1);
+                        //charBuffer[3] = character;
+                        //sets info back to last traversed accept state
+                        state = State.FIXEDACCEPT;
                     } else {
                         //not a digit, set the reader back and exit
                         pbr.unread(character);
-
+                        System.out.println("Character" + Character.toString(character));
                         //sets info back to last traversed accept state
                         state = State.FIXEDACCEPT;
                     }
@@ -240,9 +338,13 @@ class digit_FSA extends C_A {
                     break;
 
                 case S2:
+                    fromS2 = true;
+                    //????????????????????????????????????????????
+                    //fromS1 = false;
 
                     //store the operator in a variable
                     String operator = Character.toString(character);
+                    System.out.println("Character is " + character);
 
                     //read the next character
                     character = (char) pbr.read();
@@ -250,7 +352,7 @@ class digit_FSA extends C_A {
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
                         //if it was a digit, concatenate the exponential notation to the lexeme
-                        lexeme = lexeme.concat(operator);
+                        //lexeme = lexeme.concat(operator);
 
                         //concatenate the digit after the exponential notation
                         lexeme = lexeme.concat(Character.toString(character));
@@ -259,8 +361,7 @@ class digit_FSA extends C_A {
                         state = State.FLOATACCEPT;
                     } else {
                         //not a digit, set the reader back and exit
-                        //reader.reset();
-
+                        pbr.unread(character);
                         //sets info back to last traversed accept state
                         state = State.FIXEDACCEPT;
                     }
@@ -277,9 +378,10 @@ class digit_FSA extends C_A {
                         lexeme = lexeme.concat(Character.toString(character));
                     } else {
                         //not a digit, set the reader back and exit
-                        //reader.reset();
-                        //add flag/if statement to detect for ++ or -- or +- or -+    !!!!!!!!
-                        token = "MP_FLOAT";
+                        pbr.unread(character);
+                        token = "MP_FLOAT_LIT";
+
+                        //for testing only, remove!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.println(state);
                         System.out.println(lexeme);
                         System.out.println(token);
@@ -288,15 +390,13 @@ class digit_FSA extends C_A {
                         character = (char) pbr.read();
                         System.out.println("--------Reader is at");
                         System.out.println(Character.toString(character));
-                        
+
                         //exits the FSA, as we have found a valid token
                         System.exit(0);
                     }
                     //end of FLOATACCEPT 
                     break;
             }
-
-            //reader.mark(1);
         }
     }
 }

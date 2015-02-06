@@ -1,13 +1,12 @@
-12..
+12..3
 
 //valid cases
-12.3456789      //returns FIXEDACCEPT 12.3456789, next read is " "    
-0.3456789       //returns FIXEDACCEPT 0.3456789, next read is " "
-12.0            //returns FIXEDACCEPT 12.0, next read is " "
-
+12.3456789      //returns MP_FIXED_LIT 12.3456789, next read is " "    
+0.3456789       //returns MP_FIXED_LIT 0.3456789, next read is " "
+12.0            //returns MP_FIXED_LIT 12.0, next read is " "
+ 
 //invalid cases
-.3456789        //says is int, but dispatcher not called unless begins with int, so ok?
-12.e1           //returns MP_INTEGER 12, next read is .
-12.!            //returns MP_INTEGER 12, next read is .
-12..            //returns MP_INTEGER 12, next read is " "
-
+12.e1           //returns MP_INTEGER_LIT 12, next read is .
+12.!            //returns MP_INTEGER_LIT, next read is .
+12..            //returns MP_INTEGER_LIT, next read is .
+12..3           //returns MP_INTEGER_LIT, next read is .
