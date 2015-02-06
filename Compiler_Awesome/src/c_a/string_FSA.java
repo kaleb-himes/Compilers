@@ -96,7 +96,7 @@ class string_FSA extends C_A {
                     character = (char) pbr.read();
 
                     if (second_quote == false) {
-                        if (character == '"') {
+                        if (character == '\'') {
                             second_quote = true;
                         }
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
