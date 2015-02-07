@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-class digit_FSA extends C_A {
+public class digit_FSA extends C_A {
 //BE SURE TO INCLUDE PRE AND POST CONDITIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //ADD COMMENTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -54,14 +54,7 @@ class digit_FSA extends C_A {
         FIXEDACCEPT, S1, S2, FLOATACCEPT
     }
 
-    public void readFile() throws FileNotFoundException, IOException {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(fLocation),
-                        Charset.forName("UTF-8")));
-
-        //Initializes a pushback reader, so that characters can be put back in the reader
-        PushbackReader pbr = new PushbackReader(reader, 5);
+    public void readFile(BufferedReader reader, PushbackReader pbr) throws FileNotFoundException, IOException {
 
         //need this??????????????????????????????????????????????????????????????
         int c;

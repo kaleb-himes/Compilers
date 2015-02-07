@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-class string_FSA extends C_A {
+public class string_FSA extends C_A {
     
     String lexeme = "";
     String token = "";
@@ -46,27 +46,16 @@ class string_FSA extends C_A {
     /* Initializes the State variable to the START state */
     State state = State.START;
 
-    public void readFile() throws FileNotFoundException, IOException {
-
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(fLocation),
-                        Charset.forName("UTF-8")));
-
-        /* 
-         * Initializes a pushback reader, so that characters 
-         * can be put back in the reader
-         */
-        PushbackReader pbr = new PushbackReader(reader, 2);
+    public Character readFile() throws FileNotFoundException, IOException {
 
         int c;
 
-        while ((c = pbr.read()) != -1) {
+        while ((c = MPscanner.pbr.read()) != -1) {
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
              */
-            pbr.unread(c);
+            MPscanner.pbr.unread(c);
             c++;
 
             switch (state) {
@@ -76,7 +65,7 @@ class string_FSA extends C_A {
                      * Read in the first character, which is (as specified by the 
                      * dispatcher) a double quote mark 1 (").
                      */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     /* puts the character in the lexeme */
                     lexeme = Character.toString(character);
@@ -93,7 +82,7 @@ class string_FSA extends C_A {
                 /* Accept State for an Identifier Value */
                 case IDACCEPT:
                     /* read the next character */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     if (second_quote == false) {
                         if (character == '\'') {
@@ -107,11 +96,11 @@ class string_FSA extends C_A {
                          * Identifier value and ensures it has not been read
                          * previously
                          */
-                        pbr.unread(character);
+                        MPscanner.pbr.unread(character);
                         state = State.S0;
                     } else {
                         /* invalid nex character, reset */
-                        pbr.unread(character);
+                        MPscanner.pbr.unread(character);
 
                         token = "MP_STRINGLITERAL";
 
@@ -121,7 +110,7 @@ class string_FSA extends C_A {
                         System.out.println(token);
 
                         /* test print-outs */
-                        character = (char) pbr.read();
+                        character = (char) MPscanner.pbr.read();
                         System.out.println("--------Reader is at");
                         System.out.println(Character.toString(character));
 
@@ -146,13 +135,15 @@ class string_FSA extends C_A {
                     System.out.println(token);
 
                     /* test print-outs */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
                     System.out.println("--------Reader is at");
                     System.out.println(Character.toString(character));
+//                    pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
             }
         }
+        return ' ';
     }
 
 }

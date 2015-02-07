@@ -1,11 +1,18 @@
 package c_a;
 
+import static c_a.C_A.fLocation;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PushbackReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * @title c_a = compiler_awesome
@@ -14,160 +21,66 @@ import java.util.List;
  * @team ∀wesome
  */
 public class MPscanner extends C_A {
+    
+    Dispatcher dispatch = new Dispatcher();
+    public static String lexeme;    
+    public static char item;
+    public static int cNum;
+    public static int lNum;
+    
+    public static BufferedReader reader;
+    public static PushbackReader pbr;
+    
+    public static void scanFile() throws IOException{
+        Scanner scan = new Scanner(System.in);
+        File currentDirFile = new File(".");
+        String helper = currentDirFile.getAbsolutePath();
+        System.out.println("Enter path to file that will be compiled.");
+        System.out.print("Current Path: " +helper+"/");
+        fLocation = scan.nextLine();
 
-    private int lineNumber = 1;
-    private int columnNumber = 1;
-    private int startLine;
-    private int startColumn;
-    private String file;
-    private BufferedReader reader;
-    private Dispatcher token;
-    private List<String> line = new ArrayList<String>();
-    private StringBuilder lexeme = new StringBuilder();
-    private int checkedLine;
-    private int checkedColumn;
-    private String checkedLexeme = "";
-
-    MPscanner() {
-
-    }
-
-    public Dispatcher getToken() {
+        File f = new File(fLocation);
         
-        lexeme = new StringBuilder();
-        startLine = lineNumber;
-        startColumn = columnNumber;
-        char ch = getNextCharacter();
-        if (ch == '=') {
-            return returnToken(Dispatcher.TokenNames.MP_EQUAL);
-        } else if (ch == '+') {
-            return returnToken(Dispatcher.TokenNames.MP_PLUS);
-        } else if (ch == '-') {
-            return returnToken(Dispatcher.TokenNames.MP_MINUS);
-        } else if (ch == '*') {
-            return returnToken(Dispatcher.TokenNames.MP_TIMES);
-        } else if (ch == '/') {
-            return returnToken(Dispatcher.TokenNames.MP_FP_DIV);
-        } else if (ch == '(') {
-            return returnToken(Dispatcher.TokenNames.MP_LPAREN);
-        } else if (ch == ')') {
-            return returnToken(Dispatcher.TokenNames.MP_RPAREN);
-        } else if (ch == '<') {
-            checkBuffer();
-            ch = getNextCharacter();
-            if (ch == '=') {
-                return returnToken(Dispatcher.TokenNames.MP_LEQUAL);
-            } else if (ch == '>') {
-                return returnToken(Dispatcher.TokenNames.MP_NEQUAL);
-            } else {
-                resetBuffer();
-                return returnToken(Dispatcher.TokenNames.MP_LTHAN);
+        if (f.exists() && !f.isDirectory()) {
+            char nextT = getToken();
+            System.out.println("nextT = " + nextT);
+            Dispatcher.handleToken(nextT);
+        } else {
+            System.out.println("Error: file not found exception.");
+        }
+        
+    }
+    
+    public static char getToken() throws FileNotFoundException, IOException{
+        reader = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(fLocation),
+                        Charset.forName("UTF-8")));
+        pbr = new PushbackReader(reader, 5000);
+        
+        int c;
+        boolean legitToken = false;
+        //Eats up white space and illegal items
+        while(legitToken == false) {
+            c = pbr.read();
+            if (c != -1 && c > 32 && c < 127) {
+                //unreads the first legit Token and returns.
+                pbr.unread(c);
+                item = (char) pbr.read();
+                pbr.unread(item);
+                legitToken = true;
+                break;
             }
-        } else if (ch == '>') {
-            checkBuffer();
-            ch = getNextCharacter();
-            if (ch == '=') {
-                return returnToken(Dispatcher.TokenNames.MP_GEQUAL);
-            } else {
-                resetBuffer();
-                return returnToken(Dispatcher.TokenNames.MP_GTHAN);
-            }
-        } else if (ch == '.') {
-            return returnToken(Dispatcher.TokenNames.MP_PERIOD);
-        } else if (ch == ',') {
-            return returnToken(Dispatcher.TokenNames.MP_COMMA);
-        } else if (ch == ';') {
-            return returnToken(Dispatcher.TokenNames.MP_SCOLON);
-        } else if (ch == ':') {
-            checkBuffer();
-            ch = getNextCharacter();
-            if (ch == '=') {
-                return returnToken(Dispatcher.TokenNames.MP_ASSIGN);
-            } else {
-                resetBuffer();
-                return returnToken(Dispatcher.TokenNames.MP_COLON);
-            }
-        } else {
-            return returnToken(Dispatcher.TokenNames.MP_ERROR);
         }
+        return item;
     }
-
-    private char getNextCharacter() {
-        // get next character
-        return 0;
+    public static String getLexeme(){
+        return lexeme;
     }
-
-    public String getError(String inputFile, int inputLine, int inputColumn, String inputErrorName) {
-        String error = "  File \"" + inputFile + "\", line " + inputLine + ":\n";
-        error += "    " + getLine(inputLine) + "\n";
-        error += String.format("    %1$" + (inputColumn + 1) + "s", "^\n");
-        error += inputErrorName;
-        return error;
+    public static int getLineNumber(){
+        return lNum;
     }
-
-    public String getError(Dispatcher inputToken, String inputError) {
-        return getError(file, inputToken.getLineNumber(), inputToken.getColumnNumber(), inputError);
-    }
-
-    private String getLine(int inputLine) {
-        if (inputLine > line.size() - 1) {
-            return "<The end of the file has been reached>";
-        } else {
-            return line.get(inputLine);
-        }
-    }
-
-    public int getLineNumber() {
-        if (token == null) {
-            return 0;
-        } else {
-            return token.getLineNumber();
-        }
-    }
-
-    public int getColumnNumber() {
-        if (token == null) {
-            return 0;
-        } else {
-            return token.getColumnNumber();
-        }
-    }
-
-    public String getLexeme() {
-        if (token == null) {
-            return "";
-        } else {
-            return token.getLexeme();
-        }
-    }
-
-    private void checkBuffer() {
-        checkedLexeme = lexeme.toString();
-        checkedLine = lineNumber;
-        checkedColumn = columnNumber;
-        try {
-            reader.mark(512);
-        } catch (IOException e) {
-            System.err.println("Error: Failed to check reader");
-            System.exit(1);
-        }
-    }
-
-    private void resetBuffer() {
-        lineNumber = checkedLine;
-        columnNumber = checkedColumn;
-        lexeme = new StringBuilder(checkedLexeme);
-
-        try {
-            reader.reset();
-        } catch (IOException e) {
-            System.err.println("Error: Failed to reset buffer");
-            System.exit(1);
-        }
-    }
-
-    private Dispatcher returnToken(Dispatcher.TokenNames inputTokenNames) {
-        token = new Dispatcher(inputTokenNames, startLine, startColumn, lexeme.toString());
-        return token;
+    public static int getColumnNumber(){
+        return cNum;
     }
 }

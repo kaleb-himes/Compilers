@@ -44,25 +44,14 @@ public class symbol_FSA extends C_A {
 
     public void readFile() throws FileNotFoundException, IOException {
 
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(fLocation),
-                        Charset.forName("UTF-8")));
-
-        /* 
-         * Initializes a pushback reader, so that characters 
-         * can be put back in the reader
-         */
-        PushbackReader pbr = new PushbackReader(reader, 2);
-
         int c;
 
-        while ((c = pbr.read()) != -1) {
+        while ((c = MPscanner.pbr.read()) != -1) {
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
              */
-            pbr.unread(c);
+            MPscanner.pbr.unread(c);
             c++;
 
             switch (state) {
@@ -72,7 +61,7 @@ public class symbol_FSA extends C_A {
                      * Read in the first character, which is (as specified by the 
                      * dispatcher) one of the symbols.
                      */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     /* puts the character in the lexeme */
                     lexeme = Character.toString(character);
@@ -89,7 +78,7 @@ public class symbol_FSA extends C_A {
                 /* Accept State for an Identifier Value */
                 case IDACCEPT:
                     /* read the next character */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     for (int i = 0; i < chars.length; i++) {
                         
@@ -97,7 +86,7 @@ public class symbol_FSA extends C_A {
                         if (Character.toString(character) == chars[i]) {
                             if (character == ':') {
                                 //read the next character
-                                character = (char) pbr.read();
+                                character = (char) MPscanner.pbr.read();
 
                                 //check to see if the next character is =
                                 if (character == '=') {
@@ -113,7 +102,7 @@ public class symbol_FSA extends C_A {
                                 token = "MP_FLOAT_DIVIDE";
                             } else if (character == '>') {
                                 //read the next character
-                                character = (char) pbr.read();
+                                character = (char) MPscanner.pbr.read();
 
                                 //check to see if the next character is =
                                 if (character == '=') {
@@ -123,7 +112,7 @@ public class symbol_FSA extends C_A {
                                 }
                             } else if (character == '<') {
                                 //read the next character
-                                character = (char) pbr.read();
+                                character = (char) MPscanner.pbr.read();
 
                                 //check to see if the next character is =
                                 if (character == '=') {
@@ -160,11 +149,11 @@ public class symbol_FSA extends C_A {
                              * previously
                              */
                             if (readPeriod == false) {
-                                pbr.unread(character);
+                                MPscanner.pbr.unread(character);
                                 state = State.S0;
                             } else {
                                 /* a bad value has already been read */
-                                pbr.unread(1);
+                                MPscanner.pbr.unread(1);
 
                                 token = "MP_IDENTIFIER";
 
@@ -175,7 +164,7 @@ public class symbol_FSA extends C_A {
 
                                 /* test print-outs */
                                 System.out.println("----------------");
-                                character = (char) pbr.read();
+                                character = (char) MPscanner.pbr.read();
                                 System.out.println(character);
 
                                 /* need to return to dispatcher here but for now exit */
@@ -183,7 +172,7 @@ public class symbol_FSA extends C_A {
                             }
                         } else {
                             /* invalid next character, reset */
-                            pbr.unread(character);
+                            MPscanner.pbr.unread(character);
 
                             token = "MP_IDENTIFIER";
 
@@ -193,7 +182,7 @@ public class symbol_FSA extends C_A {
                             System.out.println(token);
 
                             /* test print-outs */
-                            character = (char) pbr.read();
+                            character = (char) MPscanner.pbr.read();
                             System.out.println("--------Reader is at");
                             System.out.println(Character.toString(character));
 
@@ -220,9 +209,10 @@ public class symbol_FSA extends C_A {
                     System.out.println(token);
 
                     /* test print-outs */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
                     System.out.println("--------Reader is at");
                     System.out.println(Character.toString(character));
+                    MPscanner.pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
                     System.exit(0);
             }

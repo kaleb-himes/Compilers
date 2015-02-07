@@ -25,44 +25,46 @@ public class C_A {
      * @param args the command line arguments if any
      */
     public static void main(String[] args) throws IOException {
-        /* Scanner will get user input */
-        Scanner reader = new Scanner(System.in);
-
-        System.out.println("Enter the file relevant to Compiler_Awesome");
-        System.out.println("Example: src/testStuff/test.file");
-        
-        File currentDirFile = new File(".");
-        String helper = currentDirFile.getAbsolutePath();
-        
-        System.out.println(helper);
-        System.out.println("Enter the file Location: ");
-        fLocation = reader.nextLine();
-
-        File f = new File(fLocation);
-       
-        /* Kaleb added, just for testing the identifier FSA */
-//        identifier_FSA id = new identifier_FSA();
-//        id.readFile();
-        /* Kaleb added to test string FSA */
-        string_FSA str = new string_FSA();
-        str.readFile();
-        
-        //Monica added, just for testing the digi FSA
-//        digit_FSA digi = new digit_FSA();
-//        digi.readFile();
-       
-        //Tab added, just for testing the symbol FSA
-//        symbol_FSA symbol = new symbol_FSA();
-//        symbol.readFile();
-        
-        /* If user entered a real file and file is not a directory */
-        if (f.exists() && !f.isDirectory()) {
-            /* initialize the identifier since file exists */
-            //Monica blocked out to make sure mine was working
-            //identifier_FSA ident = new identifier_FSA();
-            //ident.readFile();
-        } else {
-            System.out.println("Error: file not found exception.");
-        }
+        MPscanner.scanFile();
     }
+//        /* Scanner will get user input */
+//        Scanner reader = new Scanner(System.in);
+//
+//        System.out.println("Enter the file relevant to Compiler_Awesome");
+//        System.out.println("Example: src/testStuff/test.file");
+//        
+//        File currentDirFile = new File(".");
+//        String helper = currentDirFile.getAbsolutePath();
+//        
+//        System.out.println(helper);
+//        System.out.println("Enter the file Location: ");
+//        fLocation = reader.nextLine();
+//
+//        File f = new File(fLocation);
+//       
+//        /* Kaleb added, just for testing the identifier FSA */
+////        identifier_FSA id = new identifier_FSA();
+////        id.readFile();
+//        /* Kaleb added to test string FSA */
+//        string_FSA str = new string_FSA();
+//        str.readFile();
+//        
+//        //Monica added, just for testing the digi FSA
+////        digit_FSA digi = new digit_FSA();
+////        digi.readFile();
+//       
+//        //Tab added, just for testing the symbol FSA
+////        symbol_FSA symbol = new symbol_FSA();
+////        symbol.readFile();
+//        
+//        /* If user entered a real file and file is not a directory */
+//        if (f.exists() && !f.isDirectory()) {
+//            /* initialize the identifier since file exists */
+//            //Monica blocked out to make sure mine was working
+//            //identifier_FSA ident = new identifier_FSA();
+//            //ident.readFile();
+//        } else {
+//            System.out.println("Error: file not found exception.");
+//        }
+//    }
 }

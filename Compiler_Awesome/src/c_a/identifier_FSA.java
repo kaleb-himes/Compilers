@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-class identifier_FSA extends C_A {
+public class identifier_FSA extends C_A {
     
     String lexeme = "";
     String token = "";
@@ -41,18 +41,7 @@ class identifier_FSA extends C_A {
     /* Initializes the State variable to the START state */
     State state = State.START;
 
-    public void readFile() throws FileNotFoundException, IOException {
-
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(fLocation),
-                        Charset.forName("UTF-8")));
-
-        /* 
-         * Initializes a pushback reader, so that characters 
-         * can be put back in the reader
-         */
-        PushbackReader pbr = new PushbackReader(reader, 2);
+    public void readFile(BufferedReader reader, PushbackReader pbr) throws FileNotFoundException, IOException {
 
         int c;
 
@@ -147,6 +136,7 @@ class identifier_FSA extends C_A {
                     character = (char) pbr.read();
                     System.out.println("--------Reader is at");
                     System.out.println(Character.toString(character));
+                    pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
                     System.exit(0);
             }
