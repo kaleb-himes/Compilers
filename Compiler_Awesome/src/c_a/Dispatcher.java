@@ -106,8 +106,7 @@ public class Dispatcher {
                     state = State.IDEN;
                 }
                 //send to DIGIT_FSA
-                else if (Character.isDigit((int) item)
-                        || Character.toString(item).equals(MP_PERIOD)) {
+                else if (Character.isDigit((int) item)) {
                     state = State.DIGIT;
                 }
                 //send to STR_FSA
