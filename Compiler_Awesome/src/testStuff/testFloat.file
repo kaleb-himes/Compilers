@@ -1,4 +1,4 @@
-1.2eE+-1 
+1.2eE+-1
 
 //valid cases
 1.234E-5602     //returns MP_FLOAT_LIT 1.234E-5602, next read is " " 

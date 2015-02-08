@@ -1,1 +1,39 @@
-/
+*)
+
+//valid cases
+:                   //returns MP_COLON, next read is " "                          
+:=                  //returns MP_ASSIGN, next read is " "
+,                   //returns MP_COMMA, next read is " "
+=                   //returns MP_EQUAL, next read is " "
+/                   //returns MP_FLOAT_DIVIDE, next read is " "
+>=                  //returns MP_GEQUAL, next read is " "
+>                   //returns MP_GTHAN, next read is " "
+<=                  //returns MP_LEQUAL, next read is " "
+(                   //returns MP_LPAREN, next read is " "
+<                   //returns MP_LTHAN, next read is " "
+-                   //returns MP_MINUS, next read is " "
+<>                  //returns MP_NEQUAL, next read is " "
+.                   //returns MP_PERIOD, next read is " "
++                   //returns MP_PLUS, next read is " "
+)                   //returns MP_RPAREN, next read is " "
+;                   //returns MP_SCOLON, next read is " "
+*                   //returns MP_TIMES, next read is " "
+
+//invalid cases
+:r                  //returns MP_COLON, next read is r  
+:=:                 //returns MP_ASSIGN, next read is :  
+,1                  //returns MP_COMMA, next read is 1 
+=6                  //returns MP_EQUAL, next read is 6
+/\                  //returns MP_FLOAT_DIVIDE, next read is \
+>=>                 //returns MP_GEQUAL, next read is >
+> =                 //returns MP_GTHAN, next read is " "
+<==                 //returns MP_LEQUAL, next read is =
+(8                  //returns MP_LPAREN, next read is 8
+<<                  //returns MP_LTHAN, next read is <
+-3                  //returns MP_MINUS, next read is 3
+<>>                 //returns MP_NEQUAL, next read is >
+.a                  //returns MP_PERIOD, next read is a
++-                  //returns MP_PLUS, next read is -
+).                  //returns MP_RPAREN, next read is .
+;;                  //returns MP_SCOLON, next read is ;
+*)                  //returns MP_TIMES, next read is )

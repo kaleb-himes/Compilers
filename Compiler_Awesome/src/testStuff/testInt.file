@@ -1,4 +1,4 @@
-1b234  
+0123456789!at  
 
 //valid cases
 125                         //returns MP_INTEGER_LIT 125, next read is " "                          
