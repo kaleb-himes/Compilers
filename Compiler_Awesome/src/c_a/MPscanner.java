@@ -5,13 +5,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -67,6 +64,7 @@ public class MPscanner extends C_A {
             c = pbr.read();
             if (c != -1 && c > 32 && c < 127) {
                 //unreads the first legit Token and returns.
+                C_A.colNumber++;
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
@@ -79,9 +77,11 @@ public class MPscanner extends C_A {
             }
             else if (c == 10) {
                 C_A.lineNumber++;
+                C_A.colNumber = 0;
                 System.out.println("New line ------------------------------"+C_A.lineNumber);
             }
             else {
+                  C_A.colNumber++;
 //                System.out.println("Scanner saw this ------------------> " + (int) c);
             }
         }
@@ -98,6 +98,6 @@ public class MPscanner extends C_A {
     }
     private static synchronized void Initialize() throws FileNotFoundException {
         reader = new BufferedReader(new InputStreamReader(new FileInputStream(fLocation),Charset.forName("UTF-8")));
-        pbr = new PushbackReader(reader, 5000);
+        pbr = new PushbackReader(reader, 5);
     }
 }

@@ -211,26 +211,36 @@ public class Dispatcher {
                     }
                     break;
                 case IDEN:
+                    markLine = C_A.lineNumber;
+                    markCol = C_A.colNumber;
                     ident.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case DIGIT:
+                    markLine = C_A.lineNumber;
+                    markCol = C_A.colNumber;
                     dig.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case STR_LIT:
+                    markLine = C_A.lineNumber;
+                    markCol = C_A.colNumber;
                     str.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case COMMENT:
+                    markLine = C_A.lineNumber;
+                    markCol = C_A.colNumber;
                     comm.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case SYMBOL:
+                    markLine = C_A.lineNumber;
+                    markCol = C_A.colNumber;
                     symb.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
@@ -245,4 +255,6 @@ public class Dispatcher {
             }
         }
     }
+    public static int markCol;
+    public static int markLine;
 }

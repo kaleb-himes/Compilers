@@ -113,8 +113,8 @@ public class digit_FSA extends C_A {
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.print(token);
-                        System.out.print("      " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("      " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -130,6 +130,7 @@ public class digit_FSA extends C_A {
 
                     if (Character.isDigit(character)) {
                         //if character read was an integer, concatenate it to the lexeme
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == '.') {
                         //no decimal point has been read previously, so move to next state
@@ -139,6 +140,7 @@ public class digit_FSA extends C_A {
                             //(for unreading)
                             charBuffer[decimalPt] = character;
                             charBuffer[decimalPt] = 0;
+                            C_A.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
 
                             //as we have read a period, move toward float/fixed states
@@ -151,8 +153,8 @@ public class digit_FSA extends C_A {
 
                             //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                             System.out.print(token);
-                            System.out.print("      " + C_A.lineNumber);
-                            System.out.print("     " + C_A.colNumber);
+                            System.out.print("      " + Dispatcher.markLine);
+                            System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                             System.out.println("     " + lexeme);
 
@@ -173,8 +175,8 @@ public class digit_FSA extends C_A {
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.print(token);
-                        System.out.print("      " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("      " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -201,7 +203,8 @@ public class digit_FSA extends C_A {
 
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
-                        //concatenate the digit after the decimal point 
+                        //concatenate the digit after the decimal point
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //change states, to indicate that it is a fixed pt. number
@@ -245,8 +248,8 @@ public class digit_FSA extends C_A {
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.print(token);
-                        System.out.print("        " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("        " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -262,6 +265,7 @@ public class digit_FSA extends C_A {
 
                     if (Character.isDigit(character)) {
                         //if a digit was read, concatenate it to the lexeme
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == 'e' || character == 'E') {
                         //checks if an exponential character (E or e) has already been read
@@ -269,6 +273,7 @@ public class digit_FSA extends C_A {
                             //if an e or E has not been read, set it in buffer
                             charBuffer[exponential] = character;
                             readExponential = true;
+                            C_A.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
                             state = State.S1;
                         } else {
@@ -278,8 +283,8 @@ public class digit_FSA extends C_A {
 
                             //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                             System.out.print(token);
-                            System.out.print("        " + C_A.lineNumber);
-                            System.out.print("     " + C_A.colNumber);
+                            System.out.print("        " + Dispatcher.markLine);
+                            System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                             System.out.println("     " + lexeme);
 
@@ -301,8 +306,8 @@ public class digit_FSA extends C_A {
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
                         System.out.print(token);
-                        System.out.print("        " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("        " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -332,6 +337,7 @@ public class digit_FSA extends C_A {
 
                     //Check that the character read is of a valid type
                     if (character == '+' || character == '-') {
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                         //change states
                         state = State.S2;
@@ -365,7 +371,8 @@ public class digit_FSA extends C_A {
 
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
-                        //concatenate the digit after the + or - 
+                        //concatenate the digit after the + or -
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //move to the Float Accept state, as a floating point
@@ -382,15 +389,18 @@ public class digit_FSA extends C_A {
                     //end of S2
                     break;
 
-                //FLOATACCEPT state indicates that a floating point number has been
-                //read - one or more digits, a decimal point, one or more digits, an
-                //E or e, a + or -, and one (or more) digits    
+                /* 
+                 * FLOATACCEPT state indicates that a floating point number has been
+                 * read - one or more digits, a decimal point, one or more digits, an
+                 * E or e, a + or -, and one (or more) digits
+                 */
                 case FLOATACCEPT:
                     //read the next character     
                     character = (char) MPscanner.pbr.read();
 
                     if (Character.isDigit(character)) {
                         //if it was a digit, concatenate it to the lexeme
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else {
                         //not a digit, set the reader back and exit
@@ -398,11 +408,12 @@ public class digit_FSA extends C_A {
 
                         token = "MP_FLOAT_LIT";
 
-                        //for testing only, remove!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        /* 
+                         * all print lines will eventually be file write lines
+                         */
                         System.out.print(token);
-                        System.out.print("        " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
-//                    System.out.println(state);
+                        System.out.print("        " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
                         System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
@@ -410,7 +421,7 @@ public class digit_FSA extends C_A {
 //                        System.out.println("--------Reader is at");
 //                        System.out.println(Character.toString(character));
 
-                        //exits the FSA, as we have found a valid token
+                        //return whatever character was last read
                         return character;
                     }
                     //end of FLOATACCEPT 

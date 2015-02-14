@@ -9,14 +9,8 @@ package c_a;
  *
  * @author khimes
  */
-import static c_a.C_A.fLocation;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PushbackReader;
-import java.nio.charset.Charset;
 
 /**
  * @title c_a = compiler_awesome
@@ -103,8 +97,10 @@ public class comment_FSA extends C_A {
                         if (character == 10) {
                             character = 32;
                             C_A.lineNumber++;
+                            C_A.colNumber = 0;
                             System.out.println("New line ------------------------------" + C_A.lineNumber);
                         }
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (second_comment == true) {
                         /*
@@ -122,8 +118,8 @@ public class comment_FSA extends C_A {
 
                         /* test print-outs */
                         System.out.print(token);
-                        System.out.print("          " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("          " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -154,8 +150,8 @@ public class comment_FSA extends C_A {
                      * over by a linker which would output Machine Code and an
                      * executable program */
                     System.out.print(token);
-                    System.out.print("          " + C_A.lineNumber);
-                    System.out.print("     " + C_A.colNumber);
+                    System.out.print("          " + Dispatcher.markLine);
+                    System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                     System.out.println("     " + lexeme);
 

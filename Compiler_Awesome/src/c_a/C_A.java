@@ -18,7 +18,7 @@ public class C_A {
      * fLocation = computer/somewhere/
      * fName = file.java
      */
-    public static int colNumber = 1;
+    public static int colNumber = 0;
     public static int lineNumber = 1;
     public static String fLocation = "";
 

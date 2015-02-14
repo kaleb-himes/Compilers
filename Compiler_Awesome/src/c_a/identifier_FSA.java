@@ -86,6 +86,7 @@ public class identifier_FSA extends C_A {
                             || character == '_') {
 
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
+                        C_A.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (!Character.isAlphabetic(character)
                             && !Character.isDigit(character)
@@ -106,8 +107,8 @@ public class identifier_FSA extends C_A {
 
                         /* test print-outs */
                         System.out.print(token);
-                        System.out.print("     " + C_A.lineNumber);
-                        System.out.print("     " + C_A.colNumber);
+                        System.out.print("     " + Dispatcher.markLine);
+                        System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
@@ -133,8 +134,8 @@ public class identifier_FSA extends C_A {
                     token = "MP_IDENTIFIER";
                     /* test print-outs */
                     System.out.print(token);
-                    System.out.print("       " + C_A.lineNumber);
-                    System.out.print("     " + C_A.colNumber);
+                    System.out.print("       " + Dispatcher.markLine);
+                    System.out.print("     " + Dispatcher.markCol);
 //                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
