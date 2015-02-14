@@ -20,33 +20,30 @@ import java.io.PushbackReader;
 
 public class digit_FSA extends C_A {
     //Initializes the State variable to the START state
-    State state = State.START;
+    State state;
 
     //Strings corresponding to the lexeme (i.e. 27) and token(i.e. MP_INTEGER_LIT)
-    String lexeme = "";
-    String token = "";
+    String lexeme;
+    String token;
 
     //Variable to store the character most recently read
     char character;
 
-    //Buffer to store particular characters
-    char charBuffer[] = {0, 0, 0};
-
     //integers corresponding to space in the buffer for these particular characters 
     //(for unreading)
-    int decimalPt = 0;
-    int exponential = 1;
+    int decimalPt;
+    int exponential;
 
     //flags to indicate whether or not a particular character has already been scanned
     //(for unreading and traversing states)
-    Boolean readDecimalPt = false;
-    Boolean readExponential = false;
+    Boolean readDecimalPt;
+    Boolean readExponential;
 
     //flags to indicate whether or not a particular state has already been reached
     //(for unreading and traversing states)
-    Boolean fromS0 = false;
-    Boolean fromS1 = false;
-    Boolean fromS2 = false;
+    Boolean fromS0;
+    Boolean fromS1;
+    Boolean fromS2;
 
 //enumerated types for all possible states of FSA
     public enum State {
@@ -56,7 +53,19 @@ public class digit_FSA extends C_A {
 
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-     public void readFile(BufferedReader reader, PushbackReader pbr) throws FileNotFoundException, IOException {
+     public Character readFile() throws FileNotFoundException, IOException {
+        lexeme = "";
+        token = "";
+        state = State.START;
+        fromS0 = false;
+        fromS1 = false;
+        fromS2 = false;
+        readExponential = false;
+        readDecimalPt = false;
+        decimalPt = 0;
+        exponential = 1;
+        //Buffer to store particular characters
+        char charBuffer[] = {0, 0, 0};
         int c;
 
         while ((c = MPscanner.pbr.read()) != -1) {
@@ -112,7 +121,7 @@ public class digit_FSA extends C_A {
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
-                        System.exit(0);
+                        return character;
                     }
 
                     if (Character.isDigit(character)) {
@@ -148,7 +157,7 @@ public class digit_FSA extends C_A {
                              //////////////////////////////////
 
                             //exits the FSA, as we have found a valid token
-                            System.exit(0);
+                            return character;
                         }
                     } else {
                         //unread the last character, which does not contribute to a valid token 
@@ -168,7 +177,7 @@ public class digit_FSA extends C_A {
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
-                        System.exit(0);
+                        return character;
                     }
 
                     //end of INTACCEPT case
@@ -238,7 +247,7 @@ public class digit_FSA extends C_A {
                          //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
-                        System.exit(0);
+                        return character;
                     }
 
                     if (Character.isDigit(character)) {
@@ -269,7 +278,7 @@ public class digit_FSA extends C_A {
                          //////////////////////////////////
 
                             //exits the FSA, as we have found a valid token
-                            System.exit(0);
+                            return character;
                         }
 
                     } else {
@@ -290,7 +299,7 @@ public class digit_FSA extends C_A {
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
-                        System.exit(0);
+                        return character;
                     }
 
                     //end of FIXEDACCEPT case
@@ -386,7 +395,7 @@ public class digit_FSA extends C_A {
                         System.out.println(Character.toString(character));
 
                         //exits the FSA, as we have found a valid token
-                        System.exit(0);
+                        return character;
                     }
                     //end of FLOATACCEPT 
                     break;
@@ -394,5 +403,6 @@ public class digit_FSA extends C_A {
             //Post Condition: The input file pointer is pointing at the first 
             //character after the current token.  
         }
+        return '~';
     }
 }

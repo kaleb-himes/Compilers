@@ -24,33 +24,44 @@ import java.nio.charset.Charset;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class string_FSA extends C_A {
+public class comment_FSA extends C_A {
     
-    String lexeme = "";
-    String token = "";
+    String lexeme;
+    String token;
     char character;
-    boolean second_quote = false;
+    boolean second_comment;
 
     /* 
      * flags to indicate whether or not a particular character
      * has already been scanned
      */
-    Boolean readPeriod = false;
-    Boolean readOperator = false;
+    Boolean readPeriod;
+    Boolean readOperator;
+    Boolean loop;
 
     public enum State {
 
         START, IDACCEPT, S0
     }
 
-    /* Initializes the State variable to the START state */
-    State state = State.START;
-
+    State state;
+    /**
+     *
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public Character readFile() throws FileNotFoundException, IOException {
-
+        lexeme = "";
+        token = "";
+        second_comment = false;
+        state = State.START;
+        readPeriod = false;
+        readOperator = false;
+        loop = true;
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1) {
+        while ((c = MPscanner.pbr.read()) != -1 && loop == true) {
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
@@ -84,13 +95,13 @@ public class string_FSA extends C_A {
                     /* read the next character */
                     character = (char) MPscanner.pbr.read();
 
-                    if (second_quote == false) {
-                        if (Character.toString(character).equals("'")) {
-                            second_quote = true;
+                    if (second_comment == false) {
+                        if (Character.toString(character).equals("}")) {
+                            second_comment = true;
                         }
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
                         lexeme = lexeme.concat(Character.toString(character));
-                    } else if (second_quote == true) {
+                    } else if (second_comment == true) {
                         /*
                          * Checks if character is anything but acceptable
                          * Identifier value and ensures it has not been read
@@ -102,7 +113,7 @@ public class string_FSA extends C_A {
                         /* invalid nex character, reset */
                         MPscanner.pbr.unread(character);
 
-                        token = "MP_STRINGLITERAL";
+                        token = "MP_COMMENT";
 
                         /* test print-outs */
                         System.out.println(state);
@@ -128,7 +139,8 @@ public class string_FSA extends C_A {
                  * let the dispatcher handle it
                  */
                 case S0:
-                    token = "MP_STRINGLITERAL";
+                    loop = false;
+                    token = "MP_COMMENT";
                     /* test print-outs */
                     /* This stuff needs to be written to a file like C does
                      * for assembly stuff, our file would eventually be passed 
@@ -149,6 +161,7 @@ public class string_FSA extends C_A {
                     
                 default:
                     System.out.println("you failed default");
+                    break;
             }
         }
         System.out.print("you failed");
@@ -156,3 +169,4 @@ public class string_FSA extends C_A {
     }
 
 }
+

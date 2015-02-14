@@ -24,11 +24,11 @@ import java.util.Arrays;
 public class symbol_FSA extends C_A {
     /* Initializes the State variable to the START state */
 
-    State state = State.START;
+    State state;
 
     //Strings corresponding to the lexeme (i.e. "+") and token(i.e. MP_PLUS)
-    String lexeme = "";
-    String token = "";
+    String lexeme;
+    String token;
     char character;
 
     //The string containing building blocks of all valid symbols
@@ -41,7 +41,10 @@ public class symbol_FSA extends C_A {
 
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-    public void readFile() throws FileNotFoundException, IOException {
+    public Character readFile() throws FileNotFoundException, IOException {
+        state = State.START;
+        lexeme = "";
+        token = "";
         int c;
 
         while ((c = MPscanner.pbr.read()) != -1) {
@@ -152,7 +155,7 @@ public class symbol_FSA extends C_A {
                         character = (char) MPscanner.pbr.read();
                         System.out.println(character);
                         /* need to return to dispatcher here but for now exit */
-                        System.exit(0);
+                        return character;
                     }
                     // END SINGLEACCEPT
                     break;
@@ -173,9 +176,8 @@ public class symbol_FSA extends C_A {
                     character = (char) MPscanner.pbr.read();
                     System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
                     // END GEQACCEPT
-                    break;
 
                 case LEQACCEPT:
                     token = "MP_LEQUAL";
@@ -190,9 +192,8 @@ public class symbol_FSA extends C_A {
                     character = (char) MPscanner.pbr.read();
                     System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
                     // END LEQACCEPT
-                    break;
 
                 case ASSIGNACCEPT:
                     token = "MP_ASSIGN";
@@ -207,10 +208,9 @@ public class symbol_FSA extends C_A {
                     character = (char) MPscanner.pbr.read();
                     System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
 
                     // END ASSIGNACCEPT
-                    break;
 
                 case NEQACCEPT:
                     token = "MP_NEQUAL";
@@ -225,13 +225,13 @@ public class symbol_FSA extends C_A {
                     character = (char) MPscanner.pbr.read();
                     System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
 
                     // END NEQACCEPT
-                    break;
             }
             //Post Condition: The input file pointer is pointing at the first 
             //character after the current token  
         }
+        return '~';
     }
 }

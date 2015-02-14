@@ -22,8 +22,8 @@ import java.nio.charset.Charset;
  */
 public class identifier_FSA extends C_A {
     
-    String lexeme = "";
-    String token = "";
+    String lexeme;
+    String token;
     char character;
 
     /* 
@@ -39,18 +39,20 @@ public class identifier_FSA extends C_A {
     }
 
     /* Initializes the State variable to the START state */
-    State state = State.START;
+    State state;
 
-    public void readFile(BufferedReader reader, PushbackReader pbr) throws FileNotFoundException, IOException {
-
+    public Character readFile() throws FileNotFoundException, IOException {
+        lexeme = "";
+        token = "";
+        state = State.START;
         int c;
 
-        while ((c = pbr.read()) != -1) {
+        while ((c = MPscanner.pbr.read()) != -1) {
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
              */
-            pbr.unread(c);
+            MPscanner.pbr.unread(c);
             c++;
 
             switch (state) {
@@ -60,7 +62,7 @@ public class identifier_FSA extends C_A {
                      * Read in the first character, which is (as specified by the 
                      * dispatcher) either a letter or underscore.
                      */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     /* puts the character in the lexeme */
                     lexeme = Character.toString(character);
@@ -77,7 +79,7 @@ public class identifier_FSA extends C_A {
                 /* Accept State for an Identifier Value */
                 case IDACCEPT:
                     /* read the next character */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     if (Character.isAlphabetic((int) character)
                             || Character.isDigit((int) character)
@@ -94,11 +96,11 @@ public class identifier_FSA extends C_A {
                          * previously
                          */
 
-                        pbr.unread(character);
+                        MPscanner.pbr.unread(character);
                         state = State.S0;
                     } else {
                         /* invalid nex character, reset */
-                        pbr.unread(character);
+                        MPscanner.pbr.unread(character);
 
                         token = "MP_IDENTIFIER";
 
@@ -108,7 +110,7 @@ public class identifier_FSA extends C_A {
                         System.out.println(token);
 
                         /* test print-outs */
-                        character = (char) pbr.read();
+                        character = (char) MPscanner.pbr.read();
                         System.out.println("--------Reader is at");
                         System.out.println(Character.toString(character));
 
@@ -133,14 +135,14 @@ public class identifier_FSA extends C_A {
                     System.out.println(token);
 
                     /* test print-outs */
-                    character = (char) pbr.read();
+                    character = (char) MPscanner.pbr.read();
                     System.out.println("--------Reader is at");
                     System.out.println(Character.toString(character));
-                    pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
-                    System.exit(0);
+                    return character;
             }
         }
+        return '~';
     }
 
 }

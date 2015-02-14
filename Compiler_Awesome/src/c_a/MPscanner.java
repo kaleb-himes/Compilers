@@ -30,6 +30,7 @@ public class MPscanner extends C_A {
     
     public static BufferedReader reader;
     public static PushbackReader pbr;
+    private static boolean begin = false;
     
     public static void scanFile() throws IOException{
         Scanner scan = new Scanner(System.in);
@@ -37,7 +38,7 @@ public class MPscanner extends C_A {
         String helper = currentDirFile.getAbsolutePath();
         System.out.println("Enter path to file that will be compiled.");
         System.out.print("Current Path: " +helper+"/");
-        fLocation = scan.nextLine();
+        fLocation = "src/testStuff/k_id.file";/*scan.nextLine();*/
 
         File f = new File(fLocation);
         
@@ -52,11 +53,10 @@ public class MPscanner extends C_A {
     }
     
     public static char getToken() throws FileNotFoundException, IOException{
-        reader = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(fLocation),
-                        Charset.forName("UTF-8")));
-        pbr = new PushbackReader(reader, 5000);
+        if (begin == false) {
+            Initialize();
+            begin = true;
+        }
         
         int c;
         boolean legitToken = false;
@@ -71,6 +71,10 @@ public class MPscanner extends C_A {
                 legitToken = true;
                 break;
             }
+            else if (c == -1) {
+                System.out.println("\n\nProgram Parsed Successfully!\n\n");
+                System.exit(0);
+            }
         }
         return item;
     }
@@ -82,5 +86,9 @@ public class MPscanner extends C_A {
     }
     public static int getColumnNumber(){
         return cNum;
+    }
+    private static synchronized void Initialize() throws FileNotFoundException {
+        reader = new BufferedReader(new InputStreamReader(new FileInputStream(fLocation),Charset.forName("UTF-8")));
+        pbr = new PushbackReader(reader, 5000);
     }
 }
