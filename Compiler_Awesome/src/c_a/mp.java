@@ -27,7 +27,7 @@ public class mp {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
-        MPscanner.scanFile();
+        MPscanner scanner = new MPscanner();
+        scanner.scanFile();
     }
-
 }
