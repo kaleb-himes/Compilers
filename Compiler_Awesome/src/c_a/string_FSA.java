@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
  * @team ∀wesome
  */
 public class string_FSA extends C_A {
-    
+
     String lexeme = "";
     String token = "";
     char character;
@@ -105,17 +105,20 @@ public class string_FSA extends C_A {
                         token = "MP_STRINGLITERAL";
 
                         /* test print-outs */
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("       " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         /* test print-outs */
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
+//                        MPscanner.pbr.unread(character);
 
                         /* need to return to dispatcher here but for now exit */
-                        System.exit(0);
+                        return character;
                     }
 
                     /* END IDACCEPT */
@@ -134,19 +137,20 @@ public class string_FSA extends C_A {
                      * for assembly stuff, our file would eventually be passed 
                      * over by a linker which would output Machine Code and an
                      * executable program */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("    " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println("--------Reader is at");
-                    System.out.println(Character.toString(character));
-//                    pbr.unread(character);
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println("--------Reader is at");
+//                    System.out.println(Character.toString(character));
+//                    MPscanner.pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
-                    
                     return character;
-                    
+
                 default:
                     System.out.println("you failed default");
             }

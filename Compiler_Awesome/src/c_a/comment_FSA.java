@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
  * @team ∀wesome
  */
 public class comment_FSA extends C_A {
-    
+
     String lexeme;
     String token;
     char character;
@@ -41,14 +41,14 @@ public class comment_FSA extends C_A {
 
     public enum State {
 
-        START, IDACCEPT, S0
+        START, COMMENTACCEPT, S0
     }
 
     State state;
+
     /**
      *
-     * @return
-     * @throws FileNotFoundException
+     * @return @throws FileNotFoundException
      * @throws IOException
      */
     public Character readFile() throws FileNotFoundException, IOException {
@@ -82,16 +82,16 @@ public class comment_FSA extends C_A {
                     lexeme = Character.toString(character);
 
                     /* 
-                     * transitions to IDACCEPT state 
+                     * transitions to COMMENTACCEPT state 
                      * (because a letter or underscore has been read)
                      */
-                    state = State.IDACCEPT;
+                    state = State.COMMENTACCEPT;
 
                     /* end of START case */
                     break;
 
                 /* Accept State for an Identifier Value */
-                case IDACCEPT:
+                case COMMENTACCEPT:
                     /* read the next character */
                     character = (char) MPscanner.pbr.read();
 
@@ -100,6 +100,11 @@ public class comment_FSA extends C_A {
                             second_comment = true;
                         }
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
+                        if (character == 10) {
+                            character = 32;
+                            C_A.lineNumber++;
+                            System.out.println("New line ------------------------------" + C_A.lineNumber);
+                        }
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (second_comment == true) {
                         /*
@@ -116,20 +121,22 @@ public class comment_FSA extends C_A {
                         token = "MP_COMMENT";
 
                         /* test print-outs */
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("          " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         /* test print-outs */
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
-
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
+//                        MPscanner.pbr.unread(character);
                         /* need to return to dispatcher here but for now exit */
-                        System.exit(0);
+                        return character;
                     }
 
-                    /* END IDACCEPT */
+                    /* END COMMENTACCEPT */
                     break;
 
                 /* 
@@ -146,19 +153,21 @@ public class comment_FSA extends C_A {
                      * for assembly stuff, our file would eventually be passed 
                      * over by a linker which would output Machine Code and an
                      * executable program */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("          " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
+
 
                     /* test print-outs */
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println("--------Reader is at");
-                    System.out.println(Character.toString(character));
-//                    pbr.unread(character);
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println("--------Reader is at");
+//                    System.out.println(Character.toString(character));
+//                    MPscanner.pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
-                    
                     return character;
-                    
+
                 default:
                     System.out.println("you failed default");
                     break;
@@ -169,4 +178,3 @@ public class comment_FSA extends C_A {
     }
 
 }
-

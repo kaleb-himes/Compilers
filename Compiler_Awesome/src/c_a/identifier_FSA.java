@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
  * @team ∀wesome
  */
 public class identifier_FSA extends C_A {
-    
+
     String lexeme;
     String token;
     char character;
@@ -105,9 +105,11 @@ public class identifier_FSA extends C_A {
                         token = "MP_IDENTIFIER";
 
                         /* test print-outs */
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("     " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         /* test print-outs */
                         character = (char) MPscanner.pbr.read();
@@ -130,14 +132,17 @@ public class identifier_FSA extends C_A {
                 case S0:
                     token = "MP_IDENTIFIER";
                     /* test print-outs */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("       " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println("--------Reader is at");
-                    System.out.println(Character.toString(character));
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println("--------Reader is at");
+//                    System.out.println(Character.toString(character));
+//                    MPscanner.pbr.unread(character);
                     /* need to return to dispatcher here but for now exit */
                     return character;
             }

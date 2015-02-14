@@ -187,6 +187,9 @@ public class Dispatcher {
 
     public static void handleToken(char item) throws IOException {
         while (loop == true) {
+            if (item == 10) {
+                System.out.println("New line ------------------------------"+C_A.lineNumber);
+            }
             switch (state) {
                 case START:
                     //send to IDEN_FSA

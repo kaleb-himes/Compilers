@@ -81,25 +81,25 @@ public class symbol_FSA extends C_A {
                 case SINGLEACCEPT:
                     //Accept all valid single character tokens                
                     if (Character.compare(character, ',') == 0) {
-                        token = "MP_COMMA";
+                        token = "MP_COMMA            ";
                     } else if (Character.compare(character, '=') == 0) {
-                        token = "MP_EQUAL";
+                        token = "MP_EQUAL            ";
                     } else if (Character.compare(character, '/') == 0) {
-                        token = "MP_FLOAT_DIVIDE";
+                        token = "MP_FLOAT_DIVIDE     ";
                     } else if (Character.compare(character, '(') == 0) {
-                        token = "MP_LPAREN";
+                        token = "MP_LPAREN           ";
                     } else if (Character.compare(character, '-') == 0) {
-                        token = "MP_MINUS";
+                        token = "MP_MINUS            ";
                     } else if (Character.compare(character, '.') == 0) {
-                        token = token = "MP_PERIOD";
+                        token = token = "MP_PERIOD           ";
                     } else if (Character.compare(character, '+') == 0) {
-                        token = token = "MP_PLUS";
+                        token = token = "MP_PLUS             ";
                     } else if (Character.compare(character, ')') == 0) {
-                        token = token = "MP_RPAREN";
+                        token = token = "MP_RPAREN           ";
                     } else if (Character.compare(character, ';') == 0) {
-                        token = "MP_SCOLON";
+                        token = "MP_SCOLON           ";
                     } else if (Character.compare(character, '*') == 0) {
-                        token = "MP_TIMES";
+                        token = "MP_TIMES            ";
                         //FSA has handled all single character accept cases
                     } else {
                         //FSA may need to handle a multiple character accept case
@@ -114,7 +114,7 @@ public class symbol_FSA extends C_A {
                                 //= was the only valid symbol to follow >, so 
                                 //unread the invalid character
                                 MPscanner.pbr.unread(character);
-                                token = "MP_GTHAN";
+                                token = "MP_GTHAN            ";
                             }
                         } else if (Character.compare(character, ':') == 0) {
                             character = (char) MPscanner.pbr.read();
@@ -125,7 +125,7 @@ public class symbol_FSA extends C_A {
                                 //= was the only valid symbol to follow :, so 
                                 //unread the invalid character                                
                                 MPscanner.pbr.unread(character);
-                                token = "MP_COLON";
+                                token = "MP_COLON            ";
                             }
                         } else if (Character.compare(character, '<') == 0) {
                             character = (char) MPscanner.pbr.read();
@@ -139,21 +139,23 @@ public class symbol_FSA extends C_A {
                                 //= and > were the only valid symbols to follow <, so 
                                 //unread the invalid character
                                 MPscanner.pbr.unread(character);
-                                token = "MP_LTHAN";
+                                token = "MP_LTHAN            ";
                             }
                         }
                     } //End of if statement that sets token for all valid symbols
 
                     if (state == State.SINGLEACCEPT) {
                         /* test print-outs */
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("" + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         /* test print-outs */
-                        System.out.println("--------Reader is at");
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println(character);
+//                        System.out.println("--------Reader is at");
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println(character);
                         /* need to return to dispatcher here but for now exit */
                         return character;
                     }
@@ -167,67 +169,74 @@ public class symbol_FSA extends C_A {
                     token = "MP_GEQUAL";
 
                     /* test print-outs */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("     " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    System.out.println("--------Reader is at");
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println(character);
+//                    System.out.println("--------Reader is at");
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
                     return character;
-                    // END GEQACCEPT
+                // END GEQACCEPT
 
                 case LEQACCEPT:
                     token = "MP_LEQUAL";
 
                     /* test print-outs */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("           " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    System.out.println("--------Reader is at");
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println(character);
+//                    System.out.println("--------Reader is at");
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
                     return character;
-                    // END LEQACCEPT
+                // END LEQACCEPT
 
                 case ASSIGNACCEPT:
                     token = "MP_ASSIGN";
 
                     /* test print-outs */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("           " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    System.out.println("--------Reader is at");
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println(character);
+//                    System.out.println("--------Reader is at");
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
                     return character;
 
                     // END ASSIGNACCEPT
-
                 case NEQACCEPT:
                     token = "MP_NEQUAL";
 
                     /* test print-outs */
-                    System.out.println(state);
-                    System.out.println(lexeme);
-                    System.out.println(token);
+                    System.out.print(token);
+                    System.out.print("           " + C_A.lineNumber);
+                    System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                    System.out.println("     " + lexeme);
 
                     /* test print-outs */
-                    System.out.println("--------Reader is at");
-                    character = (char) MPscanner.pbr.read();
-                    System.out.println(character);
+//                    System.out.println("--------Reader is at");
+//                    character = (char) MPscanner.pbr.read();
+//                    System.out.println(character);
                     /* need to return to dispatcher here but for now exit */
                     return character;
 
-                    // END NEQACCEPT
+                // END NEQACCEPT
             }
             //Post Condition: The input file pointer is pointing at the first 
             //character after the current token  

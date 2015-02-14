@@ -27,6 +27,7 @@ public class MPscanner extends C_A {
     public static char item;
     public static int cNum;
     public static int lNum;
+    public static String testFile = "k_id.file";
     
     public static BufferedReader reader;
     public static PushbackReader pbr;
@@ -38,13 +39,13 @@ public class MPscanner extends C_A {
         String helper = currentDirFile.getAbsolutePath();
         System.out.println("Enter path to file that will be compiled.");
         System.out.print("Current Path: " +helper+"/");
-        fLocation = "src/testStuff/k_id.file";/*scan.nextLine();*/
+        fLocation = "src/testStuff/" +testFile;/*scan.nextLine();*/
 
         File f = new File(fLocation);
         
         if (f.exists() && !f.isDirectory()) {
             char nextT = getToken();
-            System.out.println("nextT = " + nextT);
+//            System.out.println("nextT = " + nextT);
             Dispatcher.handleToken(nextT);
         } else {
             System.out.println("Error: file not found exception.");
@@ -54,6 +55,7 @@ public class MPscanner extends C_A {
     
     public static char getToken() throws FileNotFoundException, IOException{
         if (begin == false) {
+            System.out.println("\nFrst lne ------------------------------"+C_A.lineNumber);
             Initialize();
             begin = true;
         }
@@ -74,6 +76,13 @@ public class MPscanner extends C_A {
             else if (c == -1) {
                 System.out.println("\n\nProgram Parsed Successfully!\n\n");
                 System.exit(0);
+            }
+            else if (c == 10) {
+                C_A.lineNumber++;
+                System.out.println("New line ------------------------------"+C_A.lineNumber);
+            }
+            else {
+//                System.out.println("Scanner saw this ------------------> " + (int) c);
             }
         }
         return item;

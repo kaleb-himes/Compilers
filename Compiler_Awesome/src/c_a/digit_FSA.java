@@ -10,16 +10,17 @@ import java.io.PushbackReader;
  * @version 0.1
  * @author monica, tabetha, kaleb
  * @team ∀wesome
- * 
- *  A finite state automaton, that is responsible for reading in either an 
- *  integer value, a fixed point number or a floating point number. The FSA
- *  returns the longest lexeme that matches any of the 3 previously mentioned
- *  types, as well as the column and line number, and the appropriate token. 
- * 
+ *
+ * A finite state automaton, that is responsible for reading in either an
+ * integer value, a fixed point number or a floating point number. The FSA
+ * returns the longest lexeme that matches any of the 3 previously mentioned
+ * types, as well as the column and line number, and the appropriate token.
+ *
  */
-
 public class digit_FSA extends C_A {
+
     //Initializes the State variable to the START state
+
     State state;
 
     //Strings corresponding to the lexeme (i.e. 27) and token(i.e. MP_INTEGER_LIT)
@@ -47,13 +48,14 @@ public class digit_FSA extends C_A {
 
 //enumerated types for all possible states of FSA
     public enum State {
+
         START, INTACCEPT, S0,
         FIXEDACCEPT, S1, S2, FLOATACCEPT
     }
 
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-     public Character readFile() throws FileNotFoundException, IOException {
+    public Character readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         state = State.START;
@@ -102,7 +104,7 @@ public class digit_FSA extends C_A {
                     } else {
                         //if we are coming from S0, we need to push at least one 
                         //character back to the reader
-                       MPscanner.pbr.unread(character);
+                        MPscanner.pbr.unread(character);
                         if (charBuffer[decimalPt] != 0) {
                             MPscanner.pbr.unread(charBuffer[decimalPt]);
                             charBuffer[decimalPt] = 0;
@@ -110,14 +112,16 @@ public class digit_FSA extends C_A {
                         token = "MP_INTEGER_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("      " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
@@ -146,14 +150,16 @@ public class digit_FSA extends C_A {
                             token = "MP_INTEGER_LIT";
 
                             //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                            System.out.println(state);
-                            System.out.println(lexeme);
-                            System.out.println(token);
+                            System.out.print(token);
+                            System.out.print("      " + C_A.lineNumber);
+                            System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                            System.out.println("     " + lexeme);
 
                             //for testing only, remove before combining!!!!!!!!!!!!!!!
-                            character = (char) MPscanner.pbr.read();
-                            System.out.println("--------Reader is at");
-                            System.out.println(Character.toString(character));
+//                            character = (char) MPscanner.pbr.read();
+//                            System.out.println("--------Reader is at");
+//                            System.out.println(Character.toString(character));
                              //////////////////////////////////
 
                             //exits the FSA, as we have found a valid token
@@ -162,18 +168,20 @@ public class digit_FSA extends C_A {
                     } else {
                         //unread the last character, which does not contribute to a valid token 
                         MPscanner.pbr.unread(character);
-                        
+
                         token = "MP_INTEGER_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("      " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
@@ -224,8 +232,8 @@ public class digit_FSA extends C_A {
                         //unreads characters and takes the invalid characters out of the lexeme
                         MPscanner.pbr.unread(character);
                         if (charBuffer[exponential] != 0) {
-                        MPscanner.pbr.unread(charBuffer[exponential]);
-                        charBuffer[exponential] = 0;
+                            MPscanner.pbr.unread(charBuffer[exponential]);
+                            charBuffer[exponential] = 0;
                         }
                         lexeme = lexeme.substring(0, lexeme.length() - 1);
 
@@ -236,14 +244,16 @@ public class digit_FSA extends C_A {
                         token = "MP_FIXED_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("        " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
                          //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
@@ -267,14 +277,16 @@ public class digit_FSA extends C_A {
                             token = "MP_FIXED_LIT";
 
                             //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                            System.out.println(state);
-                            System.out.println(lexeme);
-                            System.out.println(token);
+                            System.out.print(token);
+                            System.out.print("        " + C_A.lineNumber);
+                            System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                            System.out.println("     " + lexeme);
 
                             //for testing only, remove before combining!!!!!!!!!!!!!!!
-                            character = (char) MPscanner.pbr.read();
-                            System.out.println("--------Reader is at");
-                            System.out.println(Character.toString(character));
+//                            character = (char) MPscanner.pbr.read();
+//                            System.out.println("--------Reader is at");
+//                            System.out.println(Character.toString(character));
                          //////////////////////////////////
 
                             //exits the FSA, as we have found a valid token
@@ -288,14 +300,16 @@ public class digit_FSA extends C_A {
                         token = "MP_FIXED_LIT";
 
                         //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("        " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
                         //////////////////////////////////
 
                         //exits the FSA, as we have found a valid token
@@ -360,7 +374,7 @@ public class digit_FSA extends C_A {
                     } else {
                         //not a digit, set the reader back and exit
                         MPscanner.pbr.unread(character);
-                        
+
                         //sets info back to last traversed accept state
                         state = State.FIXEDACCEPT;
                     }
@@ -381,25 +395,27 @@ public class digit_FSA extends C_A {
                     } else {
                         //not a digit, set the reader back and exit
                         MPscanner.pbr.unread(character);
-                        
+
                         token = "MP_FLOAT_LIT";
 
                         //for testing only, remove!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.println(state);
-                        System.out.println(lexeme);
-                        System.out.println(token);
+                        System.out.print(token);
+                        System.out.print("        " + C_A.lineNumber);
+                        System.out.print("     " + C_A.colNumber);
+//                    System.out.println(state);
+                        System.out.println("     " + lexeme);
 
                         //for testing only, remove before combining!!!!!!!!!!!!!!!
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
+//                        character = (char) MPscanner.pbr.read();
+//                        System.out.println("--------Reader is at");
+//                        System.out.println(Character.toString(character));
 
                         //exits the FSA, as we have found a valid token
                         return character;
                     }
                     //end of FLOATACCEPT 
                     break;
-            } 
+            }
             //Post Condition: The input file pointer is pointing at the first 
             //character after the current token.  
         }
