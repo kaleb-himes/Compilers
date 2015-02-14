@@ -24,7 +24,7 @@ public class MPscanner extends mp {
     public static char item;
     public static int cNum;
     public static int lNum;
-    public static String testFile = "k_id.file";
+    public static String testFile = mp.argument;
     
     public static BufferedReader reader;
     public static PushbackReader pbr;

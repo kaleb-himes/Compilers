@@ -21,12 +21,14 @@ public class mp {
     public static int colNumber = 0;
     public static int lineNumber = 1;
     public static String fLocation = "";
+    public static String argument;
 
     /**
      * @param args the command line arguments if any
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
+        argument = args[0];
         MPscanner scanner = new MPscanner();
         scanner.scanFile();
     }
