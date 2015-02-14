@@ -1,6 +1,6 @@
 package c_a;
 
-import static c_a.C_A.fLocation;
+import static c_a.mp.fLocation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import java.util.Scanner;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class MPscanner extends C_A {
+public class MPscanner extends mp {
     
     Dispatcher dispatch = new Dispatcher();
     public static String lexeme;    
@@ -52,7 +52,7 @@ public class MPscanner extends C_A {
     
     public static char getToken() throws FileNotFoundException, IOException{
         if (begin == false) {
-            System.out.println("\nFrst lne ------------------------------"+C_A.lineNumber);
+            System.out.println("\nFrst lne ------------------------------"+mp.lineNumber);
             Initialize();
             begin = true;
         }
@@ -64,7 +64,7 @@ public class MPscanner extends C_A {
             c = pbr.read();
             if (c != -1 && c > 32 && c < 127) {
                 //unreads the first legit Token and returns.
-                C_A.colNumber++;
+                mp.colNumber++;
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
@@ -76,12 +76,12 @@ public class MPscanner extends C_A {
                 System.exit(0);
             }
             else if (c == 10) {
-                C_A.lineNumber++;
-                C_A.colNumber = 0;
-                System.out.println("New line ------------------------------"+C_A.lineNumber);
+                mp.lineNumber++;
+                mp.colNumber = 0;
+                System.out.println("New line ------------------------------"+mp.lineNumber);
             }
             else {
-                  C_A.colNumber++;
+                  mp.colNumber++;
 //                System.out.println("Scanner saw this ------------------> " + (int) c);
             }
         }

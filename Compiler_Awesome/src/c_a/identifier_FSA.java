@@ -5,7 +5,7 @@
  */
 package c_a;
 
-import static c_a.C_A.fLocation;
+import static c_a.mp.fLocation;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class identifier_FSA extends C_A {
+public class identifier_FSA extends mp {
 
     String lexeme;
     String token;
@@ -86,7 +86,7 @@ public class identifier_FSA extends C_A {
                             || character == '_') {
 
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (!Character.isAlphabetic(character)
                             && !Character.isDigit(character)

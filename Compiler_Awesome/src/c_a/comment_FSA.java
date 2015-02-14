@@ -18,7 +18,7 @@ import java.io.IOException;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class comment_FSA extends C_A {
+public class comment_FSA extends mp {
 
     String lexeme;
     String token;
@@ -96,11 +96,11 @@ public class comment_FSA extends C_A {
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
                         if (character == 10) {
                             character = 32;
-                            C_A.lineNumber++;
-                            C_A.colNumber = 0;
-                            System.out.println("New line ------------------------------" + C_A.lineNumber);
+                            mp.lineNumber++;
+                            mp.colNumber = 0;
+                            System.out.println("New line ------------------------------" + mp.lineNumber);
                         }
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (second_comment == true) {
                         /*

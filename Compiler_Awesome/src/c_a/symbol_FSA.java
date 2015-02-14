@@ -16,7 +16,7 @@ import java.util.Arrays;
  * column and line number, and the appropriate token.
  *
  */
-public class symbol_FSA extends C_A {
+public class symbol_FSA extends mp {
     /* Initializes the State variable to the START state */
 
     State state;
@@ -103,7 +103,7 @@ public class symbol_FSA extends C_A {
                             //and set the reader back
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                C_A.colNumber++;
+                                mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.GEQACCEPT;
                             } else {
@@ -115,7 +115,7 @@ public class symbol_FSA extends C_A {
                         } else if (Character.compare(character, ':') == 0) {
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                C_A.colNumber++;
+                                mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.ASSIGNACCEPT;
                             } else {
@@ -127,11 +127,11 @@ public class symbol_FSA extends C_A {
                         } else if (Character.compare(character, '<') == 0) {
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                C_A.colNumber++;
+                                mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.LEQACCEPT;
                             } else if (Character.compare(character, '>') == 0) {
-                                C_A.colNumber++;
+                                mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.NEQACCEPT;
                             } else {

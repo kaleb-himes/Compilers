@@ -10,7 +10,7 @@ import java.util.Scanner;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class C_A {
+public class mp {
     /* The file location and names example:
      * 
      * computer/somewhere/file.java

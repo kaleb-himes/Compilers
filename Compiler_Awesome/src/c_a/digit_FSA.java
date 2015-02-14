@@ -17,7 +17,7 @@ import java.io.PushbackReader;
  * types, as well as the column and line number, and the appropriate token.
  *
  */
-public class digit_FSA extends C_A {
+public class digit_FSA extends mp {
 
     //Initializes the State variable to the START state
 
@@ -130,7 +130,7 @@ public class digit_FSA extends C_A {
 
                     if (Character.isDigit(character)) {
                         //if character read was an integer, concatenate it to the lexeme
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == '.') {
                         //no decimal point has been read previously, so move to next state
@@ -140,7 +140,7 @@ public class digit_FSA extends C_A {
                             //(for unreading)
                             charBuffer[decimalPt] = character;
                             charBuffer[decimalPt] = 0;
-                            C_A.colNumber++;
+                            mp.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
 
                             //as we have read a period, move toward float/fixed states
@@ -204,7 +204,7 @@ public class digit_FSA extends C_A {
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
                         //concatenate the digit after the decimal point
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //change states, to indicate that it is a fixed pt. number
@@ -265,7 +265,7 @@ public class digit_FSA extends C_A {
 
                     if (Character.isDigit(character)) {
                         //if a digit was read, concatenate it to the lexeme
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == 'e' || character == 'E') {
                         //checks if an exponential character (E or e) has already been read
@@ -273,7 +273,7 @@ public class digit_FSA extends C_A {
                             //if an e or E has not been read, set it in buffer
                             charBuffer[exponential] = character;
                             readExponential = true;
-                            C_A.colNumber++;
+                            mp.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
                             state = State.S1;
                         } else {
@@ -337,7 +337,7 @@ public class digit_FSA extends C_A {
 
                     //Check that the character read is of a valid type
                     if (character == '+' || character == '-') {
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                         //change states
                         state = State.S2;
@@ -372,7 +372,7 @@ public class digit_FSA extends C_A {
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
                         //concatenate the digit after the + or -
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //move to the Float Accept state, as a floating point
@@ -400,7 +400,7 @@ public class digit_FSA extends C_A {
 
                     if (Character.isDigit(character)) {
                         //if it was a digit, concatenate it to the lexeme
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else {
                         //not a digit, set the reader back and exit

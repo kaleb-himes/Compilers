@@ -188,7 +188,7 @@ public class Dispatcher {
     public static void handleToken(char item) throws IOException {
         while (loop == true) {
             if (item == 10) {
-                System.out.println("New line ------------------------------"+C_A.lineNumber);
+                System.out.println("New line ------------------------------"+mp.lineNumber);
             }
             switch (state) {
                 case START:
@@ -211,36 +211,36 @@ public class Dispatcher {
                     }
                     break;
                 case IDEN:
-                    markLine = C_A.lineNumber;
-                    markCol = C_A.colNumber;
+                    markLine = mp.lineNumber;
+                    markCol = mp.colNumber;
                     ident.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case DIGIT:
-                    markLine = C_A.lineNumber;
-                    markCol = C_A.colNumber;
+                    markLine = mp.lineNumber;
+                    markCol = mp.colNumber;
                     dig.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case STR_LIT:
-                    markLine = C_A.lineNumber;
-                    markCol = C_A.colNumber;
+                    markLine = mp.lineNumber;
+                    markCol = mp.colNumber;
                     str.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case COMMENT:
-                    markLine = C_A.lineNumber;
-                    markCol = C_A.colNumber;
+                    markLine = mp.lineNumber;
+                    markCol = mp.colNumber;
                     comm.readFile();
                     item = MPscanner.getToken();
                     state = State.START;
                     break;
                 case SYMBOL:
-                    markLine = C_A.lineNumber;
-                    markCol = C_A.colNumber;
+                    markLine = mp.lineNumber;
+                    markCol = mp.colNumber;
                     symb.readFile();
                     item = MPscanner.getToken();
                     state = State.START;

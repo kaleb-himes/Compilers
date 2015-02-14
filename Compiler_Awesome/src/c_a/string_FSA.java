@@ -18,7 +18,7 @@ import java.io.IOException;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  */
-public class string_FSA extends C_A {
+public class string_FSA extends mp {
 
     String lexeme = "";
     String token = "";
@@ -83,7 +83,7 @@ public class string_FSA extends C_A {
                             second_quote = true;
                         }
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
-                        C_A.colNumber++;
+                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (second_quote == true) {
                         /*

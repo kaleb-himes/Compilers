@@ -10,6 +10,6 @@ begin
     String Awesome = 'This compiler is awesome!!!';
     int there = this + that;
     double every = 2.1289;
-    double thing = 2.5^10;
+    double thing = 2.5e-10;
     double everything = 161341234921340891234.1897491273491273497129341234;
-end;
+end
