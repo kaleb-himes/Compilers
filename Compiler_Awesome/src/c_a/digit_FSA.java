@@ -1,9 +1,7 @@
 package c_a;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PushbackReader;
 
 /**
  * @title c_a = compiler_awesome

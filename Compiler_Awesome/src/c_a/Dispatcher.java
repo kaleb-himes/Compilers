@@ -1,9 +1,6 @@
 package c_a;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @title c_a = compiler_awesome
@@ -250,7 +247,7 @@ public class Dispatcher {
                     if (item == -1) {
                         loop = false;
                     }
-                    state = state.START;
+                    state = State.START;
                     throw new AssertionError(state.name());
             }
         }

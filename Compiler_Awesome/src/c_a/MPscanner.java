@@ -69,7 +69,6 @@ public class MPscanner extends mp {
                 item = (char) pbr.read();
                 pbr.unread(item);
                 legitToken = true;
-                break;
             }
             else if (c == -1) {
                 System.out.println("\n\nProgram Parsed Successfully!\n\n");

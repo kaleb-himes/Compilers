@@ -24,6 +24,7 @@ public class mp {
 
     /**
      * @param args the command line arguments if any
+     * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
         MPscanner.scanFile();

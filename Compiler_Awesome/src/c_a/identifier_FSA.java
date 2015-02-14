@@ -5,14 +5,8 @@
  */
 package c_a;
 
-import static c_a.mp.fLocation;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PushbackReader;
-import java.nio.charset.Charset;
 
 /**
  * @title c_a = compiler_awesome
