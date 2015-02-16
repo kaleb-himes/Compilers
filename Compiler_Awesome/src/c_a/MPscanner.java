@@ -77,11 +77,13 @@ public class MPscanner extends mp {
             } else if (c == -1) {
                 System.out.println("\n\nScanning Finished\n\n");
                 System.exit(0);
-            } else if (c == 10) {
+            } 
+            else if (c == 10) {
                 mp.lineNumber++;
                 mp.colNumber = 0;
                 //System.out.println("New line ------------------------------" + mp.lineNumber);
-            } else {
+            } 
+            else {
                 mp.colNumber++;
 //                System.out.println("Scanner saw this ------------------> " + (int) c);
             }

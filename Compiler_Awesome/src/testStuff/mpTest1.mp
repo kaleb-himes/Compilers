@@ -1,6 +1,7 @@
 { a sample program 1 }
 
 program sample1;
+  var a = "hello"
   var i, j: integer;
 begin
   readln(i); { get i }
