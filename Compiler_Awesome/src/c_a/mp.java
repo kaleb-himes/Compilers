@@ -1,8 +1,6 @@
 package c_a;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * @title c_a = compiler_awesome
@@ -18,6 +16,7 @@ public class mp {
      * fLocation = computer/somewhere/
      * fName = file.java
      */
+
     public static int colNumber = 0;
     public static int lineNumber = 1;
     public static String fLocation = "";
@@ -29,7 +28,9 @@ public class mp {
      */
     public static void main(String[] args) throws IOException {
         argument = args[0];
+
         MPscanner scanner = new MPscanner();
         scanner.scanFile();
+
     }
 }

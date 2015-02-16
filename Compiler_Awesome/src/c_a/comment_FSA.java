@@ -23,19 +23,14 @@ public class comment_FSA extends mp {
     String lexeme;
     String token;
     char character;
-    boolean second_comment;
 
-    /* 
-     * flags to indicate whether or not a particular character
-     * has already been scanned
-     */
-    Boolean readPeriod;
-    Boolean readOperator;
+    Boolean closedComment;
+    Boolean runOnDetector;
     Boolean loop;
 
     public enum State {
 
-        START, COMMENTACCEPT, S0
+        START, S0, COMMENTACCEPT, RUNONCOMMENT
     }
 
     State state;
@@ -48,10 +43,9 @@ public class comment_FSA extends mp {
     public Character readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
-        second_comment = false;
+        closedComment = false;
+        runOnDetector = false;
         state = State.START;
-        readPeriod = false;
-        readOperator = false;
         loop = true;
         int c;
 
@@ -68,71 +62,70 @@ public class comment_FSA extends mp {
                 case START:
                     /* 
                      * Read in the first character, which is (as specified by the 
-                     * dispatcher) a double quote mark 1 (").
+                     * dispatcher) a '{'.
                      */
                     character = (char) MPscanner.pbr.read();
 
-                    /* puts the character in the lexeme */
-                    lexeme = Character.toString(character);
+                    if (Character.compare(character, '{') == 0) {
+                        /* puts the character in the lexeme */
+                        lexeme = Character.toString(character);
 
-                    /* 
-                     * transitions to COMMENTACCEPT state 
-                     * (because a letter or underscore has been read)
-                     */
-                    state = State.COMMENTACCEPT;
-
+                        /* 
+                         * transitions to S0 state 
+                         * (because an opening comment symbol has been read)
+                         */
+                        state = State.S0;
+                    }
                     /* end of START case */
                     break;
 
-                /* Accept State for an Identifier Value */
-                case COMMENTACCEPT:
+                /* Intermediate state, indicates we have read a { but not yet a } */
+                case S0:
                     /* read the next character */
                     character = (char) MPscanner.pbr.read();
 
-                    if (second_comment == false) {
-                        if (Character.toString(character).equals("}")) {
-                            second_comment = true;
-                        }
-                        /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
+                    //checks if we read a { before a }
+                    if (Character.compare(character, '{') == 0) {
+                        runOnDetector = true;
+                        MPscanner.pbr.unread(character);
+                    }
+
+                    if (Character.compare(character, '}') == 0) {
+                          closedComment = true;
+                    }
+                    
+                    //We have not yet read a closing brace, so keep concatenating the
+                    //intermediate characters and consider them part of the comment
+                    if (closedComment == false  && runOnDetector == false) {
+                        //if (Character.compare(character, '}') == 0) {
+                        //    closedComment = true;
+                        //}
+
                         if (character == 10) {
                             character = 32;
                             mp.lineNumber++;
                             mp.colNumber = 0;
-                            System.out.println("New line ------------------------------" + mp.lineNumber);
                         }
                         mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
-                    } else if (second_comment == true) {
-                        /*
-                         * Checks if character is anything but acceptable
-                         * Identifier value and ensures it has not been read
-                         * previously
-                         */
+                    } else if (closedComment == true && runOnDetector == false) {
+                        //go to the comment accept state, as you have read one { or }                       
                         MPscanner.pbr.unread(character);
-                        state = State.S0;
-                    } else {
-                        /* invalid nex character, reset */
+                        state = State.COMMENTACCEPT;
+                    } else if (runOnDetector == true) {
                         MPscanner.pbr.unread(character);
+                        state = State.RUNONCOMMENT;
 
-                        token = "MP_COMMENT";
+                        token = "MP_RUN_COMMENT";
 
-                        /* test print-outs */
                         System.out.print(token);
                         System.out.print("          " + Dispatcher.markLine);
                         System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                         System.out.println("     " + lexeme);
-
-                        /* test print-outs */
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-//                        MPscanner.pbr.unread(character);
-                        /* need to return to dispatcher here but for now exit */
-                        return character;
+                        
                     }
 
-                    /* END COMMENTACCEPT */
+                    /* END S0 */
                     break;
 
                 /* 
@@ -141,7 +134,7 @@ public class comment_FSA extends mp {
                  * a valid identifier has been read or an error occured
                  * let the dispatcher handle it
                  */
-                case S0:
+                case COMMENTACCEPT:
                     loop = false;
                     token = "MP_COMMENT";
                     /* test print-outs */
@@ -152,25 +145,44 @@ public class comment_FSA extends mp {
                     System.out.print(token);
                     System.out.print("          " + Dispatcher.markLine);
                     System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
-
-                    /* test print-outs */
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println("--------Reader is at");
-//                    System.out.println(Character.toString(character));
-//                    MPscanner.pbr.unread(character);
-                    /* need to return to dispatcher here but for now exit */
+                    /* return to dispatcher */
                     return character;
+
+                /* 
+                 * S0 state indicates all valid characters have been read and 
+                 * we encountered something not legal. This could mean either
+                 * a valid identifier has been read or an error occured
+                 * let the dispatcher handle it
+                 */
+                case RUNONCOMMENT:
+                    //NEED TO GET THIS TO PRINT OUT 
+                    loop = false;
+                    
+                    //lexeme = lexeme.concat(Character.toString(character));
+                    
+                    token = "MP_RUN_COMMENT";
+
+                    System.out.print(token);
+                    System.out.print("          " + Dispatcher.markLine);
+                    System.out.print("     " + Dispatcher.markCol);
+                    System.out.println("     " + lexeme);
+
+                    state = State.S0;
+                    /* return to dispatcher */
+                return character;
+                //break;
 
                 default:
                     System.out.println("you failed default");
                     break;
             }
         }
-        System.out.print("you failed");
-        return '~';
-    }
+        System.out.print(
+                "at end - delte this comment when done");
 
+        return '~';
+
+    }
 }

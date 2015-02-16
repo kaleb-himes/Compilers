@@ -1,4 +1,4 @@
-{ a sample program 1 }
+{ a sample program 1 
 
 program sample1;
   var i, j: integer;
