@@ -63,7 +63,6 @@ public class Dispatcher {
     public static final String QUOTE = "\'";
     public static final String LBRACKET = "{";
 
-    //make these enums as well?
     public static final identifier_FSA ident = new identifier_FSA();
     public static final digit_FSA dig = new digit_FSA();
     public static final string_FSA str = new string_FSA();
@@ -76,6 +75,8 @@ public class Dispatcher {
     public static int lineNo;
     public static int colNo;
 
+    public static String whitespace = "";
+
     public enum State {
 
         START, IDEN, DIGIT, STR_LIT, QUOTE, SYMBOL, COMMENT
@@ -85,10 +86,15 @@ public class Dispatcher {
     public static void handleToken(char item) throws IOException {
         boolean runOnQuote = false;
         System.out.println("\nScanner Output\n");
+
         while (loop == true) {
+<<<<<<< HEAD
             //if (item == 10) {
             // System.out.println("New line ------------------------------" + mp.lineNumber);
             //}            
+=======
+            item = MPscanner.getNextToken();
+>>>>>>> 9a6c695a4c2329173a8fd41672735f3f69c296d7
 
             switch (state) {
                 case START:
@@ -130,7 +136,6 @@ public class Dispatcher {
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     ident.readFile();
-                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = ident.getToken();
@@ -138,9 +143,9 @@ public class Dispatcher {
                     lineNo = ident.getLineNumber();
                     colNo = ident.getColumnNumber();
 
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
+                    System.out.print(token + "  ");
+                    System.out.print(lineNo + "   ");
+                    System.out.print(colNo + "   ");
                     System.out.println(lexeme);
                     break;
 
@@ -148,7 +153,6 @@ public class Dispatcher {
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     dig.readFile();
-                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = dig.getToken();
@@ -156,18 +160,22 @@ public class Dispatcher {
                     lineNo = dig.getLineNumber();
                     colNo = dig.getColumnNumber();
 
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
+                    if (token.equals("MP_FIXED_LIT") || token.equals("MP_FLOAT_LIT")) {
+                        whitespace = "   ";
+                    } else if (token.equals("MP_INTEGER_LIT")) {
+                        whitespace = " ";
+                    }
+                    
+                    System.out.print(token + whitespace);
+                    System.out.print(lineNo + "   ");
+                    System.out.print(colNo + "   ");
                     System.out.println(lexeme);
-
                     break;
 
                 case STR_LIT:
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     str.readFile();
-                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = str.getToken();
@@ -175,11 +183,10 @@ public class Dispatcher {
                     lineNo = str.getLineNumber();
                     colNo = str.getColumnNumber();
 
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
+                    System.out.print(token + "  ");
+                    System.out.print(lineNo + "   ");
+                    System.out.print(colNo + "   ");
                     System.out.println(lexeme);
-
                     break;
 
                 case QUOTE:
@@ -206,17 +213,16 @@ public class Dispatcher {
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     comm.readFile();
-                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = comm.getToken();
                     lexeme = comm.getLexeme();
                     lineNo = comm.getLineNumber();
-                    colNo = comm.getColumnNumber();
-
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
+                    colNo = comm.getColumnNumber(); 
+                    
+                    System.out.print(token + "        ");
+                    System.out.print(lineNo + "   ");
+                    System.out.print(colNo + "   ");
                     System.out.println(lexeme);
 
                     break;
@@ -224,7 +230,6 @@ public class Dispatcher {
                 case SYMBOL:
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
-                    item = MPscanner.getNextToken();
                     symb.readFile();
                     state = State.START;
 
@@ -233,9 +238,19 @@ public class Dispatcher {
                     lineNo = symb.getLineNumber();
                     colNo = symb.getColumnNumber();
 
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
+                    if (token.equals("MP_LPAREN") || token.equals("MP_RPAREN") || token.equals("MP_NEQUALS") || token.equals("MP_SCOLON") || token.equals("MP_ASSIGN") || token.equals("MP_GEQUAL") || token.equals("MP_LEQUAL") || token.equals("MP_PERIOD")) {
+                        whitespace = "      ";
+                    } else if (token.equals("MP_COLON") || token.equals("MP_COMMA") || token.equals("MP_EQUAL") || token.equals("MP_GTHAN") || token.equals("MP_LTHAN") || token.equals("MP_MINUS") || token.equals("MP_TIMES")) {
+                        whitespace = "       ";
+                    } else if (token.equals("MP_PLUS")) {
+                        whitespace = "        ";
+                    } else if (token.equals("MP_FLOAT_DIVIDE")) {
+                        whitespace = " ";
+                    }
+
+                    System.out.print(token + whitespace);
+                    System.out.print(lineNo + "   ");
+                    System.out.print(colNo + "   ");
                     System.out.println(lexeme);
                     break;
 

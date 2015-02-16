@@ -165,7 +165,6 @@ public class symbol_FSA extends mp {
 
                     if (state == State.SINGLEACCEPT) {
 
-
                         /* Return to the dispatcher */
                         return token;
                     }

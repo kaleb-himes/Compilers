@@ -1,6 +1,6 @@
 { a sample program 1R }
 program sample1R;
-  var i: integer;
+var i: integer;
       j: real;
 begin
   readln(i); { get i }
