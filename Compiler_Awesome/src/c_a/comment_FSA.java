@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package c_a;
 
 /**
@@ -17,13 +12,18 @@ import java.io.IOException;
  * @version 0.1
  * @author monica, tabetha, kaleb
  * @team ∀wesome
+ *
+ * A finite state automaton, that is responsible for reading in a comment.
  */
 public class comment_FSA extends mp {
 
     String lexeme;
     String token;
+
+    //Variable to store the character most recently read
     char character;
 
+    //Flags to keep track of certain program states
     Boolean closedComment;
     Boolean runOnDetector;
     Boolean loop;
@@ -33,14 +33,27 @@ public class comment_FSA extends mp {
         START, S0, COMMENTACCEPT, RUNONCOMMENT
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public int getLineNumber() {
+        return Dispatcher.markLine;
+    }
+
+    public int getColumnNumber() {
+        return Dispatcher.markCol;
+    }
+
     State state;
 
-    /**
-     *
-     * @return @throws FileNotFoundException
-     * @throws IOException
-     */
-    public Character readFile() throws FileNotFoundException, IOException {
+    //Precondition: the source file file pointer points to the first character 
+    //of the lexeme corresponding to the next token
+    public String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         closedComment = false;
@@ -58,7 +71,8 @@ public class comment_FSA extends mp {
             c++;
 
             switch (state) {
-                /* START state indicates that nothing has been scanned yet */
+                //START state indicates that no part of the lexeme has been 
+                //scanned yet
                 case START:
                     /* 
                      * Read in the first character, which is (as specified by the 
@@ -83,106 +97,78 @@ public class comment_FSA extends mp {
                 case S0:
                     /* read the next character */
                     character = (char) MPscanner.pbr.read();
-
-                    //checks if we read a { before a }
+                    /*
+                     * Does a check to see if we read a { before a } per 
+                     * http://cobweb.cs.uga.edu/~kochut/Teaching/x570/micro-pascal/micro-pascal.html
+                     * nested comments are not permitted
+                     */
                     if (Character.compare(character, '{') == 0) {
+                        //detects the presence of a run on comment
                         runOnDetector = true;
-                        MPscanner.pbr.unread(character);
                     }
 
-                    if (Character.compare(character, '}') == 0) {
-                          closedComment = true;
-                    }
-                    
-                    //We have not yet read a closing brace, so keep concatenating the
-                    //intermediate characters and consider them part of the comment
-                    if (closedComment == false  && runOnDetector == false) {
-                        //if (Character.compare(character, '}') == 0) {
-                        //    closedComment = true;
-                        //}
+                    // We have not yet read a closing brace, so keep concatenating the
+                    // intermediate characters and consider them part of the comment
+                    if (closedComment == false && runOnDetector == false) {
+                        if (Character.compare(character, '}') == 0) {
+                            closedComment = true;
+                        }
 
+                        //check for end of line characters (for comments that span lines)
                         if (character == 10) {
-                            character = 32;
                             mp.lineNumber++;
                             mp.colNumber = 0;
+                            mp.colNumber++;
                         }
-                        mp.colNumber++;
-                        lexeme = lexeme.concat(Character.toString(character));
                     } else if (closedComment == true && runOnDetector == false) {
-                        //go to the comment accept state, as you have read one { or }                       
-                        MPscanner.pbr.unread(character);
+                        //go to the comment accept state, as you have read one { and }                       
                         state = State.COMMENTACCEPT;
                     } else if (runOnDetector == true) {
                         MPscanner.pbr.unread(character);
                         state = State.RUNONCOMMENT;
-
-                        token = "MP_RUN_COMMENT";
-
-                        System.out.print(token);
-                        System.out.print("          " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-                        System.out.println("     " + lexeme);
-                        
                     }
+                    //update lexeme
+                    lexeme = lexeme.concat(Character.toString(character));
 
                     /* END S0 */
                     break;
 
                 /* 
-                 * S0 state indicates all valid characters have been read and 
-                 * we encountered something not legal. This could mean either
-                 * a valid identifier has been read or an error occured
-                 * let the dispatcher handle it
+                 * COMMENTACCEPT state, accepts anything that starts with a 
+                 * { and ends with a }. Nested comments are not allowed
+                 * in Micro Pascal.
                  */
                 case COMMENTACCEPT:
+                    //stop looping, as we are in an accept state
                     loop = false;
+
+                    //unread the last character, to get the reader in the right place
+                    MPscanner.pbr.unread(character);
                     token = "MP_COMMENT";
-                    /* test print-outs */
-                    /* This stuff needs to be written to a file like C does
-                     * for assembly stuff, our file would eventually be passed 
-                     * over by a linker which would output Machine Code and an
-                     * executable program */
-                    System.out.print(token);
-                    System.out.print("          " + Dispatcher.markLine);
-                    System.out.print("     " + Dispatcher.markCol);
-                    System.out.println("     " + lexeme);
 
                     /* return to dispatcher */
-                    return character;
+                    return token;
+                //END COMMENTACCEPT
 
                 /* 
-                 * S0 state indicates all valid characters have been read and 
-                 * we encountered something not legal. This could mean either
-                 * a valid identifier has been read or an error occured
-                 * let the dispatcher handle it
+                 * RUNONCOMMENT state indicates that two {{ have been read (which 
+                 * is not allowed in MicroPascal.   
                  */
                 case RUNONCOMMENT:
-                    //NEED TO GET THIS TO PRINT OUT 
-                    loop = false;
-                    
-                    //lexeme = lexeme.concat(Character.toString(character));
-                    
+                    character = (char) MPscanner.pbr.read();
                     token = "MP_RUN_COMMENT";
-
-                    System.out.print(token);
-                    System.out.print("          " + Dispatcher.markLine);
-                    System.out.print("     " + Dispatcher.markCol);
-                    System.out.println("     " + lexeme);
-
-                    state = State.S0;
-                    /* return to dispatcher */
-                return character;
-                //break;
-
-                default:
-                    System.out.println("you failed default");
+                    //END RUNONCOMMENT
                     break;
+
+            }
+        } //end while
+        //Post Condition: The input file pointer is pointing at the first 
+        //character after the current token.          
+        if (state != State.COMMENTACCEPT) {
+            if (state != State.RUNONCOMMENT) {
+                token = "MP_ERROR";
             }
         }
-        System.out.print(
-                "at end - delte this comment when done");
-
-        return '~';
-
+        return token;
     }
 }
