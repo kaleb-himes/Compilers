@@ -138,6 +138,7 @@ public class identifier_FSA extends mp {
                 token = "MP_ERROR";
             }
         }
+
         return token;
     }
 

@@ -56,8 +56,8 @@ public class MPscanner extends mp {
 
     public static char getNextToken() throws FileNotFoundException, IOException {
         if (begin == false) {
-            //System.out.println("\nFrst lne ------------------------------" + mp.lineNumber);
-            System.out.println();
+  //          System.out.println("\nFrst lne ------------------------------" + mp.lineNumber);
+//            System.out.println();
             Initialize();
             begin = true;
         }
@@ -80,7 +80,7 @@ public class MPscanner extends mp {
             } else if (c == 10) {
                 mp.lineNumber++;
                 mp.colNumber = 0;
-                //System.out.println("New line ------------------------------" + mp.lineNumber);
+//                System.out.println("New line ------------------------------" + mp.lineNumber);
             } else {
                 mp.colNumber++;
 //                System.out.println("Scanner saw this ------------------> " + (int) c);

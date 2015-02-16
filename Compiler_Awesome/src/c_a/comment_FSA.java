@@ -144,7 +144,7 @@ public class comment_FSA extends mp {
 
                     //unread the last character, to get the reader in the right place
                     MPscanner.pbr.unread(character);
-                    token = "MP_COMMENT";
+                    token = "COMMENT";
 
                     /* return to dispatcher */
                     return token;
@@ -157,8 +157,8 @@ public class comment_FSA extends mp {
                 case RUNONCOMMENT:
                     character = (char) MPscanner.pbr.read();
                     token = "MP_RUN_COMMENT";
-                    //END RUNONCOMMENT
-                    break;
+
+                    return token;
 
             }  //Post Condition: The input file pointer is pointing at the first 
                //character after the current token.  

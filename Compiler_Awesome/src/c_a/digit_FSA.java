@@ -127,14 +127,8 @@ public class digit_FSA extends mp {
                         System.out.print(token);
                         System.out.print("      " + Dispatcher.markLine);
                         System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
-                        //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-                        //////////////////////////////////
                         //exits the FSA, as we have found a valid token
                         return token;
                     }
