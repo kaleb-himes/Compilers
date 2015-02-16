@@ -32,6 +32,22 @@ public class string_FSA extends mp {
         START, IDACCEPT, S0
     }
 
+        public String getToken() {
+        return token;
+    }
+
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public int getLineNumber() {
+        return Dispatcher.markLine;
+    }
+
+    public int getColumnNumber() {
+        return Dispatcher.markCol;
+    }
+    
     /* Initializes the State variable to the START state */
     State state = State.START;
 

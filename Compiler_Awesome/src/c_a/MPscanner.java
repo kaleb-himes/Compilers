@@ -44,7 +44,7 @@ public class MPscanner extends mp {
         File f = new File(fLocation);
 
         if (f.exists() && !f.isDirectory()) {
-            char nextT = getToken();
+            char nextT = getNextToken();
 //            System.out.println("nextT = " + nextT);
             Dispatcher.handleToken(nextT);
         } else {
@@ -54,7 +54,7 @@ public class MPscanner extends mp {
         out.close();
     }
 
-    public static char getToken() throws FileNotFoundException, IOException {
+    public static char getNextToken() throws FileNotFoundException, IOException {
         if (begin == false) {
             //System.out.println("\nFrst lne ------------------------------" + mp.lineNumber);
             System.out.println();
@@ -89,17 +89,17 @@ public class MPscanner extends mp {
         return item;
     }
 
-    public static String getLexeme() {
-        return lexeme;
-    }
-
-    public static int getLineNumber() {
-        return lNum;
-    }
-
-    public static int getColumnNumber() {
-        return cNum;
-    }
+//    public static String getLexeme() {
+//        return lexeme;
+//    }
+//
+//    public static int getLineNumber() {
+//        return lNum;
+//    }
+//
+//    public static int getColumnNumber() {
+//        return cNum;
+//    }
 
     private static synchronized void Initialize() throws FileNotFoundException {
         reader = new BufferedReader(new InputStreamReader(new FileInputStream(fLocation), Charset.forName("UTF-8")));

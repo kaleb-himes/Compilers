@@ -207,10 +207,18 @@ public class symbol_FSA extends mp {
             //character after the current token  
         } //end while
 
-        if (state != State.ASSIGNACCEPT || state != State.GEQACCEPT || state != State.LEQACCEPT
-                || state != State.NEQACCEPT || state != State.SINGLEACCEPT) {
-            token = "MP_ERROR";
+        if (state != State.ASSIGNACCEPT) {
+            if (state != State.GEQACCEPT) {
+                if (state != State.LEQACCEPT) {
+                    if (state != State.NEQACCEPT) {
+                        if (state != State.SINGLEACCEPT) {
+                            token = "MP_ERROR";
+                        }
+                    }
+                }
+            }
         }
+
         return token;
     }
 }

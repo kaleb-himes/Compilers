@@ -27,10 +27,26 @@ public class identifier_FSA extends mp {
         START, IDACCEPT, S0
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public int getLineNumber() {
+        return Dispatcher.markLine;
+    }
+
+    public int getColumnNumber() {
+        return Dispatcher.markCol;
+    }
+
     /* Initializes the State variable to the START state */
     State state;
 
-    public Character readFile() throws FileNotFoundException, IOException {
+    public String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         state = State.START;
@@ -94,20 +110,9 @@ public class identifier_FSA extends mp {
 
                         token = "MP_IDENTIFIER";
 
-                        /* test print-outs */
-                        System.out.print(token);
-                        System.out.print("     " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                        System.out.println("     " + lexeme);
+                        /* return to dispatcher */
+                        return token;
 
-                        /* test print-outs */
-                        character = (char) MPscanner.pbr.read();
-                        System.out.println("--------Reader is at");
-                        System.out.println(Character.toString(character));
-
-                        /* need to return to dispatcher here but for now exit */
-                        System.exit(0);
                     }
 
                     /* END IDACCEPT */
@@ -121,23 +126,19 @@ public class identifier_FSA extends mp {
                  */
                 case S0:
                     token = "MP_IDENTIFIER";
-                    /* test print-outs */
-                    System.out.print(token);
-                    System.out.print("       " + Dispatcher.markLine);
-                    System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                    System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println("--------Reader is at");
-//                    System.out.println(Character.toString(character));
-//                    MPscanner.pbr.unread(character);
-                    /* need to return to dispatcher here but for now exit */
-                    return character;
+                    /* return to dispatcher */
+                    return token;
+            } //Post Condition: The input file pointer is pointing at the first 
+            //character after the current token. 
+        } //end while
+
+        if (state != State.IDACCEPT) {
+            if (state != State.S0) {
+                token = "MP_ERROR";
             }
         }
-        return '~';
+        return token;
     }
 
 }

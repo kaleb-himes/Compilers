@@ -146,6 +146,9 @@ public class comment_FSA extends mp {
                     MPscanner.pbr.unread(character);
                     token = "MP_COMMENT";
 
+                    System.out.println("****************Token " + token);
+                    System.out.println("****************Lexeme " + lexeme);
+
                     /* return to dispatcher */
                     return token;
                 //END COMMENTACCEPT
@@ -160,10 +163,10 @@ public class comment_FSA extends mp {
                     //END RUNONCOMMENT
                     break;
 
-            }
+            }  //Post Condition: The input file pointer is pointing at the first 
+               //character after the current token.  
         } //end while
-        //Post Condition: The input file pointer is pointing at the first 
-        //character after the current token.          
+
         if (state != State.COMMENTACCEPT) {
             if (state != State.RUNONCOMMENT) {
                 token = "MP_ERROR";
