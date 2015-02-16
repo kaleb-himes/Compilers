@@ -49,9 +49,25 @@ public class digit_FSA extends mp {
         FIXEDACCEPT, S1, S2, FLOATACCEPT
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public String getLexeme() {
+        return lexeme;
+    }
+
+    public int getLineNumber() {
+        return Dispatcher.markLine;
+    }
+
+    public int getColumnNumber() {
+        return Dispatcher.markCol;
+    }
+
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-    public Character readFile() throws FileNotFoundException, IOException {
+    public String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         state = State.START;
@@ -119,9 +135,8 @@ public class digit_FSA extends mp {
 //                        System.out.println("--------Reader is at");
 //                        System.out.println(Character.toString(character));
                         //////////////////////////////////
-
                         //exits the FSA, as we have found a valid token
-                        return character;
+                        return token;
                     }
 
                     if (Character.isDigit(character)) {
@@ -151,17 +166,10 @@ public class digit_FSA extends mp {
                             System.out.print(token);
                             System.out.print("      " + Dispatcher.markLine);
                             System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                             System.out.println("     " + lexeme);
 
-                            //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                            character = (char) MPscanner.pbr.read();
-//                            System.out.println("--------Reader is at");
-//                            System.out.println(Character.toString(character));
-                             //////////////////////////////////
-
                             //exits the FSA, as we have found a valid token
-                            return character;
+                            return token;
                         }
                     } else {
                         //unread the last character, which does not contribute to a valid token 
@@ -169,21 +177,8 @@ public class digit_FSA extends mp {
 
                         token = "MP_INTEGER_LIT";
 
-                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.print(token);
-                        System.out.print("      " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                        System.out.println("     " + lexeme);
-
-                        //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-                        //////////////////////////////////
-
                         //exits the FSA, as we have found a valid token
-                        return character;
+                        return token;
                     }
 
                     //end of INTACCEPT case
@@ -242,21 +237,8 @@ public class digit_FSA extends mp {
                         }
                         token = "MP_FIXED_LIT";
 
-                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.print(token);
-                        System.out.print("        " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                        System.out.println("     " + lexeme);
-
-                        //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-                         //////////////////////////////////
-
                         //exits the FSA, as we have found a valid token
-                        return character;
+                        return token;
                     }
 
                     if (Character.isDigit(character)) {
@@ -277,21 +259,8 @@ public class digit_FSA extends mp {
 
                             token = "MP_FIXED_LIT";
 
-                            //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                            System.out.print(token);
-                            System.out.print("        " + Dispatcher.markLine);
-                            System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                            System.out.println("     " + lexeme);
-
-                            //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                            character = (char) MPscanner.pbr.read();
-//                            System.out.println("--------Reader is at");
-//                            System.out.println(Character.toString(character));
-                         //////////////////////////////////
-
                             //exits the FSA, as we have found a valid token
-                            return character;
+                            return token;
                         }
 
                     } else {
@@ -300,21 +269,8 @@ public class digit_FSA extends mp {
 
                         token = "MP_FIXED_LIT";
 
-                        //for testing only, can delete this!!!!!!!!!!!!!!!!!!!!!!!!
-                        System.out.print(token);
-                        System.out.print("        " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                        System.out.println("     " + lexeme);
-
-                        //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-                        //////////////////////////////////
-
                         //exits the FSA, as we have found a valid token
-                        return character;
+                        return token;
                     }
 
                     //end of FIXEDACCEPT case
@@ -404,21 +360,8 @@ public class digit_FSA extends mp {
 
                         token = "MP_FLOAT_LIT";
 
-                        /* 
-                         * all print lines will eventually be file write lines
-                         */
-                        System.out.print(token);
-                        System.out.print("        " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-                        System.out.println("     " + lexeme);
-
-                        //for testing only, remove before combining!!!!!!!!!!!!!!!
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-
                         //return whatever character was last read
-                        return character;
+                        return token;
                     }
                     //end of FLOATACCEPT 
                     break;
@@ -426,6 +369,14 @@ public class digit_FSA extends mp {
             //Post Condition: The input file pointer is pointing at the first 
             //character after the current token.  
         }
-        return '~';
+
+        if (state != State.INTACCEPT) {
+            if (state != State.FIXEDACCEPT) {
+                if (state != State.FLOATACCEPT) {
+                    token = "MP_ERROR";
+                }
+            }
+        }
+        return token;
     }
 }

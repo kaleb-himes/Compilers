@@ -29,10 +29,10 @@ public class string_FSA extends mp {
 
     public enum State {
 
-        START, IDACCEPT, S0
+        START, STRINGACCEPT, S0
     }
 
-        public String getToken() {
+    public String getToken() {
         return token;
     }
 
@@ -47,11 +47,11 @@ public class string_FSA extends mp {
     public int getColumnNumber() {
         return Dispatcher.markCol;
     }
-    
+
     /* Initializes the State variable to the START state */
     State state = State.START;
 
-    public Character readFile() throws FileNotFoundException, IOException {
+    public String readFile() throws FileNotFoundException, IOException {
 
         int c;
 
@@ -76,16 +76,16 @@ public class string_FSA extends mp {
                     lexeme = Character.toString(character);
 
                     /* 
-                     * transitions to IDACCEPT state 
+                     * transitions to STRINGACCEPT state 
                      * (because a letter or underscore has been read)
                      */
-                    state = State.IDACCEPT;
+                    state = State.STRINGACCEPT;
 
                     /* end of START case */
                     break;
 
                 /* Accept State for an Identifier Value */
-                case IDACCEPT:
+                case STRINGACCEPT:
                     /* read the next character */
                     character = (char) MPscanner.pbr.read();
 
@@ -108,26 +108,13 @@ public class string_FSA extends mp {
                         /* invalid nex character, reset */
                         MPscanner.pbr.unread(character);
 
-                        token = "MP_STRINGLITERAL";
+                        token = "MP_STRING_LIT";
 
-                        /* test print-outs */
-                        System.out.print(token);
-                        System.out.print("       " + Dispatcher.markLine);
-                        System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                        System.out.println("     " + lexeme);
-
-                        /* test print-outs */
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println("--------Reader is at");
-//                        System.out.println(Character.toString(character));
-//                        MPscanner.pbr.unread(character);
-
-                        /* need to return to dispatcher here but for now exit */
-                        return character;
+                        /* return to dispatcher */
+                        return token;
                     }
 
-                    /* END IDACCEPT */
+                    /* END STRINGACCEPT */
                     break;
 
                 /* 
@@ -137,32 +124,21 @@ public class string_FSA extends mp {
                  * let the dispatcher handle it
                  */
                 case S0:
-                    token = "MP_STRINGLITERAL";
+                    token = "MP_STRING_LIT";
                     /* test print-outs */
-                    /* This stuff needs to be written to a file like C does
-                     * for assembly stuff, our file would eventually be passed 
-                     * over by a linker which would output Machine Code and an
-                     * executable program */
-                    System.out.print(token);
-                    System.out.print("    " + Dispatcher.markLine);
-                    System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
-                    System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println("--------Reader is at");
-//                    System.out.println(Character.toString(character));
-//                    MPscanner.pbr.unread(character);
-                    /* need to return to dispatcher here but for now exit */
-                    return character;
 
-                default:
-                    System.out.println("you failed default");
+                    /* return to dispatcher  */
+                    return token;
+
+            }
+        } //end while
+        if (state != State.STRINGACCEPT) {
+            if (state != State.S0) {
+                token = "MP_ERROR";
             }
         }
-        System.out.print("you failed");
-        return '~';
+        return token;
     }
 
 }

@@ -89,18 +89,6 @@ public class MPscanner extends mp {
         return item;
     }
 
-//    public static String getLexeme() {
-//        return lexeme;
-//    }
-//
-//    public static int getLineNumber() {
-//        return lNum;
-//    }
-//
-//    public static int getColumnNumber() {
-//        return cNum;
-//    }
-
     private static synchronized void Initialize() throws FileNotFoundException {
         reader = new BufferedReader(new InputStreamReader(new FileInputStream(fLocation), Charset.forName("UTF-8")));
         pbr = new PushbackReader(reader, 5);

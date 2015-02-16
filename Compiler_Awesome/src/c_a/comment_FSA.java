@@ -146,9 +146,6 @@ public class comment_FSA extends mp {
                     MPscanner.pbr.unread(character);
                     token = "MP_COMMENT";
 
-                    System.out.println("****************Token " + token);
-                    System.out.println("****************Lexeme " + lexeme);
-
                     /* return to dispatcher */
                     return token;
                 //END COMMENTACCEPT
