@@ -17,8 +17,6 @@ import java.io.IOException;
  */
 public class digit_FSA extends mp {
 
-    //Initializes the State variable to the START state
-
     State state;
 
     //Strings corresponding to the lexeme (i.e. 27) and token(i.e. MP_INTEGER_LIT)
