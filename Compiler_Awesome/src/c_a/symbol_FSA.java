@@ -1,9 +1,12 @@
 package c_a;
 
+/**
+ *
+ * @author mthornton
+ */
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
-
 
 /**
  * @title c_a = compiler_awesome
@@ -24,6 +27,7 @@ public class symbol_FSA extends mp {
     //Strings corresponding to the lexeme (i.e. "+") and token(i.e. MP_PLUS)
     String lexeme;
     String token;
+    String whiteSpace;
     char character;
 
     //The string containing building blocks of all valid symbols
@@ -40,6 +44,8 @@ public class symbol_FSA extends mp {
         state = State.START;
         lexeme = "";
         token = "";
+        whiteSpace = "";
+
         int c;
 
         while ((c = MPscanner.pbr.read()) != -1) {
@@ -76,25 +82,35 @@ public class symbol_FSA extends mp {
                 case SINGLEACCEPT:
                     //Accept all valid single character tokens                
                     if (Character.compare(character, ',') == 0) {
-                        token = "MP_COMMA            ";
+                        token = "MP_COMMA";
+                        whiteSpace = "            ";
                     } else if (Character.compare(character, '=') == 0) {
-                        token = "MP_EQUAL            ";
+                        token = "MP_EQUAL";
+                        whiteSpace = "            ";
                     } else if (Character.compare(character, '/') == 0) {
-                        token = "MP_FLOAT_DIVIDE     ";
+                        token = "MP_FLOAT_DIVIDE";
+                        whiteSpace = "     ";
                     } else if (Character.compare(character, '(') == 0) {
-                        token = "MP_LPAREN           ";
+                        token = "MP_LPAREN";
+                        whiteSpace = "           ";
                     } else if (Character.compare(character, '-') == 0) {
-                        token = "MP_MINUS            ";
+                        token = "MP_MINUS";
+                        whiteSpace = "            ";
                     } else if (Character.compare(character, '.') == 0) {
-                        token = token = "MP_PERIOD           ";
+                        token = "MP_PERIOD";
+                        whiteSpace = "           ";
                     } else if (Character.compare(character, '+') == 0) {
-                        token = token = "MP_PLUS             ";
+                        token = "MP_PLUS";
+                        whiteSpace = "             ";
                     } else if (Character.compare(character, ')') == 0) {
-                        token = token = "MP_RPAREN           ";
+                        token = "MP_RPAREN";
+                        whiteSpace = "           ";
                     } else if (Character.compare(character, ';') == 0) {
-                        token = "MP_SCOLON           ";
+                        token = "MP_SCOLON";
+                        whiteSpace = "           ";
                     } else if (Character.compare(character, '*') == 0) {
-                        token = "MP_TIMES            ";
+                        token = "MP_TIMES";
+                        whiteSpace = "            ";
                         //FSA has handled all single character accept cases
                     } else {
                         //FSA may need to handle a multiple character accept case
@@ -110,7 +126,8 @@ public class symbol_FSA extends mp {
                                 //= was the only valid symbol to follow >, so 
                                 //unread the invalid character
                                 MPscanner.pbr.unread(character);
-                                token = "MP_GTHAN            ";
+                                token = "MP_GTHAN";
+                                whiteSpace = "            ";
                             }
                         } else if (Character.compare(character, ':') == 0) {
                             character = (char) MPscanner.pbr.read();
@@ -122,7 +139,8 @@ public class symbol_FSA extends mp {
                                 //= was the only valid symbol to follow :, so 
                                 //unread the invalid character                                
                                 MPscanner.pbr.unread(character);
-                                token = "MP_COLON            ";
+                                token = "MP_COLON";
+                                whiteSpace = "            ";
                             }
                         } else if (Character.compare(character, '<') == 0) {
                             character = (char) MPscanner.pbr.read();
@@ -138,7 +156,8 @@ public class symbol_FSA extends mp {
                                 //= and > were the only valid symbols to follow <, so 
                                 //unread the invalid character
                                 MPscanner.pbr.unread(character);
-                                token = "MP_LTHAN            ";
+                                token = "MP_LTHAN";
+                                whiteSpace = "            ";
                             }
                         }
                     } //End of if statement that sets token for all valid symbols
@@ -146,16 +165,12 @@ public class symbol_FSA extends mp {
                     if (state == State.SINGLEACCEPT) {
                         /* test print-outs */
                         System.out.print(token);
+                        System.out.print(whiteSpace);
                         System.out.print("" + Dispatcher.markLine);
                         System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                         System.out.println("     " + lexeme);
 
-                        /* test print-outs */
-//                        System.out.println("--------Reader is at");
-//                        character = (char) MPscanner.pbr.read();
-//                        System.out.println(character);
-                        /* need to return to dispatcher here but for now exit */
+                        /* Return to the dispatcher */
                         return character;
                     }
                     // END SINGLEACCEPT
@@ -166,19 +181,15 @@ public class symbol_FSA extends mp {
                  */
                 case GEQACCEPT:
                     token = "MP_GEQUAL";
-
+                    whiteSpace = "      ";
                     /* test print-outs */
                     System.out.print(token);
+                    System.out.print(whiteSpace);
                     System.out.print("     " + Dispatcher.markLine);
                     System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    System.out.println("--------Reader is at");
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println(character);
-                    /* need to return to dispatcher here but for now exit */
+                    /* return to dispatcher*/
                     return character;
                 // END GEQACCEPT
 
@@ -189,14 +200,9 @@ public class symbol_FSA extends mp {
                     System.out.print(token);
                     System.out.print("           " + Dispatcher.markLine);
                     System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    System.out.println("--------Reader is at");
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println(character);
-                    /* need to return to dispatcher here but for now exit */
+                    /* need to return to dispatcher*/
                     return character;
                 // END LEQACCEPT
 
@@ -207,17 +213,12 @@ public class symbol_FSA extends mp {
                     System.out.print(token);
                     System.out.print("           " + Dispatcher.markLine);
                     System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    System.out.println("--------Reader is at");
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println(character);
-                    /* need to return to dispatcher here but for now exit */
+                    /* need to return to dispatcher */
                     return character;
+                // END ASSIGNACCEPT
 
-                    // END ASSIGNACCEPT
                 case NEQACCEPT:
                     token = "MP_NEQUAL";
 
@@ -225,16 +226,10 @@ public class symbol_FSA extends mp {
                     System.out.print(token);
                     System.out.print("           " + Dispatcher.markLine);
                     System.out.print("     " + Dispatcher.markCol);
-//                    System.out.println(state);
                     System.out.println("     " + lexeme);
 
-                    /* test print-outs */
-//                    System.out.println("--------Reader is at");
-//                    character = (char) MPscanner.pbr.read();
-//                    System.out.println(character);
-                    /* need to return to dispatcher here but for now exit */
+                    /* return to dispatcher*/
                     return character;
-
                 // END NEQACCEPT
             }
             //Post Condition: The input file pointer is pointing at the first 
