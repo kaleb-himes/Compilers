@@ -42,11 +42,11 @@ public class comment_FSA extends mp {
     }
 
     public int getLineNumber() {
-        return Dispatcher.markLine;
+        return lineNumber;
     }
 
     public int getColumnNumber() {
-        return Dispatcher.markCol;
+        return colNumber;
     }
 
     State state;
@@ -116,7 +116,7 @@ public class comment_FSA extends mp {
 
                         //check for end of line characters (for comments that span lines)
                         if (character == 10) {
-                            mp.lineNumber++;
+                            //mp.lineNumber++;
                             mp.colNumber = 0;
                             mp.colNumber++;
                         }
@@ -157,17 +157,20 @@ public class comment_FSA extends mp {
                 case RUNONCOMMENT:
                     character = (char) MPscanner.pbr.read();
                     token = "MP_RUN_COMMENT";
-
-                    return token;
+                    //end of RUNONCOMMENT
+                    break;
 
             }  //Post Condition: The input file pointer is pointing at the first 
-               //character after the current token.  
+            //character after the current token.  
         } //end while
 
         if (state != State.COMMENTACCEPT) {
             if (state != State.RUNONCOMMENT) {
                 token = "MP_ERROR";
             }
+        }
+        if (state != State.RUNONCOMMENT) {
+            token = "MP_RUN_COMMENT";
         }
         return token;
     }

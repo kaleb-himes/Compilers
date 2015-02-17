@@ -58,11 +58,11 @@ public class digit_FSA extends mp {
     }
 
     public int getLineNumber() {
-        return Dispatcher.markLine;
+        return lineNumber;
     }
 
     public int getColumnNumber() {
-        return Dispatcher.markCol;
+        return colNumber;
     }
 
     //Precondition: the source file file pointer points to the first character 

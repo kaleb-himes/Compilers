@@ -79,7 +79,7 @@ public class Dispatcher {
 
     public enum State {
 
-        START, IDEN, DIGIT, STR_LIT, QUOTE, SYMBOL, COMMENT
+        START, IDEN, DIGIT, STR_LIT, QUOTE, SYMBOL, COMMENT, ERROR
     }
     private static State state = State.START;
 
@@ -123,6 +123,8 @@ public class Dispatcher {
                             || Character.compare(item, ')') == 0 || Character.compare(item, ';') == 0
                             || Character.compare(item, '*') == 0) {
                         state = State.SYMBOL;
+                    } else {
+                        state = State.ERROR;
                     }
                     break;
 
@@ -137,10 +139,15 @@ public class Dispatcher {
                     lineNo = ident.getLineNumber();
                     colNo = ident.getColumnNumber();
 
-                    System.out.print(token + "  ");
-                    System.out.print(lineNo + "   ");
-                    System.out.print(colNo + "   ");
-                    System.out.println(lexeme);
+                    if (token.equals("MP_ERROR")) {
+                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                        MPscanner.pbr.read();
+                    } else {
+                        System.out.print(token + "  ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
                     break;
 
                 case DIGIT:
@@ -159,11 +166,16 @@ public class Dispatcher {
                     } else if (token.equals("MP_INTEGER_LIT")) {
                         whitespace = " ";
                     }
-                    
-                    System.out.print(token + whitespace);
-                    System.out.print(lineNo + "   ");
-                    System.out.print(colNo + "   ");
-                    System.out.println(lexeme);
+
+                    if (token.equals("MP_ERROR")) {
+                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                        MPscanner.pbr.read();
+                    } else {
+                        System.out.print(token + "  ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
                     break;
 
                 case STR_LIT:
@@ -177,10 +189,15 @@ public class Dispatcher {
                     lineNo = str.getLineNumber();
                     colNo = str.getColumnNumber();
 
-                    System.out.print(token + "  ");
-                    System.out.print(lineNo + "   ");
-                    System.out.print(colNo + "   ");
-                    System.out.println(lexeme);
+                    if (token.equals("MP_ERROR")) {
+                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                        MPscanner.pbr.read();
+                    } else {
+                        System.out.print(token + "  ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
                     break;
 
                 case QUOTE:
@@ -189,7 +206,6 @@ public class Dispatcher {
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     str.readFile();
-                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = str.getToken();
@@ -197,10 +213,15 @@ public class Dispatcher {
                     lineNo = str.getLineNumber();
                     colNo = str.getColumnNumber();
 
-                    System.out.print(token + " ");
-                    System.out.print(lineNo + " ");
-                    System.out.print(colNo + " ");
-                    System.out.println(lexeme);
+                    if (token.equals("MP_ERROR")) {
+                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                        MPscanner.pbr.read();
+                    } else {
+                        System.out.print(token + "  ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
                     break;
 
                 case COMMENT:
@@ -212,13 +233,19 @@ public class Dispatcher {
                     token = comm.getToken();
                     lexeme = comm.getLexeme();
                     lineNo = comm.getLineNumber();
-                    colNo = comm.getColumnNumber(); 
-                    
-                    System.out.print(token + "        ");
-                    System.out.print(lineNo + "   ");
-                    System.out.print(colNo + "   ");
-                    System.out.println(lexeme);
+                    colNo = comm.getColumnNumber();
 
+                    if (token.equals("MP_ERROR")) {
+                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d.\n\033[0m", lineNo, colNo);
+                        MPscanner.pbr.read();
+                    } else if (token.equals("MP_RUN_COMMENT")) {
+                        System.out.format("\033[31mERROR: RUN ON COMMENT DETECTED AT LINE %d, COLUMN %d.\n\033[0m", lineNo, colNo);
+                    } else {
+                        System.out.print(token + "        ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
                     break;
 
                 case SYMBOL:
@@ -242,10 +269,26 @@ public class Dispatcher {
                         whitespace = " ";
                     }
 
-                    System.out.print(token + whitespace);
-                    System.out.print(lineNo + "   ");
-                    System.out.print(colNo + "   ");
-                    System.out.println(lexeme);
+                    if (token.equals("MP_ERROR")) {
+                        MPscanner.pbr.read();
+                        System.out.format("\033[31m ERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                    } else {
+                        System.out.print(token + "  ");
+                        System.out.print(lineNo + "   ");
+                        System.out.print(colNo + "   ");
+                        System.out.println(lexeme);
+                    }
+                    break;
+
+                case ERROR:
+                    token = "MP_ERROR";
+                    MPscanner.pbr.read();
+
+                    System.out.format("\033[31mERROR: INVALID CHARACTER AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
+                    System.out.println();
+
+                    //item = MPscanner.getNextToken();
+                    state = State.START;
                     break;
 
                 default:
