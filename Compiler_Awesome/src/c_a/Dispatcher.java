@@ -60,7 +60,7 @@ public class Dispatcher {
     public static final String MP_SCOLON = ";";
     public static final String MP_TIMES = "*";
     public static final String UNDERSCORE = "_";
-    public static final String QUOTE = "\'";
+    public static final String QUOTE = "'";
     public static final String LBRACKET = "{";
 
     public static final identifier_FSA ident = new identifier_FSA();

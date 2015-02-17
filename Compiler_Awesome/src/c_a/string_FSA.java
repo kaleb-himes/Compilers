@@ -31,7 +31,7 @@ public class string_FSA extends mp {
 
     public enum State {
 
-        START, STRINGACCEPT, S0
+        START, STRINGACCEPT, S0, S_ERROR
     }
 
     public String getToken() {
@@ -104,16 +104,15 @@ public class string_FSA extends mp {
                             //reduce line number by one so when scanner sees it error will print on same line.
                             foundRunOn = true;
                             //+2 account for the return mid string that won't get counted otherwise
-                            mp.lineNumber+=2;
+                            mp.lineNumber += 2;
                             MPscanner.pbr.unread(character);
-                            token = "MP_ERROR";
-                            return token;
+                            state = State.S_ERROR;
                         } else {
                             /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
                             mp.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
                         }
-                    } else if (second_quote == true) {
+                    } else if (second_quote == true && foundRunOn == false) {
                         /*
                          * Checks if character is anything but acceptable
                          * Identifier value and ensures it has not been read
@@ -142,9 +141,10 @@ public class string_FSA extends mp {
                  */
                 case S0:
                     token = "MP_STRING_LIT";
-                    /* test print-outs */
-
-
+                    /* return to dispatcher  */
+                    return token;
+                case S_ERROR:
+                    token = "MP_ERROR";
                     /* return to dispatcher  */
                     return token;
 
