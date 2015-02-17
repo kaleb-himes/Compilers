@@ -67,9 +67,10 @@ public class MPscanner extends mp {
         //Eats up white space and illegal items
         while (legitToken == false) {
             c = pbr.read();
+//            System.out.println("Read --------------------------------------------------> " + (int)c);
+            mp.colNumber++;
             if (c != -1 && c > 32 && c < 127) {
                 //unreads the first legit Token and returns.
-                mp.colNumber++;
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
@@ -78,19 +79,10 @@ public class MPscanner extends mp {
                 System.out.println("\n\nScanning Finished\n\n");
                 System.exit(0);
             } 
-            else if (c == 10) {
-                mp.lineNumber++;
+            else if (c < 32 || c > 126) {
                 mp.colNumber = 0;
-<<<<<<< HEAD
-                //System.out.println("New line ------------------------------" + mp.lineNumber);
-            } 
-            else {
-=======
-//                System.out.println("New line ------------------------------" + mp.lineNumber);
             } else {
->>>>>>> 9a6c695a4c2329173a8fd41672735f3f69c296d7
-                mp.colNumber++;
-//                System.out.println("Scanner saw this ------------------> " + (int) c);
+                //mp.colNumber++;
             }
         }
         return item;

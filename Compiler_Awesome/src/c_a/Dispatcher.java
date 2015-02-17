@@ -88,13 +88,7 @@ public class Dispatcher {
         System.out.println("\nScanner Output\n");
 
         while (loop == true) {
-<<<<<<< HEAD
-            //if (item == 10) {
-            // System.out.println("New line ------------------------------" + mp.lineNumber);
-            //}            
-=======
             item = MPscanner.getNextToken();
->>>>>>> 9a6c695a4c2329173a8fd41672735f3f69c296d7
 
             switch (state) {
                 case START:
