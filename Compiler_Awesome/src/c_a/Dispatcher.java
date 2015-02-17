@@ -112,7 +112,7 @@ public class Dispatcher {
                         state = State.DIGIT;
                     } //send to STR_FSA
                     else if (Character.toString(item).equals(QUOTE)) {
-                        state = State.STR_LIT;
+                        state = State.QUOTE;
                     } //send to COMMENT_FSA
                     else if (Character.toString(item).equals(LBRACKET)) {
                         state = State.COMMENT;

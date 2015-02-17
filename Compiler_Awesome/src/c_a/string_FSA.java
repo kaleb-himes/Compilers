@@ -104,9 +104,8 @@ public class string_FSA extends mp {
                             //reduce line number by one so when scanner sees it error will print on same line.
                             foundRunOn = true;
                             mp.lineNumber++;
-                            System.out.println("Found run-on string, return both RUN and STING_LIT, later we'll suggest to user they may have meant STRING_LIT");
                             MPscanner.pbr.unread(character);
-                            token = "MP_RUN_STRING";
+                            token = "MP_ERROR";
                             return token;
                         } else {
                             /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
