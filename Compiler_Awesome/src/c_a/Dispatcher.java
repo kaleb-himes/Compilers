@@ -172,7 +172,7 @@ public class Dispatcher {
                         System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
                         MPscanner.pbr.read();
                     } else {
-                        System.out.print(token + "  ");
+                        System.out.print(token + whitespace);
                         System.out.print(lineNo + "   ");
                         System.out.print(colNo + "   ");
                         System.out.println(lexeme);
@@ -274,7 +274,7 @@ public class Dispatcher {
                         MPscanner.pbr.read();
                         System.out.format("\033[31m ERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
                     } else {
-                        System.out.print(token + "  ");
+                        System.out.print(token + whitespace);
                         System.out.print(lineNo + "   ");
                         System.out.print(colNo + "   ");
                         System.out.println(lexeme);
