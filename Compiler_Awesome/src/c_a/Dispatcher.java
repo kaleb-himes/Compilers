@@ -93,14 +93,15 @@ public class Dispatcher {
             switch (state) {
                 case START:
                     //You know you have just went to the next line
-                    if (item == '\n' || item == '\r') {
-                        System.out.println("Got into this else if: " + runOnQuote);
-                        if (runOnQuote) {
-                            token = "MP_RUN_STRING";
-                            loop = false;
-                            System.out.println("Run on quote detected! Exited");
-                        }
-                    }
+                    /* Wasn't doing anything... ???*/
+//                    if (item == 10) {
+//                        System.out.println("Got into this else if: " + runOnQuote);
+//                        if (runOnQuote) {
+//                            token = "MP_RUN_STRING";
+//                            loop = false;
+//                            System.out.println("Run on quote detected! Exited");
+//                        }
+//                    }
 
                     //send to IDEN_FSA
                     if (Character.isAlphabetic((int) item)
@@ -111,7 +112,7 @@ public class Dispatcher {
                         state = State.DIGIT;
                     } //send to STR_FSA
                     else if (Character.toString(item).equals(QUOTE)) {
-                        state = State.QUOTE;
+                        state = State.STR_LIT;
                     } //send to COMMENT_FSA
                     else if (Character.toString(item).equals(LBRACKET)) {
                         state = State.COMMENT;
@@ -183,7 +184,6 @@ public class Dispatcher {
                     markCol = mp.colNumber;
                     str.readFile();
                     state = State.START;
-
                     token = str.getToken();
                     lexeme = str.getLexeme();
                     lineNo = str.getLineNumber();
@@ -198,14 +198,15 @@ public class Dispatcher {
                         System.out.print(colNo + "   ");
                         System.out.println(lexeme);
                     }
-                    break;
+                   break;
 
                 case QUOTE:
-                    runOnQuote = !runOnQuote;
+//                    runOnQuote = !runOnQuote;
 
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     str.readFile();
+                    item = MPscanner.getNextToken();
                     state = State.START;
 
                     token = str.getToken();

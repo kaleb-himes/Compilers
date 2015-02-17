@@ -19,6 +19,8 @@ public class string_FSA extends mp {
     String token = "";
     char character;
     boolean second_quote = false;
+    public static boolean foundRunOn = false;
+    public static int runOnColMark;
 
     /* 
      * flags to indicate whether or not a particular character
@@ -71,6 +73,7 @@ public class string_FSA extends mp {
                      * dispatcher) a double quote mark 1 (").
                      */
                     character = (char) MPscanner.pbr.read();
+                    character = (char) MPscanner.pbr.read();
 
                     /* puts the character in the lexeme */
                     lexeme = Character.toString(character);
@@ -91,11 +94,25 @@ public class string_FSA extends mp {
 
                     if (second_quote == false) {
                         if (Character.toString(character).equals("'")) {
-                            second_quote = true;
+                            character = (char) MPscanner.pbr.read();
+                            if (Character.toString(character).equals("'")) {
+                                Character.toString(character).replace(character, '\0');
+                            } else {
+                                second_quote = true;
+                            }
+                        } else if (character == 10) {
+                            //reduce line number by one so when scanner sees it error will print on same line.
+                            foundRunOn = true;
+                            mp.lineNumber++;
+                            System.out.println("Found run-on string, return both RUN and STING_LIT, later we'll suggest to user they may have meant STRING_LIT");
+                            MPscanner.pbr.unread(character);
+                            token = "MP_RUN_STRING";
+                            return token;
+                        } else {
+                            /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
+                            mp.colNumber++;
+                            lexeme = lexeme.concat(Character.toString(character));
                         }
-                        /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
-                        mp.colNumber++;
-                        lexeme = lexeme.concat(Character.toString(character));
                     } else if (second_quote == true) {
                         /*
                          * Checks if character is anything but acceptable

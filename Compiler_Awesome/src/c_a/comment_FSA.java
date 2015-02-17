@@ -118,7 +118,7 @@ public class comment_FSA extends mp {
                         if (character == 10) {
                             //mp.lineNumber++;
                             mp.colNumber = 0;
-                            mp.colNumber++;
+//                            mp.colNumber++;
                         }
                     } else if (closedComment == true && runOnDetector == false) {
                         //go to the comment accept state, as you have read one { and }                       

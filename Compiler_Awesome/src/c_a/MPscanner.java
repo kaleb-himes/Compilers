@@ -56,8 +56,6 @@ public class MPscanner extends mp {
 
     public static char getNextToken() throws FileNotFoundException, IOException {
         if (begin == false) {
-  //          System.out.println("\nFrst lne ------------------------------" + mp.lineNumber);
-//            System.out.println();
             Initialize();
             begin = true;
         }
@@ -67,22 +65,23 @@ public class MPscanner extends mp {
         //Eats up white space and illegal items
         while (legitToken == false) {
             c = pbr.read();
-//            System.out.println("Read --------------------------------------------------> " + (int)c);
-            mp.colNumber++;
+
             if (c != -1 && c > 32 && c < 127) {
                 //unreads the first legit Token and returns.
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
+                mp.colNumber++;
                 legitToken = true;
             } else if (c == -1) {
                 System.out.println("\n\nScanning Finished\n\n");
                 System.exit(0);
             } 
-            else if (c < 32 || c > 126) {
+            else if (c == 10) {
+                mp.lineNumber++;
                 mp.colNumber = 0;
             } else {
-                //mp.colNumber++;
+//                mp.colNumber++;
             }
         }
         return item;

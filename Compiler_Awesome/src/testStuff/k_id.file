@@ -7,8 +7,9 @@ begin
     {random comment in the middle}
     int this <= 1;
     int that = 2;
-    String Awesome = 'This compiler is awesome!!!';
-    {String Awesome = 'This compiler is awesome!!!'; -- DOES NOT WORK YET}
+    String Awesome = 'This compiler''s awesome!!!
+';
+    {String Awesome = ''This compiler is awesome!!!'; -- DOES NOT WORK YET}
     int there = this + that;
     double every = 2.1289;
     double thing = 2.5e-10;
