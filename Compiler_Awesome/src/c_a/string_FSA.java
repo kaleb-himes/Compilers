@@ -103,7 +103,8 @@ public class string_FSA extends mp {
                         } else if (character == 10) {
                             //reduce line number by one so when scanner sees it error will print on same line.
                             foundRunOn = true;
-                            mp.lineNumber++;
+                            //+2 account for the return mid string that won't get counted otherwise
+                            mp.lineNumber+=2;
                             MPscanner.pbr.unread(character);
                             token = "MP_ERROR";
                             return token;
