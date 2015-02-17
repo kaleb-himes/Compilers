@@ -93,16 +93,6 @@ public class Dispatcher {
             switch (state) {
                 case START:
                     mp.colNumber--;
-                    //You know you have just went to the next line
-                    /* Wasn't doing anything... ???*/
-//                    if (item == 10) {
-//                        System.out.println("Got into this else if: " + runOnQuote);
-//                        if (runOnQuote) {
-//                            token = "MP_RUN_STRING";
-//                            loop = false;
-//                            System.out.println("Run on quote detected! Exited");
-//                        }
-//                    }
 
                     //send to IDEN_FSA
                     if (Character.isAlphabetic((int) item)
@@ -113,7 +103,7 @@ public class Dispatcher {
                         state = State.DIGIT;
                     } //send to STR_FSA
                     else if (Character.toString(item).equals(QUOTE)) {
-                        state = State.QUOTE;
+                        state = State.STR_LIT;
                     } //send to COMMENT_FSA
                     else if (Character.toString(item).equals(LBRACKET)) {
                         state = State.COMMENT;
@@ -193,38 +183,15 @@ public class Dispatcher {
                     if (token.equals("MP_ERROR")) {
                         System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
                         MPscanner.pbr.read();
-                    } else {
+                    } else if (token.equals("MP_RUN_STRING")) {
+                   System.out.format("\033[31mERROR: RUN ON STRING DETECTED AT LINE %d, COLUMN %d.\n\033[0m", lineNo, colNo);      
+                    }else {
                         System.out.print(token + "  ");
                         System.out.print(lineNo + "   ");
                         System.out.print(colNo + "   ");
                         System.out.println(lexeme);
                     }
                    break;
-
-                case QUOTE:
-//                    runOnQuote = !runOnQuote;
-
-                    markLine = mp.lineNumber;
-                    markCol = mp.colNumber;
-                    str.readFile();
-                    item = MPscanner.getNextToken();
-                    state = State.START;
-
-                    token = str.getToken();
-                    lexeme = str.getLexeme();
-                    lineNo = str.getLineNumber();
-                    colNo = str.getColumnNumber();
-
-                    if (token.equals("MP_ERROR")) {
-                        System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
-                        MPscanner.pbr.read();
-                    } else {
-                        System.out.print(token + "  ");
-                        System.out.print(lineNo + "   ");
-                        System.out.print(colNo + "   ");
-                        System.out.println(lexeme);
-                    }
-                    break;
 
                 case COMMENT:
                     markLine = mp.lineNumber;
