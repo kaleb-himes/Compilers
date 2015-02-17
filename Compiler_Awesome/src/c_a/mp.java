@@ -17,7 +17,7 @@ public class mp {
      * fName = file.java
      */
 
-    public static int colNumber = -1;
+    public static int colNumber = 0;
     public static int lineNumber = 1;
     public static String fLocation = "";
     public static String argument;
@@ -29,7 +29,7 @@ public class mp {
     public static void main(String[] args) throws IOException {
         argument = args[0];
 
-        MPscanner scanner = new MPscanner();
+        final MPscanner scanner = new MPscanner();
         scanner.scanFile();
 
     }

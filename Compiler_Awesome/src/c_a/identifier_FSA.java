@@ -46,7 +46,7 @@ public class identifier_FSA extends mp {
     /* Initializes the State variable to the START state */
     State state;
 
-    public String readFile() throws FileNotFoundException, IOException {
+    public synchronized String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         state = State.START;

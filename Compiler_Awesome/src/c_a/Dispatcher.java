@@ -63,11 +63,11 @@ public class Dispatcher {
     public static final String QUOTE = "'";
     public static final String LBRACKET = "{";
 
-    public static final identifier_FSA ident = new identifier_FSA();
-    public static final digit_FSA dig = new digit_FSA();
-    public static final string_FSA str = new string_FSA();
-    public static final symbol_FSA symb = new symbol_FSA();
-    public static final comment_FSA comm = new comment_FSA();
+    protected final static identifier_FSA ident = new identifier_FSA();
+    protected final static digit_FSA dig = new digit_FSA();
+    protected final static string_FSA str = new string_FSA();
+    protected final static symbol_FSA symb = new symbol_FSA();
+    protected final static comment_FSA comm = new comment_FSA();
 
     public static boolean loop = true;
     public static String token = "";
@@ -92,6 +92,7 @@ public class Dispatcher {
 
             switch (state) {
                 case START:
+                    mp.colNumber--;
                     //You know you have just went to the next line
                     /* Wasn't doing anything... ???*/
 //                    if (item == 10) {

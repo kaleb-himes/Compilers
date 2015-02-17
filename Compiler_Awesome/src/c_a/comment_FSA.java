@@ -53,7 +53,7 @@ public class comment_FSA extends mp {
 
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-    public String readFile() throws FileNotFoundException, IOException {
+    public synchronized String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
         closedComment = false;
@@ -118,7 +118,7 @@ public class comment_FSA extends mp {
                         if (character == 10) {
                             //mp.lineNumber++;
                             mp.colNumber = 0;
-//                            mp.colNumber++;
+                            mp.colNumber++;
                         }
                     } else if (closedComment == true && runOnDetector == false) {
                         //go to the comment accept state, as you have read one { and }                       

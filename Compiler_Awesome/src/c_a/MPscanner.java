@@ -20,7 +20,7 @@ import java.util.Scanner;
  */
 public class MPscanner extends mp {
 
-    Dispatcher dispatch = new Dispatcher();
+    protected final Dispatcher dispatch = new Dispatcher();
     public static String lexeme;
     public static char item;
     public static int cNum;
@@ -54,7 +54,7 @@ public class MPscanner extends mp {
         out.close();
     }
 
-    public static char getNextToken() throws FileNotFoundException, IOException {
+    public static synchronized char getNextToken() throws FileNotFoundException, IOException {
         if (begin == false) {
             Initialize();
             begin = true;
@@ -79,9 +79,9 @@ public class MPscanner extends mp {
             } 
             else if (c == 10) {
                 mp.lineNumber++;
-                mp.colNumber = 0;
+                mp.colNumber = -1;
             } else {
-//                mp.colNumber++;
+                mp.colNumber++;
             }
         }
         return item;

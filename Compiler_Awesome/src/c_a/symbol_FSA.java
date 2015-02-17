@@ -55,7 +55,7 @@ public class symbol_FSA extends mp {
 
     //Precondition: the source file file pointer points to the first character 
     //of the lexeme corresponding to the next token
-    public String readFile() throws FileNotFoundException, IOException {
+    public synchronized String readFile() throws FileNotFoundException, IOException {
         state = State.START;
         lexeme = "";
         token = "";

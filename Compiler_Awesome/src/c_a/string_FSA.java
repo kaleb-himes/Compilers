@@ -53,7 +53,7 @@ public class string_FSA extends mp {
     /* Initializes the State variable to the START state */
     State state = State.START;
 
-    public String readFile() throws FileNotFoundException, IOException {
+    public synchronized String readFile() throws FileNotFoundException, IOException {
 
         int c;
 
@@ -73,7 +73,12 @@ public class string_FSA extends mp {
                      * dispatcher) a double quote mark 1 (").
                      */
                     character = (char) MPscanner.pbr.read();
-                    character = (char) MPscanner.pbr.read();
+                    if (character != 10) {
+                        character = (char) MPscanner.pbr.read();
+                    }
+                    else {
+                        MPscanner.pbr.unread(character);
+                    }
 
                     /* puts the character in the lexeme */
                     lexeme = Character.toString(character);
@@ -98,13 +103,14 @@ public class string_FSA extends mp {
                             if (Character.toString(character).equals("'")) {
                                 Character.toString(character).replace(character, '\0');
                             } else {
+                                MPscanner.pbr.unread(character);
                                 second_quote = true;
                             }
                         } else if (character == 10) {
                             //reduce line number by one so when scanner sees it error will print on same line.
                             foundRunOn = true;
                             //+2 account for the return mid string that won't get counted otherwise
-                            mp.lineNumber += 2;
+                            mp.lineNumber+=2;
                             MPscanner.pbr.unread(character);
                             state = State.S_ERROR;
                         } else {
