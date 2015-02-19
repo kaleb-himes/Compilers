@@ -12,8 +12,6 @@ public class string_FSA extends mp {
     char character;
 
     //Flags to keep track of certain program states
-    Boolean closedString;
-    Boolean runOnDetector;
     Boolean loop;
 
     public enum State {
@@ -44,8 +42,6 @@ public class string_FSA extends mp {
     public String readFile() throws FileNotFoundException, IOException {
         lexeme = "";
         token = "";
-        closedString = false;
-        runOnDetector = false;
         state = State.START;
         loop = true;
 
@@ -90,31 +86,21 @@ public class string_FSA extends mp {
                     if (Character.toString(character).equals("'")) {
                         character = (char) MPscanner.pbr.read();
                         if (Character.toString(character).equals("'")) {
-                            character = (char) MPscanner.pbr.read();
-                            if (Character.toString(character).equals("'")) {
-                                Character.toString(character).replace(character, '\0');
-                            }
+                            Character.toString(character).replace(character, '\0');
                         } else {
+                            //if we are not escaping a quote, go to the string accept state
                             MPscanner.pbr.unread(character);
-                            runOnDetector = true;
                             state = State.STRINGACCEPT;
                         }
-
-                    } else if (character == 10 && runOnDetector == false) {
-                        //reduce line number by one so when scanner sees it error will print on same line.
+                    } else if (character == 10) {
+                        //we have gotten to the end of line without seeing second quote
 
                         MPscanner.pbr.unread(character);
-                        state = State.STRINGACCEPT;
-
-                    } else if (character != 10 && runOnDetector == false) {
-                        lexeme = lexeme.concat(Character.toString(character));
-                    } else if (runOnDetector == true) {
-                        MPscanner.pbr.unread(character);
-                        //detects the presence of a run on string
-                        runOnDetector = true;
                         state = State.RUNONSTRING;
-                    }
 
+                    } else if (character != 10) {
+                        lexeme = lexeme.concat(Character.toString(character));
+                    }
                     /* END S0 */
                     break;
 
@@ -127,8 +113,8 @@ public class string_FSA extends mp {
                     //stop looping, as we are in an accept state
                     loop = false;
 
-                    //unread the last character, to get the reader in the right place
-                    //MPscanner.pbr.unread(character);
+                    MPscanner.pbr.unread(character);
+
                     token = "MP_STRING_LIT";
 
                     /* return to dispatcher */
@@ -140,21 +126,19 @@ public class string_FSA extends mp {
                  * the end of line
                  */
                 case RUNONSTRING:
+                    loop = false;
                     token = "MP_RUN_STRING";
                     return token;
 
             }  //Post Condition: The input file pointer is pointing at the first 
             //character after the current token.  
         } //end while
-
         if (state != State.STRINGACCEPT) {
             if (state != State.RUNONSTRING) {
                 token = "MP_ERROR";
             }
         }
-        if (state != State.RUNONSTRING) {
-            token = "MP_RUN_STRING";
-        }
         return token;
     }
+
 }
