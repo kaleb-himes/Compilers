@@ -218,6 +218,7 @@ public class Dispatcher {
                     break;
 
                 case SYMBOL:
+//                    System.out.println("LOOKING AT THIS -----------------> " + item);
                     markLine = mp.lineNumber;
                     markCol = mp.colNumber;
                     symb.readFile();

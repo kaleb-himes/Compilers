@@ -74,10 +74,10 @@ public class MPscanner extends mp {
                 mp.colNumber++;
                 legitToken = true;
             } else if (c == -1) {
-                System.out.println("\n\nScanning Finished\n\n");
+                System.out.println("\nScanning Finished");
                 System.exit(0);
             } 
-            else if (c == 10) {
+            else if (c == 10 || c == 13) {
                 mp.lineNumber++;
                 mp.colNumber = -1;
             } else {

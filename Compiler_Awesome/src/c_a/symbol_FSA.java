@@ -27,6 +27,7 @@ public class symbol_FSA extends mp {
     //Strings corresponding to the lexeme (i.e. "+") and token(i.e. MP_PLUS)
     String lexeme;
     String token;
+    boolean eof = false;
     char character;
 
     //The string containing building blocks of all valid symbols
@@ -62,7 +63,11 @@ public class symbol_FSA extends mp {
 
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1) {
+        while (eof == false) {
+            c = MPscanner.pbr.read();
+            if (c == -1) {
+                eof = true;
+            }
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
@@ -217,7 +222,6 @@ public class symbol_FSA extends mp {
                 }
             }
         }
-
         return token;
     }
 }

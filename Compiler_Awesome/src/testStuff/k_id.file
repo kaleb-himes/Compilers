@@ -4,6 +4,7 @@ such }
 
 Public static void main ()
 begin
+    var X = 'fakes'' stuffs''';
     {random comment in the middle}
     int this <= 1;
     int that = 2;

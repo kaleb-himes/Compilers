@@ -83,13 +83,18 @@ public class string_FSA extends mp {
 
                     //we might need to worry about escaped characters
                     //this would be our second quote
+                    /* while looping on S0 if we read a second ' enter state */
                     if (Character.toString(character).equals("'")) {
                         character = (char) MPscanner.pbr.read();
+
+                        /* check to see if there is another ' immediately after */
                         if (Character.toString(character).equals("'")) {
+                            lexeme = lexeme.concat("'");
                             Character.toString(character).replace(character, '\0');
                         } else {
                             //if we are not escaping a quote, go to the string accept state
                             MPscanner.pbr.unread(character);
+
                             state = State.STRINGACCEPT;
                         }
                     } else if (character == 10) {
@@ -112,8 +117,6 @@ public class string_FSA extends mp {
                 case STRINGACCEPT:
                     //stop looping, as we are in an accept state
                     loop = false;
-
-                    MPscanner.pbr.unread(character);
 
                     token = "MP_STRING_LIT";
 

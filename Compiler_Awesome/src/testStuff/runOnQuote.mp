@@ -1,2 +1,2 @@
-var a = 'some;
+var a = 'some''s';
 var b = 'better';
