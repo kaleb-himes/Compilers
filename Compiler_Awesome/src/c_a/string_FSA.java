@@ -12,7 +12,8 @@ public class string_FSA extends mp {
     char character;
 
     //Flags to keep track of certain program states
-    Boolean loop;
+//    Boolean loop;
+    Boolean eof = false;
 
     public enum State {
 
@@ -43,11 +44,15 @@ public class string_FSA extends mp {
         lexeme = "";
         token = "";
         state = State.START;
-        loop = true;
+//        loop = true;
 
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1 && loop == true) {
+        while (eof == false/* && loop == true*/) {
+            c = MPscanner.pbr.read();
+            if (c == -1 ) {
+                eof = true;
+            }
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
@@ -99,7 +104,6 @@ public class string_FSA extends mp {
                         }
                     } else if (character == 10) {
                         //we have gotten to the end of line without seeing second quote
-
                         MPscanner.pbr.unread(character);
                         state = State.RUNONSTRING;
 
@@ -116,7 +120,8 @@ public class string_FSA extends mp {
                  */
                 case STRINGACCEPT:
                     //stop looping, as we are in an accept state
-                    loop = false;
+//                    loop = false;
+//                    MPscanner.pbr.unread(character);
 
                     token = "MP_STRING_LIT";
 
@@ -129,7 +134,7 @@ public class string_FSA extends mp {
                  * the end of line
                  */
                 case RUNONSTRING:
-                    loop = false;
+//                    loop = false;
                     token = "MP_RUN_STRING";
                     return token;
 

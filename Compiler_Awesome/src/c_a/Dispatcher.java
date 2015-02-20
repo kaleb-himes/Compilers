@@ -92,7 +92,6 @@ public class Dispatcher {
 
             switch (state) {
                 case START:
-                    mp.colNumber--;
 
                     //send to IDEN_FSA
                     if (Character.isAlphabetic((int) item)
@@ -130,6 +129,8 @@ public class Dispatcher {
                     lexeme = ident.getLexeme();
                     lineNo = ident.getLineNumber();
                     colNo = ident.getColumnNumber();
+                    /* Increase columns by size of lexeme */
+                    mp.colNumber += lexeme.length();
 
                     if (token.equals("MP_ERROR")) {
                         System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
@@ -152,6 +153,8 @@ public class Dispatcher {
                     lexeme = dig.getLexeme();
                     lineNo = dig.getLineNumber();
                     colNo = dig.getColumnNumber();
+                    /* Increase columns by size of lexeme */
+                    mp.colNumber += lexeme.length();
 
                     if (token.equals("MP_FIXED_LIT") || token.equals("MP_FLOAT_LIT")) {
                         whitespace = "   ";
@@ -179,6 +182,8 @@ public class Dispatcher {
                     lexeme = str.getLexeme();
                     lineNo = str.getLineNumber();
                     colNo = str.getColumnNumber();
+                    /* Increase columns by size of lexeme */
+                    mp.colNumber += lexeme.length();
 
                     if (token.equals("MP_ERROR")) {
                         System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d. RESUMING SCAN AT NEXT CHARACTER.\n\033[0m", lineNo, colNo);
@@ -203,6 +208,9 @@ public class Dispatcher {
                     lexeme = comm.getLexeme();
                     lineNo = comm.getLineNumber();
                     colNo = comm.getColumnNumber();
+                    /* Increase columns by size of lexeme */
+                    mp.colNumber += lexeme.length();
+                    mp.lineNumber += comment_FSA.returnLineTally;
 
                     if (token.equals("MP_ERROR")) {
                         System.out.format("\033[31mERROR: INVALID TOKEN FOUND STARTING AT LINE %d, COLUMN %d.\n\033[0m", lineNo, colNo);
@@ -228,6 +236,8 @@ public class Dispatcher {
                     lexeme = symb.getLexeme();
                     lineNo = symb.getLineNumber();
                     colNo = symb.getColumnNumber();
+                    /* Increase columns by size of lexeme */
+                    mp.colNumber += lexeme.length();
 
                     if (token.equals("MP_LPAREN") || token.equals("MP_RPAREN") || token.equals("MP_NEQUALS") || token.equals("MP_SCOLON") || token.equals("MP_ASSIGN") || token.equals("MP_GEQUAL") || token.equals("MP_LEQUAL") || token.equals("MP_PERIOD")) {
                         whitespace = "      ";

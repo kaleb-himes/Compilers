@@ -41,6 +41,7 @@ public class digit_FSA extends mp {
     Boolean fromS0;
     Boolean fromS1;
     Boolean fromS2;
+    Boolean eof = false;
 
 //enumerated types for all possible states of FSA
     public enum State {
@@ -82,7 +83,11 @@ public class digit_FSA extends mp {
         char charBuffer[] = {0, 0, 0};
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1) {
+        while (eof == false) {
+            c = MPscanner.pbr.read();
+            if (c == -1) {
+                eof = true;
+            }
             //unreads this character, in order to check if we are at end of file
             MPscanner.pbr.unread(c);
             c++;
@@ -135,7 +140,6 @@ public class digit_FSA extends mp {
 
                     if (Character.isDigit(character)) {
                         //if character read was an integer, concatenate it to the lexeme
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == '.') {
                         //no decimal point has been read previously, so move to next state
@@ -145,7 +149,6 @@ public class digit_FSA extends mp {
                             //(for unreading)
                             charBuffer[decimalPt] = character;
                             charBuffer[decimalPt] = 0;
-                            mp.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
 
                             //as we have read a period, move toward float/fixed states
@@ -189,7 +192,6 @@ public class digit_FSA extends mp {
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
                         //concatenate the digit after the decimal point
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //change states, to indicate that it is a fixed pt. number
@@ -237,7 +239,6 @@ public class digit_FSA extends mp {
 
                     if (Character.isDigit(character)) {
                         //if a digit was read, concatenate it to the lexeme
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else if (character == 'e' || character == 'E') {
                         //checks if an exponential character (E or e) has already been read
@@ -245,7 +246,6 @@ public class digit_FSA extends mp {
                             //if an e or E has not been read, set it in buffer
                             charBuffer[exponential] = character;
                             readExponential = true;
-                            mp.colNumber++;
                             lexeme = lexeme.concat(Character.toString(character));
                             state = State.S1;
                         } else {
@@ -283,12 +283,10 @@ public class digit_FSA extends mp {
 
                     //Check that the character read is of a valid type
                     if (character == '+' || character == '-') {
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                         //change states
                         state = State.S2;
                     } else if (character == 'E' || character == 'e') {
-                        MPscanner.pbr.unread(character);
 
                         //sets info back to last traversed accept state
                         state = State.FIXEDACCEPT;
@@ -318,7 +316,6 @@ public class digit_FSA extends mp {
                     //Check that the character read is of a valid type
                     if (Character.isDigit(character)) {
                         //concatenate the digit after the + or -
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
 
                         //move to the Float Accept state, as a floating point
@@ -346,7 +343,6 @@ public class digit_FSA extends mp {
 
                     if (Character.isDigit(character)) {
                         //if it was a digit, concatenate it to the lexeme
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
                     } else {
                         //not a digit, set the reader back and exit

@@ -26,8 +26,9 @@ public class comment_FSA extends mp {
     //Flags to keep track of certain program states
     Boolean closedComment;
     Boolean runOnDetector;
-    Boolean loop;
-
+//    Boolean loop;
+    Boolean eof = false;
+    
     public enum State {
 
         START, S0, COMMENTACCEPT, RUNONCOMMENT
@@ -58,11 +59,16 @@ public class comment_FSA extends mp {
         token = "";
         closedComment = false;
         runOnDetector = false;
+        returnLineTally = 0;
         state = State.START;
-        loop = true;
+//        loop = true;
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1 && loop == true) {
+        while (eof == false /*&& loop == true*/) {
+            c = MPscanner.pbr.read();
+            if (c == -1) {
+                eof = true;
+            }
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
@@ -116,9 +122,7 @@ public class comment_FSA extends mp {
 
                         //check for end of line characters (for comments that span lines)
                         if (character == 10) {
-                            //mp.lineNumber++;
-                            mp.colNumber = 0;
-                            mp.colNumber++;
+                            returnLineTally++;
                         }
                     } else if (closedComment == true && runOnDetector == false) {
                         //go to the comment accept state, as you have read one { and }                       
@@ -140,7 +144,7 @@ public class comment_FSA extends mp {
                  */
                 case COMMENTACCEPT:
                     //stop looping, as we are in an accept state
-                    loop = false;
+//                    loop = false;
 
                     //unread the last character, to get the reader in the right place
                     MPscanner.pbr.unread(character);
@@ -174,4 +178,5 @@ public class comment_FSA extends mp {
         }
         return token;
     }
+    public static int returnLineTally;
 }

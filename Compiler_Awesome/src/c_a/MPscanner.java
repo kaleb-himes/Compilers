@@ -71,15 +71,15 @@ public class MPscanner extends mp {
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
-                mp.colNumber++;
+//                mp.colNumber++;
                 legitToken = true;
             } else if (c == -1) {
                 System.out.println("\nScanning Finished");
                 System.exit(0);
             } 
-            else if (c == 10 || c == 13) {
+            else if (c == 10) {
                 mp.lineNumber++;
-                mp.colNumber = -1;
+                mp.colNumber = 1;
             } else {
                 mp.colNumber++;
             }

@@ -19,8 +19,7 @@ public class identifier_FSA extends mp {
      * flags to indicate whether or not a particular character
      * has already been scanned
      */
-    Boolean readPeriod = false;
-    Boolean readOperator = false;
+    Boolean eof = false;
 
     public enum State {
 
@@ -52,7 +51,11 @@ public class identifier_FSA extends mp {
         state = State.START;
         int c;
 
-        while ((c = MPscanner.pbr.read()) != -1) {
+        while (eof == false) {
+            c = MPscanner.pbr.read();
+            if (c == -1) {
+                eof = true;
+            }
             /* 
              * unreads this character, which is just checking
              * if we are at end of file
@@ -91,11 +94,8 @@ public class identifier_FSA extends mp {
                             || character == '_') {
 
                         /* if 0-9 | a-z | A-Z | $ | _ then concat to lexeme */
-                        mp.colNumber++;
                         lexeme = lexeme.concat(Character.toString(character));
-                    } else if (!Character.isAlphabetic(character)
-                            && !Character.isDigit(character)
-                            && character != '_') {
+                    } else {
                         /*
                          * Checks if character is anything but acceptable
                          * Identifier value and ensures it has not been read
@@ -104,17 +104,7 @@ public class identifier_FSA extends mp {
 
                         MPscanner.pbr.unread(character);
                         state = State.S0;
-                    } else {
-                        /* invalid nex character, reset */
-                        MPscanner.pbr.unread(character);
-
-                        token = "MP_IDENTIFIER";
-
-                        /* return to dispatcher */
-                        return token;
-
                     }
-
                     /* END IDACCEPT */
                     break;
 
