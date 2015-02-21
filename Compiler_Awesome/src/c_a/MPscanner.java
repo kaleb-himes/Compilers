@@ -33,7 +33,6 @@ public class MPscanner extends mp {
     private static boolean begin = false;
 
     public static void scanFile() throws IOException {
-        Scanner scan = new Scanner(System.in);
         File currentDirFile = new File(".");
         String helper = currentDirFile.getAbsolutePath();
         System.out.println("Enter path to file that will be compiled.");
