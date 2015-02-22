@@ -1,5 +1,6 @@
 package c_a;
 
+import static c_a.fileReader.file_reader.reader;
 import static c_a.mp.fLocation;
 import c_a.parser.parser;
 import java.io.File;
@@ -85,7 +86,8 @@ public class MPscanner extends mp {
                 fWriter.println(lexeme);
                 //stop the file writer
                 fWriter.close();
-                
+                //close the reader. we'll re-initialize it for the parser.
+                reader.close();
                 //run the parser
                 parse.runParse();
                 /*** change ***/

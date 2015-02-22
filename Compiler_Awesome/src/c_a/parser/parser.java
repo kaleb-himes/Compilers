@@ -32,7 +32,12 @@
  * Remember that each team member is to get a subset of the nonterminals to implement as stubs.
  */
 package c_a.parser;
+import static c_a.fileReader.file_reader.reader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -62,18 +67,39 @@ public class parser {
         Error, Terminate
     }
     State state;
-    public void runParse() throws FileNotFoundException {
+    public void runParse() throws FileNotFoundException, IOException {
         
         /* 
          * Re-initialize the file reader to read from our scanner output file
          * instead of reading the program input file
          */
         c_a.fileReader.file_reader.fileReaderInit(c_a.fileReader.file_reader.outLocation);
-        String reserved = "";
+        List<String> lines = new ArrayList<String>();
+        String line = null;
+        //read in one line at a time from the output file
+        while ((line = reader.readLine()) != null) {
+            //replace all of our nice formatted spacing with a single space
+            line = line.trim().replaceAll(" +", " ");
+            //split the string into tokens using space as the splitter
+            StringTokenizer st = new StringTokenizer(line, " ");
+            while (st.hasMoreElements()) {
+                /*
+                 * trim each token, and add it to the array
+                 * lines n=0,n+=4 = micro pascal token
+                 * lines n=1,n+=4 = line number
+                 * lines n=2,n+=4 = column number
+                 * lines n=3,n+=4 = lexeme
+                 */
+                lines.add(st.nextElement().toString().trim());
+            }
+        }
+        for(int i = 0; i < lines.size(); i++) {
+            System.out.println(lines.get(i));
+        }
         state = State.Sys_Goal;
         while (done == false) {
             /* Get Look Ahead */
-            /* TODO LOGIC HERE FOR LOOK AHEAD*/
+            /* TODO LOGIC HERE FOR LOOK AHEAD */
             
             /* switch case on look ahead */
             switch(state) {
@@ -98,9 +124,6 @@ public class parser {
                     break;
                 case Var_Dec_Part:
                     // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
-                    if (lookahead.equals("MP_VAR")) {
-                        reserved = match(lookahead);
-                    }
                     // 6. Var_Dec_Part -> MP_EMPTY 
                     break;
                 case Var_Dec_Tail:
@@ -356,7 +379,7 @@ public class parser {
         
         //ensure string "in" is lowercase for checks.
         in = in.toLowerCase();
-        System.out.println("String in after tolower() = " + in);
+//        System.out.println("String in after tolower() = " + in);
         
         //check for reserved words
         if (in.equals("for"))

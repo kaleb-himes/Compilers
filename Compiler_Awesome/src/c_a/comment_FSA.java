@@ -148,7 +148,7 @@ public class comment_FSA extends mp {
 
                     //unread the last character, to get the reader in the right place
                     MPscanner.pbr.unread(character);
-                    token = "COMMENT";
+                    token = "MP_COMMENT";
 
                     /* return to dispatcher */
                     return token;

@@ -218,7 +218,7 @@ public class Dispatcher {
                     } else if (token.equals("MP_RUN_COMMENT")) {
                         System.out.format("\033[31mERROR: RUN ON COMMENT DETECTED AT LINE %d, COLUMN %d.\n\033[0m", lineNo, colNo);
                     } else {
-                        MPscanner.fWriter.print(token + "        ");
+                        MPscanner.fWriter.print(token + "     ");
                         MPscanner.fWriter.print(lineNo + "   ");
                         MPscanner.fWriter.print(colNo + "   ");
                         MPscanner.fWriter.println(lexeme);

@@ -118,7 +118,7 @@ public class identifier_FSA extends mp {
                     //check for reserved word with parser.match()
                     token = c_a.parser.parser.match(lexeme);
                     
-                    System.out.println("after match: " + token);
+//                    System.out.println("after match: " + token);
                     //if no match was found return MP_IDENTIFIER otherwise
                     //return the reserved word identifier
                     if (token.equals("MP_NO_MATCH")) {
