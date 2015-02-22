@@ -47,9 +47,10 @@ public class parser {
 
     Boolean done = false;
     String lookahead = "MP_TESTING";
-    int index;
+    int index, sColonCount;
     List<String> parseTokens;
     String sourceOfError;
+    int blockState;
     
     public enum State {
         Sys_Goal, Program, Prog_Head, Block, Var_Dec_Part,
@@ -81,6 +82,8 @@ public class parser {
         String line = null;
         lookahead = "";
         index = 0;
+        blockState = 1;
+        sColonCount = 0;
         state = State.Sys_Goal;
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
@@ -108,6 +111,7 @@ public class parser {
             /* TODO LOGIC HERE FOR LOOK AHEAD */
             lookahead = parseTokens.get(index);
             /* switch case on look ahead */
+            System.out.println("Current state is : " + state);
             switch(state) {
                 case Sys_Goal:
                     // 1. SystemGoal -> Program MP_EOF
@@ -142,9 +146,6 @@ public class parser {
                         index += 4;
                         state = State.Prog_Id;
                     }
-                    else if (lookahead.equals("MP_IDENTIFIER")) {
-                        state = State.Prog_Id;
-                    }
                     //postcondition
                     else {
                         sourceOfError = "Prog_Head";
@@ -152,35 +153,125 @@ public class parser {
                     }
                     break;
                 case Block:
-                    System.out.println("Got to Block");
-                    state = State.Terminate;
+                    //track which lookaheads we have used so far;
+                    //4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement
+                    if (blockState == 1) {
+                        state = State.Var_Dec_Part;
+                        blockState++;
+                    }
+                    else if (blockState == 2) {
+                        state = State.Proc_Func_Dec_Part;
+                        blockState++;
+                    }
+                    else {
+                        state = State.Statement;
+                        blockState = 1;
+                    }
 //                    state = State.Var_Dec_Part;
                     break;
                 case Var_Dec_Part:
                     // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
-                    
-                    // 6. Var_Dec_Part -> MP_EMPTY 
+                    // 6. Var_Dec_Part -> MP_EMPTY
+                    //precondition
+                    if (lookahead.equals("MP_VAR")) {
+                        index += 4;
+                        state = State.Var_Dec;
+                    }
+                    else if (lookahead.equals("MP_SCOLON")) {
+                        state = State.Var_Dec_Tail;
+                    }
+                    //postcondition (must have been MP_EMPTY)
+                    else 
+                        state = State.Block;
                     break;
                 case Var_Dec_Tail:
                     // 7. Var_Dec_Tail -> Var_Dec MP_SCOLON Var_Dec_Tail 
-                    // 8. Var_Dec_Tail -> MP_EMPTY 
+                    // 8. Var_Dec_Tail -> MP_EMPTY
+                    //precondition
+                    if (lookahead.equals("MP_SCOLON")) {
+                        index += 4;
+                        state = State.Var_Dec_Tail;
+                    }
+                    //postcondition
+                    else if (lookahead.equals("MP_IDENTIFIER"))
+                        state = State.Var_Dec;
+                    else
+                        state = State.Block;
                     break;
                 case Var_Dec:
-                    // 9. Id_List MP_COLON Type 
+                    // 9. Var_Dec -> Id_List MP_COLON Type
+                    //precondition
+                    if (lookahead.equals("MP_COLON")) {
+                        index += 4;
+                        state = State.Type;
+                    }
+                    //postcondition
+                    else
+                        state = State.Id_List;
                     break;
                 case Type:
                     // 10. Type -> MP_INTEGER_WORD
                     // 11. Type -> MP_FLOAT_WORD
                     // 12. Type -> MP_STRING_WORD
                     // 13. Type -> MP_BOOLEAN_WORD
+                    //precondition
+                    if (lookahead.equals("MP_INTEGER")) {
+                        index += 4;
+                        state = State.Var_Dec_Part;
+                    }
+                    else if (lookahead.equals("MP_FLOAT")) {
+                        index += 4;
+                        state = State.Var_Dec_Part;
+                    }
+                    else if (lookahead.equals("MP_STRING")) {
+                        index += 4;
+                        state = State.Var_Dec_Part;
+                    }
+                    else if (lookahead.equals("MP_BOOLEAN")) {
+                        index += 4;
+                        state = State.Var_Dec_Part;
+                    }
+                    //postcondition
+                    else {
+                        sourceOfError = "Type";
+                        state = State.Error;
+                    }
                     break;
                 case Proc_Func_Dec_Part:
                     // 14. Proc_Func_Dec_Part -> Proc_Dec Proc_Func_Dec_Part 
                     // 15. Proc_Func_Dec_Part -> Func_Dec Proc_Func_Dec_Part 
-                    // 16. Proc_Func_Dec_Part -> MP_EMPTY 
+                    // 16. Proc_Func_Dec_Part -> MP_EMPTY
+                    //precondition
+                    if (lookahead.equals("MP_PROCEDURE"))
+                        state = State.Proc_Dec;
+                    else if (lookahead.equals("MP_FUNCTION"))
+                        state = State.Func_Dec;
+                    //postcondition
+                    else
+                        state = State.Block;
                     break;
                 case Proc_Dec:
-                    // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON 
+                    // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
+                    //precondition
+                    if (lookahead.equals("MP_PROCEDURE"))
+                        state = State.Proc_Head;
+                    else if (lookahead.equals("MP_SCOLON") && sColonCount == 0) {
+                        sColonCount++;
+                        index += 4;
+                        state = State.Block;
+                    }
+                    //postcondition
+                    else {
+                        if (lookahead.equals("MP_SCOLON")) {
+                            index += 4;
+                            sColonCount = 0;
+                            state = State.Proc_Func_Dec_Part;
+                        }
+                        else {
+                            sourceOfError = "Proc_Dec, no second MP_SCOLON";
+                            state = State.Error;
+                        }
+                    }
                     break;
                 case Func_Dec:
                     // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON 
@@ -223,6 +314,8 @@ public class parser {
                     // 33. Statement_Tail -> MP_EMPTY
                     break;
                 case Statement:
+                    System.out.println("CHECKPOINT");
+                    state = State.Terminate;
                     // 34. Statement -> Empty_Statement
                     // 35. Statement -> Compound_Statement
                     // 36. Statement -> Read_Statement
@@ -363,8 +456,10 @@ public class parser {
                     break;
                 case Prog_Id:
                     // 107. Prog_Id -> MP_IDENTIFIER
+//                    System.out.println("lookahead in Prog_Id = " + lookahead);
                     //precondition
                     if (lookahead.equals("MP_IDENTIFIER")) {
+                        index += 4;
                         state = State.Program;
                     }
                     //postcondition
@@ -390,10 +485,37 @@ public class parser {
                     break;
                 case Id_List:
                     // 113. Id_List -> MP_IDENTIFIER Id_Tail
+                    //precondition
+                    if (lookahead.equals("MP_IDENTIFIER")) {
+                        index += 4;
+                        state = State.Id_Tail;
+                    }
+                    //postcondition
+                    else {
+                        sourceOfError = "Id_List";
+                        state = State.Error;
+                    }
                     break;
                 case Id_Tail:
                     // 114. Id_Tail -> MP_COMMA MP_IDENTIFIER Id_Tail
                     // 115. Id_Tail -> MP_EMPTY
+                    //precondition
+                    if (lookahead.equals("MP_COMMA")) {
+                        index += 4;
+                        lookahead = parseTokens.get(index);
+                        if (lookahead.equals("MP_IDENTIFIER")) {
+                            index += 4;
+                            state = State.Id_Tail;
+                        }
+                        else {
+                            sourceOfError = "Id_Tail, no ID following comma";
+                            state = State.Error;
+                        }
+                    }
+                    //postcondition
+                    else {
+                        state = State.Var_Dec;
+                    }
                     break;
                 case Error:
                     // if found error enter this case
