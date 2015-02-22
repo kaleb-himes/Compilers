@@ -31,7 +31,8 @@
  * just to see that the program works to the extent that each method can be called.
  * Remember that each team member is to get a subset of the nonterminals to implement as stubs.
  */
-package c_a;
+package c_a.parser;
+import java.io.FileNotFoundException;
 
 /**
  *
@@ -40,10 +41,9 @@ package c_a;
 public class parser {
 
     Boolean done = false;
-    String lookahead;
+    String lookahead = "MP_TESTING";
     
     public enum State {
-        Determine_State,
         Sys_Goal, Program, Prog_Head, Block, Var_Dec_Part,
         Var_Dec_Tail, Var_Dec, Type, 
         Proc_Func_Dec_Part, Proc_Dec, Func_Dec,
@@ -58,10 +58,19 @@ public class parser {
         Actual_Param_Tail, Actual_Param, Expression, Opt_Relational_Part,
         Relational_Op, Simple_Expression, Term_Tail, Optional_Sign, Add_Op, 
         Term, Factor_Tail, Multiply_Op, Factor, Prog_Id, Var_Id, Proc_Id, 
-        Function_Id, Boolean_Expression, Ordinal_Expression, Id_List, Id_Tail
+        Function_Id, Boolean_Expression, Ordinal_Expression, Id_List, Id_Tail,
+        Error, Terminate
     }
     State state;
-    public void runParse() {
+    public void runParse() throws FileNotFoundException {
+        
+        /* 
+         * Re-initialize the file reader to read from our scanner output file
+         * instead of reading the program input file
+         */
+        c_a.fileReader.file_reader.fileReaderInit(c_a.fileReader.file_reader.outLocation);
+        String reserved = "";
+        state = State.Sys_Goal;
         while (done == false) {
             /* Get Look Ahead */
             /* TODO LOGIC HERE FOR LOOK AHEAD*/
@@ -69,10 +78,17 @@ public class parser {
             /* switch case on look ahead */
             switch(state) {
                 case Sys_Goal:
-                    // 1. SystemGoal -> Program EOF  
+                    // 1. SystemGoal -> Program MP_EOF
+                    if (!lookahead.equals("MP_EOF"))
+                        state = State.Program;
+                    else
+                        state = State.Terminate;
                     break;
                 case Program:
-                    // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD 
+                    System.out.println("Got to Program");
+                    state = State.Terminate;
+                    // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
+                    
                     break;
                 case Prog_Head:
                     // 3. ProgramHeading -> MP_PROGRAM_WORD Prog_Id 
@@ -81,7 +97,10 @@ public class parser {
                     // 4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement 
                     break;
                 case Var_Dec_Part:
-                    // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail 
+                    // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
+                    if (lookahead.equals("MP_VAR")) {
+                        reserved = match(lookahead);
+                    }
                     // 6. Var_Dec_Part -> MP_EMPTY 
                     break;
                 case Var_Dec_Tail:
@@ -309,10 +328,106 @@ public class parser {
                     // 114. Id_Tail -> MP_COMMA MP_IDENTIFIER Id_Tail
                     // 115. Id_Tail -> MP_EMPTY
                     break;
+                case Error:
+                    // if found error enter this case
+                    /* TODO LOGIC HERE FOR ERROR */
+                    break;
+                case Terminate:
+                    /* 
+                     * Print anything we want to before exiting parser then 
+                     * exit program 
+                     */
+                    done = true;
+                    System.exit(0);
+                    break;
                 default:
                     System.out.println("Parser Default");
                     break;
             }
         }
+    }
+    /*
+     * @param in: the value of lookahead at the time it is called.
+     * @function match: matches the token to see if it is a reserved word
+     *                  or variable.
+     */
+    public static String match(String in) {
+        String token = "";
+        
+        //ensure string "in" is lowercase for checks.
+        in = in.toLowerCase();
+        System.out.println("String in after tolower() = " + in);
+        
+        //check for reserved words
+        if (in.equals("for"))
+            token = "MP_FOR       ";
+        else if (in.equals("and"))
+            token = "MP_AND       ";
+        else if (in.equals("begin"))
+            token = "MP_BEGIN     ";
+        else if (in.equals("Boolean"))
+            token = "MP_BOOLEAN   ";
+        else if (in.equals("div"))
+            token = "MP_DIV       ";
+        else if (in.equals("do"))
+            token = "MP_DO        ";
+        else if (in.equals("downto"))
+            token = "MP_DOWNTO    ";
+        else if (in.equals("else"))
+            token = "MP_ELSE      ";
+        else if (in.equals("MP_END"))
+            token = "MP_END       ";
+        else if (in.equals("false"))
+            token = "MP_FALSE     ";
+        else if (in.equals("fixed"))
+            token = "MP_FIXED     ";
+        else if (in.equals("float"))
+            token = "MP_FLOAT     ";
+        else if (in.equals("for"))
+            token = "MP_FOR       ";
+        else if (in.equals("function"))
+            token = "MP_FUNCTION  ";
+        else if (in.equals("if"))
+            token = "MP_IF        ";
+        else if (in.equals("integer"))
+            token = "MP_INTEGER   ";
+        else if (in.equals("mod"))
+            token = "MP_MOD       ";
+        else if (in.equals("not"))
+            token = "MP_NOT       ";
+        else if (in.equals("or"))
+            token = "MP_OR        ";
+        else if (in.equals("procedure"))
+            token = "MP_PROCEDURE ";
+        else if (in.equals("program"))
+            token = "MP_PROGRAM   ";
+        else if (in.equals("read"))
+            token = "MP_READ      ";
+        else if (in.equals("repeat"))
+            token = "MP_REPEAT    ";
+        else if (in.equals("string"))
+            token = "MP_STRING    ";
+        else if (in.equals("then"))
+            token = "MP_THEN      ";
+        else if (in.equals("true"))
+            token = "MP_TRUE      ";
+        else if (in.equals("to"))
+            token = "MP_TO        ";
+        else if (in.equals("type"))
+            token = "MP_TYPE      ";
+        else if (in.equals("until"))
+            token = "MP_UNTIL     ";
+        else if (in.equals("var"))
+            token = "MP_VAR       ";
+        else if (in.equals("while"))
+            token = "MP_WHILE     ";
+        else if (in.equals("write"))
+            token = "MP_WRITE     ";
+        else if (in.equals("writeln"))
+            token = "MP_WRITELN   ";
+        else 
+            return "MP_NO_MATCH";
+        //return token if any case matched            
+        return token;
     }
 }

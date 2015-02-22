@@ -1,11 +1,12 @@
-{multi
-line
-comment}
+program Tester(input, output);
 
-'a string '' there'
-{comment here} 3.234 int x = 5;
-    'begin'
-    3.58e+1;
-    2.9eE
-'run on
-                {run on
+ var I: Integer;
+
+  begin {tester}
+    Writeln; Writeln;
+    Write('Please enter an integer value for I: ');
+    Read(I);
+    I := I + 1;
+    Writeln('The current value of I is ', I:0);
+    Writeln; Writeln
+  end. {tester}

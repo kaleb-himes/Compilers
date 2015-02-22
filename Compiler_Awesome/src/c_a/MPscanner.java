@@ -1,16 +1,13 @@
 package c_a;
 
 import static c_a.mp.fLocation;
-import java.io.BufferedReader;
+import c_a.parser.parser;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.PushbackReader;
-import java.nio.charset.Charset;
-import java.util.Scanner;
 
 /**
  * @title c_a = compiler_awesome
@@ -20,6 +17,7 @@ import java.util.Scanner;
  */
 public class MPscanner extends mp {
 
+    static parser parse = new parser();
     protected final Dispatcher dispatch = new Dispatcher();
     public static String lexeme;
     public static char item;
@@ -27,7 +25,8 @@ public class MPscanner extends mp {
     public static int lNum;
     public static String testFile = mp.argument;
 
-    public static BufferedReader reader;
+    public static PrintWriter fWriter;
+    
     public static PushbackReader pbr;
     public static PrintStream out;
     private static boolean begin = false;
@@ -35,9 +34,8 @@ public class MPscanner extends mp {
     public static void scanFile() throws IOException {
         File currentDirFile = new File(".");
         String helper = currentDirFile.getAbsolutePath();
-        System.out.println("Enter path to file that will be compiled.");
-        System.out.print("Current Path: " + helper + "/");
         fLocation = "src/testStuff/" + testFile;
+        System.out.println("Scanning: " + helper + "/" + fLocation);
         /*scan.nextLine();*/
         
         File f = new File(fLocation);
@@ -55,7 +53,7 @@ public class MPscanner extends mp {
 
     public static synchronized char getNextToken() throws FileNotFoundException, IOException {
         if (begin == false) {
-            Initialize();
+            c_a.fileReader.file_reader.Initialize();
             begin = true;
         }
 
@@ -70,11 +68,28 @@ public class MPscanner extends mp {
                 pbr.unread(c);
                 item = (char) pbr.read();
                 pbr.unread(item);
-//                mp.colNumber++;
                 legitToken = true;
             } else if (c == -1) {
+                
                 System.out.println("\nScanning Finished");
-                System.exit(0);
+                /*** change ***/
+                // write out the token for EOF
+                String token = "MP_EOF";
+                lexeme = "-1";
+                int lineNo = MPscanner.lineNumber;
+                int colNo = MPscanner.colNumber;
+                String whitespace = "         ";
+                fWriter.print(token + whitespace);
+                fWriter.print(lineNo + "   ");
+                fWriter.print(colNo + "   ");
+                fWriter.println(lexeme);
+                //stop the file writer
+                fWriter.close();
+                
+                //run the parser
+                parse.runParse();
+                /*** change ***/
+//                System.exit(0);
             } 
             else if (c == 10) {
                 mp.lineNumber++;
@@ -84,10 +99,5 @@ public class MPscanner extends mp {
             }
         }
         return item;
-    }
-
-    private static synchronized void Initialize() throws FileNotFoundException {
-        reader = new BufferedReader(new InputStreamReader(new FileInputStream(fLocation), Charset.forName("UTF-8")));
-        pbr = new PushbackReader(reader, 5);
     }
 }

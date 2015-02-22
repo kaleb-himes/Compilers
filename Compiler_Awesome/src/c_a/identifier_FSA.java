@@ -115,7 +115,15 @@ public class identifier_FSA extends mp {
                  * let the dispatcher handle it
                  */
                 case S0:
-                    token = "MP_IDENTIFIER";
+                    //check for reserved word with parser.match()
+                    token = c_a.parser.parser.match(lexeme);
+                    
+                    System.out.println("after match: " + token);
+                    //if no match was found return MP_IDENTIFIER otherwise
+                    //return the reserved word identifier
+                    if (token.equals("MP_NO_MATCH")) {
+                        token = "MP_IDENTIFIER";
+                    }
 
                     /* return to dispatcher */
                     return token;
