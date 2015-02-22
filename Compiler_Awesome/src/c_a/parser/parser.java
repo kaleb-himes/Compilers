@@ -47,6 +47,9 @@ public class parser {
 
     Boolean done = false;
     String lookahead = "MP_TESTING";
+    int index;
+    List<String> parseTokens;
+    String sourceOfError;
     
     public enum State {
         Sys_Goal, Program, Prog_Head, Block, Var_Dec_Part,
@@ -74,8 +77,11 @@ public class parser {
          * instead of reading the program input file
          */
         c_a.fileReader.file_reader.fileReaderInit(c_a.fileReader.file_reader.outLocation);
-        List<String> lines = new ArrayList<String>();
+        parseTokens = new ArrayList<String>();
         String line = null;
+        lookahead = "";
+        index = 0;
+        state = State.Sys_Goal;
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
@@ -90,40 +96,69 @@ public class parser {
                  * lines n=2,n+=4 = column number
                  * lines n=3,n+=4 = lexeme
                  */
-                lines.add(st.nextElement().toString().trim());
+                parseTokens.add(st.nextElement().toString().trim());
             }
         }
-        for(int i = 0; i < lines.size(); i++) {
-            System.out.println(lines.get(i));
-        }
-        state = State.Sys_Goal;
+        //testing printout
+//        for(int i = 0; i < lines.size(); i++) {
+//            System.out.println(lines.get(i));
+//        }
         while (done == false) {
             /* Get Look Ahead */
             /* TODO LOGIC HERE FOR LOOK AHEAD */
-            
+            lookahead = parseTokens.get(index);
             /* switch case on look ahead */
             switch(state) {
                 case Sys_Goal:
                     // 1. SystemGoal -> Program MP_EOF
-                    if (!lookahead.equals("MP_EOF"))
-                        state = State.Program;
-                    else
+                    //precondition
+                    if (lookahead.equals("MP_EOF")) {
                         state = State.Terminate;
+                    }
+                    //postcondition
+                    else
+                        state = State.Program;
                     break;
                 case Program:
-                    System.out.println("Got to Program");
-                    state = State.Terminate;
                     // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
-                    
+                    //precondition
+                    if (lookahead.equals("MP_SCOLON")) {
+                        index += 4;
+                        state = State.Block;
+                    }
+                    else if (lookahead.equals("MP_PERIOD")) {
+                        index += 4;
+                        state = State.Sys_Goal;
+                    }
+                    //postcondition
+                    else
+                        state = State.Prog_Head;
                     break;
                 case Prog_Head:
-                    // 3. ProgramHeading -> MP_PROGRAM_WORD Prog_Id 
+                    // 3. ProgramHeading -> MP_PROGRAM_WORD Prog_Id
+                    //precondition
+//                    System.out.println("lookahead in Prog_Head = " + lookahead);
+                    if (lookahead.equals("MP_PROGRAM")) {
+                        index += 4;
+                        state = State.Prog_Id;
+                    }
+                    else if (lookahead.equals("MP_IDENTIFIER")) {
+                        state = State.Prog_Id;
+                    }
+                    //postcondition
+                    else {
+                        sourceOfError = "Prog_Head";
+                        state = State.Error;
+                    }
                     break;
                 case Block:
-                    // 4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement 
+                    System.out.println("Got to Block");
+                    state = State.Terminate;
+//                    state = State.Var_Dec_Part;
                     break;
                 case Var_Dec_Part:
                     // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
+                    
                     // 6. Var_Dec_Part -> MP_EMPTY 
                     break;
                 case Var_Dec_Tail:
@@ -328,6 +363,15 @@ public class parser {
                     break;
                 case Prog_Id:
                     // 107. Prog_Id -> MP_IDENTIFIER
+                    //precondition
+                    if (lookahead.equals("MP_IDENTIFIER")) {
+                        state = State.Program;
+                    }
+                    //postcondition
+                    else {
+                        sourceOfError = "Prog_Id";
+                        state = State.Error;
+                    }
                     break;
                 case Var_Id:
                     // 108. Var_Id -> MP_IDENTIFIER
@@ -354,6 +398,8 @@ public class parser {
                 case Error:
                     // if found error enter this case
                     /* TODO LOGIC HERE FOR ERROR */
+                    System.out.println("Error in state: " + sourceOfError);
+                    state = State.Terminate;
                     break;
                 case Terminate:
                     /* 
@@ -374,83 +420,7 @@ public class parser {
      * @function match: matches the token to see if it is a reserved word
      *                  or variable.
      */
-    public static String match(String in) {
-        String token = "";
+    public static void match(String in) {
         
-        //ensure string "in" is lowercase for checks.
-        in = in.toLowerCase();
-//        System.out.println("String in after tolower() = " + in);
-        
-        //check for reserved words
-        if (in.equals("for"))
-            token = "MP_FOR       ";
-        else if (in.equals("and"))
-            token = "MP_AND       ";
-        else if (in.equals("begin"))
-            token = "MP_BEGIN     ";
-        else if (in.equals("Boolean"))
-            token = "MP_BOOLEAN   ";
-        else if (in.equals("div"))
-            token = "MP_DIV       ";
-        else if (in.equals("do"))
-            token = "MP_DO        ";
-        else if (in.equals("downto"))
-            token = "MP_DOWNTO    ";
-        else if (in.equals("else"))
-            token = "MP_ELSE      ";
-        else if (in.equals("MP_END"))
-            token = "MP_END       ";
-        else if (in.equals("false"))
-            token = "MP_FALSE     ";
-        else if (in.equals("fixed"))
-            token = "MP_FIXED     ";
-        else if (in.equals("float"))
-            token = "MP_FLOAT     ";
-        else if (in.equals("for"))
-            token = "MP_FOR       ";
-        else if (in.equals("function"))
-            token = "MP_FUNCTION  ";
-        else if (in.equals("if"))
-            token = "MP_IF        ";
-        else if (in.equals("integer"))
-            token = "MP_INTEGER   ";
-        else if (in.equals("mod"))
-            token = "MP_MOD       ";
-        else if (in.equals("not"))
-            token = "MP_NOT       ";
-        else if (in.equals("or"))
-            token = "MP_OR        ";
-        else if (in.equals("procedure"))
-            token = "MP_PROCEDURE ";
-        else if (in.equals("program"))
-            token = "MP_PROGRAM   ";
-        else if (in.equals("read"))
-            token = "MP_READ      ";
-        else if (in.equals("repeat"))
-            token = "MP_REPEAT    ";
-        else if (in.equals("string"))
-            token = "MP_STRING    ";
-        else if (in.equals("then"))
-            token = "MP_THEN      ";
-        else if (in.equals("true"))
-            token = "MP_TRUE      ";
-        else if (in.equals("to"))
-            token = "MP_TO        ";
-        else if (in.equals("type"))
-            token = "MP_TYPE      ";
-        else if (in.equals("until"))
-            token = "MP_UNTIL     ";
-        else if (in.equals("var"))
-            token = "MP_VAR       ";
-        else if (in.equals("while"))
-            token = "MP_WHILE     ";
-        else if (in.equals("write"))
-            token = "MP_WRITE     ";
-        else if (in.equals("writeln"))
-            token = "MP_WRITELN   ";
-        else 
-            return "MP_NO_MATCH";
-        //return token if any case matched            
-        return token;
     }
 }
