@@ -46,12 +46,12 @@ import java.util.StringTokenizer;
  */
 public class parser {
 
-    Boolean done = false;
+    static Boolean done = false;
     static String lookahead = "";
     static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
-            expMark, simpExpMark;
+            expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
-    static String sourceOfError;
+    static String sourceOfError, potentialError;
     static int blockState;
 
 //    public enum State {
@@ -81,7 +81,8 @@ public class parser {
          * Re-initialize the file reader to read from our scanner output file
          * instead of reading the program input file
          */
-        c_a.fileReader.file_reader.fileReaderInit(c_a.fileReader.file_reader.outLocation);
+        c_a.fileReader.file_reader.fileReaderInit(
+                c_a.fileReader.file_reader.outLocation);
         parseTokens = new ArrayList<String>();
         String line = null;
         lookahead = "";
@@ -93,7 +94,7 @@ public class parser {
         simpExpMark = 0;
         procIdFound = 0;
         frmlParamState = 0;
-//        state = State.Sys_Goal;
+//        Sys_Goal;
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
@@ -114,16 +115,12 @@ public class parser {
             }
         }
 
-        get_Lookahead();
-        while (done == false) {
-
-            /* switch case on look ahead */
-//            System.out.println("Current state is : " + state);
-            get_Lookahead();
-        }
+        /* kick off our parse with a lookahead set then call Sys_Goal */
+        Get_Lookahead();
+        Sys_Goal();
     }
 
-    public static void get_Lookahead() {
+    public static void Get_Lookahead() {
         /* Get Look Ahead */
         /* TODO LOGIC HERE FOR LOOK AHEAD */
         lookahead = parseTokens.get(index);
@@ -139,78 +136,96 @@ public class parser {
                 lookahead = parseTokens.get(index);
             }
         }
-        Sys_Goal();
+    }
+
+    public static void Advance_Pointer() {
+        index += 4;
+        Get_Lookahead();
     }
 
     public static void Sys_Goal() {
-                    // 1. SystemGoal -> Program MP_EOF
-        //precondition
-        if (lookahead.equals("MP_EOF")) {
-            Terminate();
-        } //postcondition
-        else {
-            Program();
+        // 1. SystemGoal -> Program MP_EOF
+        Program();
+        G_Check = Match("MP_EOF");
+        switch (G_Check) {
+            case 1:
+                Terminate("Program parsed successfully, found MP_EOF");
+            default:
+                sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookahead;
         }
 //                    System.out.println("Parser Default");
     }
-    
+
     public static void Program() {
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
-        if (lookahead.equals("MP_SCOLON")) {
-            index += 4;
-            Block();
-        } else if (lookahead.equals("MP_PERIOD")) {
-            index += 4;
-            Sys_Goal();
-        } //postcondition
-        else {
-            Prog_Head();
+        Prog_Head();
+        G_Check = Match("MP_SCOLON");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Block();
+                G_Check = Match("MP_PERIOD");
+                switch (G_Check) {
+                    case 0:
+                        sourceOfError = "Prog_Head, Expected MP_PERIOD found:"
+                                + " " + lookahead;
+                        Error();
+                    default:
+                        Advance_Pointer();
+                        Sys_Goal();
+                }
+            default:
+                sourceOfError = "Program, Expected MP_SCOLON found: "
+                        + lookahead;
+                Error();
         }
     }
 
     public static void Prog_Head() {
         // 3. ProgramHeading -> MP_PROGRAM_WORD Prog_Id
         //precondition
-//                    System.out.println("lookahead in Prog_Head = " + lookahead);
-        if (lookahead.equals("MP_PROGRAM")) {
-            index += 4;
-            Prog_Id();
-        } //postcondition
-        else {
-            sourceOfError = "Prog_Head";
-            Error();
+        G_Check = Match("MP_PROGRAM");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Prog_Id();
+            default:
+                sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
+                        + " " + lookahead;
         }
+
     }
 
     public static void Block() {
         //track which lookaheads we have used so far;
         //4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement_Part
-        if (blockState == 1) {
-            Var_Dec_Part();
-            blockState++;
-        } else if (blockState == 2) {
-            Proc_Func_Dec_Part();
-            blockState++;
-        } else {
-            Statement_Part();
-            blockState = 1;
-        }
-//                    state = State.Var_Dec_Part;
+        Var_Dec_Part();
+        Proc_Func_Dec_Part();
+        Statement_Part();
+//                    Var_Dec_Part;
     }
 
     public static void Var_Dec_Part() {
         // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
         // 6. Var_Dec_Part -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_VAR")) {
-            index += 4;
-            Var_Dec();
-        } else if (lookahead.equals("MP_SCOLON")) {
-            Var_Dec_Tail();
-        } //postcondition (must have been MP_EMPTY)
-        else {
-            Block();
+        G_Check = Match("MP_VAR");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Var_Dec();
+                G_Check = Match("MP_SCOLON");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Var_Dec_Tail();
+                    default:
+                        sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
+                                + "found:  " + lookahead;
+                }
+            default:
+                potentialError = "Var_Dec_Part, treated as empty";
         }
     }
 
@@ -218,28 +233,30 @@ public class parser {
         // 7. Var_Dec_Tail -> Var_Dec MP_SCOLON Var_Dec_Tail 
         // 8. Var_Dec_Tail -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_SCOLON")) {
-            index += 4;
-            state = State.Var_Dec_Tail;
-        } //postcondition
-        else if (lookahead.equals("MP_IDENTIFIER")) {
-            state = State.Var_Dec;
-        } else {
-            state = State.Block;
+        Var_Dec();
+        G_Check = Match("MP_SCOLON");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Var_Dec_Tail();
+            default:
+                potentialError = "Var_Dec_Tail, treated as empty";
         }
     }
 
     public static void Var_Dec() {
         // 9. Var_Dec -> Id_List MP_COLON Type
         //precondition
-        if (lookahead.equals("MP_COLON")) {
-            index += 4;
-            returnToState = State.Var_Dec_Part;
-            state = State.Type;
-        } //postcondition
-        else {
-            returnToState = State.Var_Dec;
-            state = State.Id_List;
+        Id_List();
+        G_Check = Match("MP_COLON");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Type();
+            default:
+                sourceOfError = "Var_Dec, Expected MP_COLON found: "
+                        + "" + lookahead;
+                Error();
         }
     }
 
@@ -249,22 +266,25 @@ public class parser {
         // 12. Type -> MP_STRING_WORD
         // 13. Type -> MP_BOOLEAN_WORD
         //precondition
-        if (lookahead.equals("MP_INTEGER")) {
-            index += 4;
-            state = returnToState;
-        } else if (lookahead.equals("MP_FLOAT")) {
-            index += 4;
-            state = returnToState;
-        } else if (lookahead.equals("MP_STRING")) {
-            index += 4;
-            state = returnToState;
-        } else if (lookahead.equals("MP_BOOLEAN")) {
-            index += 4;
-            state = returnToState;
-        } //postcondition
-        else {
-            sourceOfError = "Type, found no integer, float, string, or boolean";
-            state = State.Error;
+        G_Check = Match("MP_INTEGER");
+        switch (G_Check) {
+            case 0:
+                G_Check = Match("MP_FLOAT");
+                switch (G_Check) {
+                    case 0:
+                        G_Check = Match("MP_STRING_LIT");
+                        switch (G_Check) {
+                            case 0:
+                                G_Check = Match("MP_BOOLEAN");
+                                switch (G_Check) {
+                                    case 0:
+                                        sourceOfError = "Type, Expected "
+                                                + "[MP_INTEGER | MP_FLOAT |"
+                                                + " MP_STRING_LIT | MP_BOOLEAN."
+                                                + " found: " + lookahead;
+                                }
+                        }
+                }
         }
     }
 
@@ -273,54 +293,55 @@ public class parser {
         // 15. Proc_Func_Dec_Part -> Func_Dec Proc_Func_Dec_Part 
         // 16. Proc_Func_Dec_Part -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_PROCEDURE")) {
-            state = State.Proc_Dec;
-        } else if (lookahead.equals("MP_FUNCTION")) {
-            state = State.Func_Dec;
-        } //postcondition
-        else {
-            state = State.Block;
+        switch(lookahead) {
+            case "MP_PROCEDURE":
+                Proc_Dec();
+                Proc_Func_Dec_Part();
+            case "MP_FUNCTION":
+                Func_Dec();
+                Proc_Func_Dec_Part();
+            default:
+                /* Do Nothing */ 
         }
     }
 
     public static void Proc_Dec() {
         // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
         //precondition
-        if (lookahead.equals("MP_PROCEDURE")) {
-            state = State.Proc_Head;
-        } else if (lookahead.equals("MP_SCOLON") && sColonMark == 0) {
-            sColonMark++;
-            index += 4;
-            state = State.Block;
-        } //postcondition
-        else {
-            if (lookahead.equals("MP_SCOLON")) {
-                index += 4;
-                sColonMark = 0;
-                state = State.Proc_Func_Dec_Part;
-            } else {
-                sourceOfError = "Proc_Dec, no second MP_SCOLON";
-                state = State.Error;
-            }
+        Proc_Head();
+        G_Check = Match("MP_SCOLON");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Block();
+                G_Check = Match("MP_SCOLON");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                    default:
+                        sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
+                                + "" + lookahead;
+                }
+            default:
+                sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
+                        + "" + lookahead;
+                
+                
         }
     }
 
     public static void Func_Dec() {
-        state = State.Terminate;
         // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON 
     }
 
     public static void Proc_Head() {
-        state = State.Terminate;
         // 19. Proc_Head -> MP_PROCEDURE Proc_Id Opt_Formal_Param_List
         if (lookahead.equals("MP_PROCEDURE")) {
             index += 4;
-            state = State.Proc_Id;
+            Proc_Id();
         } else if (procIdFound == 1) {
             //reset the IdFound for future checks
             procIdFound = 0;
-            returnToState
-                    = state = State.Opt_Formal_Param_List;
         }
     }
 
@@ -334,18 +355,18 @@ public class parser {
         //precondition
         if (lookahead.equals("MP_LPAREN")) {
             index += 4;
-            state = State.Formal_Param_Sec;
+            Formal_Param_Sec();
             frmlParamState = 1;
         } else if (lookahead.equals("MP_RPAREN")) {
             index += 4;
-            state = State.Proc_Dec;
+            Proc_Dec();
         } else if (frmlParamState == 1) {
             frmlParamState = 0;
-            returnToState = State.Opt_Formal_Param_List;
-            state = State.Formal_Param_Sec_Tail;
+//            returnToState = State.Opt_Formal_Param_List;
+            Formal_Param_Sec_Tail();
         } else {
             //return to state on success or if empty
-            state = State.Block;
+            Block();
         }
         //postcondition
     }
@@ -356,14 +377,14 @@ public class parser {
         //precondition
         if (lookahead.equals("MP_SCOLON")) {
             index += 4;
-            state = State.Formal_Param_Sec;
+            Formal_Param_Sec();
             frmlParamState = 1;
         } else if (frmlParamState == 1) {
             frmlParamState = 0;
-            state = State.Formal_Param_Sec_Tail;
+            Formal_Param_Sec_Tail();
         } //postcondition
         else {
-            state = returnToState;
+//            state = returnToState;
         }
     }
 
@@ -371,16 +392,16 @@ public class parser {
         // 25. Formal_Param_Sec -> Val_Param_Sec
         // 26. Formal_Param_Sec -> Var_Param_Sec
         if (lookahead.equals("MP_VAL")) {
-            state = State.Val_Param_Sec;
+            Val_Param_Sec();
         } else {
-            state = State.Var_Param_Sec;
+            Var_Param_Sec();
         }
     }
 
     public static void Val_Param_Sec() {
         // 27. Val_Param_Sec -> Id_List MP_COLON Type
         if (lookahead.equals("MP_IDENTIFIER")) {
-            state = State.Id_List;
+            Id_List();
         }
     }
 
@@ -388,26 +409,26 @@ public class parser {
         // 28. Var_Param_Sec -> MP_VAR Id_List MP_COLON Type
         if (lookahead.equals("MP_VAR")) {
             index += 4;
-            returnToState = State.Var_Param_Sec;
-            state = State.Id_List;
+//            returnToState = State.Var_Param_Sec;
+            Id_List();
         } else if (lookahead.equals("MP_COLON")) {
             index += 4;
-            returnToState = State.Opt_Formal_Param_List;
-            state = State.Type;
+//            returnToState = State.Opt_Formal_Param_List;
+            Type();
         } else {
             sourceOfError = "Var_Param_Sec"
                     + "<usage> [VAR | VAL] example () { integer";
-            state = State.Error;
+            Error();
         }
     }
 
     public static void Statement_Part() {
         // 29. Statement_Part -> Compound_Statement
         if (lookahead.equals("MP_BEGIN")) {
-            state = State.Compound_Statement;
+            Compound_Statement();
         } else {
             sourceOfError = "Statement_Part, no MP_BEGIN";
-            state = State.Error;
+            Error();
         }
     }
 
@@ -415,10 +436,11 @@ public class parser {
         // 30. Compound_Statement -> MP_BEGIN Statement_Seq MP_END
         if (lookahead.equals("MP_BEGIN")) {
             index += 4;
-            state = State.Statement_Seq;
+            Statement_Seq();
         } else if (lookahead.equals("MP_END")) {
             index += 4;
-            state = State.Sys_Goal;
+            Get_Lookahead();
+            Sys_Goal();
         }
     }
 
@@ -426,11 +448,11 @@ public class parser {
         // 31. Statement_Seq -> Statement Statement_Tail
         if (stmntSeqMark == 0) {
             stmntSeqMark = 1;
-            returnToState = State.Statement_Seq;
-            state = State.Statement;
+//            returnToState = State.Statement_Seq;
+            Statement();
         } else if (stmntSeqMark == 1) {
             stmntSeqMark = 0;
-            state = State.Statement_Tail;
+            Statement_Tail();
         }
     }
 
@@ -439,11 +461,11 @@ public class parser {
         // 33. Statement_Tail -> MP_EMPTY
         if (lookahead.equals("MP_SCOLON")) {
             index += 4;
-            state = State.Statement;
-            returnToState = State.Statement_Tail;
+            Statement();
+//            returnToState = State.Statement_Tail;
         } else //empty statement
         {
-            state = State.Compound_Statement;
+            Compound_Statement();
         }
 
     }
@@ -451,38 +473,37 @@ public class parser {
     public static void Statement() {
 //                    System.out.println("CHECKPOINT");
 //                    System.out.println("LOOKAHEAD = " + lookahead);
-        state = State.Terminate;
         // 34. Statement -> Empty_Statement (post condition)
         // 35. Statement -> Compound_Statement
         if (lookahead.equals("MP_BEGIN")) {
-            state = State.Compound_Statement;
+            Compound_Statement();
         } // 36. Statement -> Read_Statement
         else if (lookahead.equals("MP_READ")) {
-            state = State.Read_Statement;
+            Read_Statement();
         } // 37. Statement -> Write_Statement
         else if (lookahead.equals("MP_WRITE") || lookahead.equals("MP_WRITELN")) {
-            state = State.Write_Statement;
+            Write_Statement();
         } // 38. Statement -> Assign_Statement
         else if (lookahead.equals("MP_ASSIGN")) {
-            state = State.Assign_Statement;
+            Assign_Statement();
         } // 39. Statement -> If_Statement
         else if (lookahead.equals("MP_IF")) {
-            state = State.If_Statement;
+            If_Statement();
         } // 40. Statement -> While_Statement
         else if (lookahead.equals("MP_WHILE")) {
-            state = State.While_Statement;
+            While_Statement();
         } // 41. Statement -> Repeat_Statement
         else if (lookahead.equals("MP_REPEAT")) {
-            state = State.Repeat_Statement;
+            Repeat_Statement();
         } // 42. Statement -> For_Statement
         else if (lookahead.equals("MP_FOR")) {
-            state = State.For_Statement;
+            For_Statement();
         } // 43. Statement -> Procedure_Statement
         else if (lookahead.equals("MP_PROCEDURE")) {
-            state = State.Proc_Statement;
+            Proc_Statement();
         } //post condition
         else {
-            state = returnToState;
+//            state = returnToState;
         }
     }
 
@@ -511,14 +532,14 @@ public class parser {
 
             if (lookahead.equals("MP_LPAREN")) {
                 index += 4;
-                returnToState = State.Write_Statement;
-                state = State.Write_Param;
+//                returnToState = State.Write_Statement;
+                Write_Param();
             } else if (lookahead.equals("MP_RPAREN")) {
                 index += 4;
             } else if (!lookahead.equals("MP_WRITE")
                     && !lookahead.equals("MP_LPAREN")
                     && !lookahead.equals("MP_RPAREN")) {
-                state = State.Write_Param_Tail;
+                Write_Param_Tail();
             }
         } else if (lookahead.equals("MP_WRITELN")) {
             // 50. Write_Statement -> MP_WRITELN_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
@@ -527,32 +548,32 @@ public class parser {
             System.out.println("LOOKAHEAD: " + lookahead);
             if (lookahead.equals("MP_LPAREN")) {
                 index += 4;
-                returnToState = State.Write_Statement;
-                state = State.Write_Param;
+//                returnToState = State.Write_Statement;
+                Write_Param();
             } else if (lookahead.equals("MP_RPAREN")) {
                 index += 4;
             } else if (!lookahead.equals("MP_WRITE")
                     && !lookahead.equals("MP_LPAREN")
                     && !lookahead.equals("MP_RPAREN")) {
-                state = State.Write_Param_Tail;
+                Write_Param_Tail();
             }
         } else {
             sourceOfError = "Write_Statement, something went wrong.\n"
                     + "<usage> [WRITE | WRITELN] (Write_Param Write_Param_Tail)";
-            state = State.Error;
+            Error();
         }
 
     }
 
     public static void Write_Param_Tail() {
-        state = State.Terminate;
+        Terminate("default exit, parser not yet complete");
         // 51. Write_Param_Tail -> MP_COMMA Write_Param Write_Param_Tail
         // 52. Write_Param_Tail -> MP_EMPTY
     }
 
     public static void Write_Param() {
         // 53. Write_Param -> Ordinal_Expression
-        state = State.Ordinal_Expression;
+        Ordinal_Expression();
     }
 
     public static void Assign_Statement() {
@@ -620,10 +641,10 @@ public class parser {
         // 73. Expression -> Simple_Expression Opt_Relational_Part
         if (expMark == 0) {
             expMark = 1;
-            state = State.Simple_Expression;
+            Simple_Expression();
         } else {
             expMark = 0;
-            state = State.Opt_Relational_Part;
+            Opt_Relational_Part();
         }
     }
 
@@ -645,13 +666,13 @@ public class parser {
         // 82. Simple_Expression -> Optional_Sign Term Term_Tail
         if (simpExpMark == 0) {
             simpExpMark = 1;
-            state = State.Optional_Sign;
+            Optional_Sign();
         } else if (simpExpMark == 1) {
             simpExpMark = 2;
-            state = State.Term;
+            Term();
         } else {
             simpExpMark = 0;
-            state = State.Term_Tail;
+            Term_Tail();
         }
     }
 
@@ -702,15 +723,15 @@ public class parser {
 
     public static void Prog_Id() {
         // 107. Prog_Id -> MP_IDENTIFIER
-//                    System.out.println("lookahead in Prog_Id = " + lookahead);
         //precondition
-        if (lookahead.equals("MP_IDENTIFIER")) {
-            index += 4;
-            state = State.Program;
-        } //postcondition
-        else {
-            sourceOfError = "Prog_Id";
-            state = State.Error;
+        switch (lookahead) {
+            case "MP_IDENTIFIER":
+                index += 4;
+                Get_Lookahead();
+                Program();
+            default:
+                sourceOfError = "Prog_Id";
+                Error();
         }
     }
 
@@ -723,10 +744,10 @@ public class parser {
         if (lookahead.equals("MP_IDENTIFIER")) {
             procIdFound = 1;
             index += 4;
-            state = State.Proc_Head;
+            Proc_Head();
         } else {
             sourceOfError = "Proc_Id, no identifier found";
-            state = State.Error;
+            Error();
         }
     }
 
@@ -740,7 +761,7 @@ public class parser {
 
     public static void Ordinal_Expression() {
         // 112. Ordinal_Expression -> Expression
-        state = State.Expression;
+        Expression();
     }
 
     public static void Id_List() {
@@ -748,11 +769,11 @@ public class parser {
         //precondition
         if (lookahead.equals("MP_IDENTIFIER")) {
             index += 4;
-            state = State.Id_Tail;
+            Id_Tail();
         } //postcondition
         else {
             sourceOfError = "Id_List";
-            state = State.Error;
+            Error();
         }
     }
 
@@ -765,30 +786,32 @@ public class parser {
             lookahead = parseTokens.get(index);
             if (lookahead.equals("MP_IDENTIFIER")) {
                 index += 4;
-                state = State.Id_Tail;
+                Id_Tail();
             } else {
                 sourceOfError = "Id_Tail, no ID following comma";
-                state = State.Error;
+                Error();
             }
         } //postcondition
         else {
-            state = returnToState;
+//            state = returnToState;
         }
     }
 
     public static void Error() {
         // if found error enter this case
-                    /* TODO LOGIC HERE FOR ERROR */
-        System.out.println("Error in state: " + sourceOfError);
-        state = State.Terminate;
+        /* MONICA!!!!!!! */
+        /* TODO LOGIC HERE FOR ERROR */
+        String message = "Error in state: " + sourceOfError;
+        Terminate(message);
     }
 
-    public static void Terminate() {
+    public static void Terminate(String message) {
         /* 
          * Print anything we want to before exiting parser then 
          * exit program 
          */
         done = true;
+        System.out.println(message);
         System.exit(0);
     }
     /*
@@ -797,7 +820,11 @@ public class parser {
      *                  or variable.
      */
 
-    public static void match(String in) {
-
+    public static Integer Match(String in) {
+        if (in.equals(lookahead)) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
