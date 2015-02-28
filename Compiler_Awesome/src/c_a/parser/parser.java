@@ -321,153 +321,207 @@ public class parser {
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookahead;
+                        Error();
                 }
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookahead;
-                
-                
+                Error();
         }
     }
 
     public static void Func_Dec() {
-        // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON 
+        // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON
+        Func_Head();
+        G_Check = Match("MP_SCOLON");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Block();
+                G_Check = Match("MP_SCOLON");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                    default:
+                        sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
+                                + "" + lookahead;
+                        Error();
+                }
+            default:
+                sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
+                        + "" + lookahead;
+                Error();
+        }
     }
 
     public static void Proc_Head() {
         // 19. Proc_Head -> MP_PROCEDURE Proc_Id Opt_Formal_Param_List
-        if (lookahead.equals("MP_PROCEDURE")) {
-            index += 4;
-            Proc_Id();
-        } else if (procIdFound == 1) {
-            //reset the IdFound for future checks
-            procIdFound = 0;
+        G_Check = Match("MP_PROCEDURE");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Proc_Id();
+                Opt_Formal_Param_List();
+            default:
+                sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
+                        + " " + lookahead;
+                Error();
         }
     }
 
     public static void Func_Head() {
-        // 20. Func_Head -> MP_FUNCTION Func_Id Opt_Formal_Param_List 
+        // 20. Func_Head -> MP_FUNCTION Function_Id Opt_Formal_Param_List
+        G_Check = Match("MP_FUNCTION");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Function_Id();
+                Opt_Formal_Param_List();
+            default:
+                sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
+                        + "" + lookahead;
+                Error();
+        }
     }
 
     public static void Opt_Formal_Param_List() {
         // 21. Opt_Formal_Param_List -> MP_LPAREN Formal_Param_Sec Formal_Param_Sec_Tail MP_RPAREN 
         // 22. Opt_Formal_Param_List -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_LPAREN")) {
-            index += 4;
-            Formal_Param_Sec();
-            frmlParamState = 1;
-        } else if (lookahead.equals("MP_RPAREN")) {
-            index += 4;
-            Proc_Dec();
-        } else if (frmlParamState == 1) {
-            frmlParamState = 0;
-//            returnToState = State.Opt_Formal_Param_List;
-            Formal_Param_Sec_Tail();
-        } else {
-            //return to state on success or if empty
-            Block();
+        G_Check = Match("MP_LPAREN");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Formal_Param_Sec();
+                Formal_Param_Sec_Tail();
+                G_Check = Match("MP_RPAREN");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                    default:
+                        sourceOfError = "Opt_Formal_Param_List, Expected "
+                                + "MP_RPAREN found: " + lookahead;
+                }
+            default:
+                sourceOfError = "Opt_Formal_Param_List, Expected MP_LPAREN "
+                        + "found: " + lookahead;
+                Error();
         }
-        //postcondition
     }
 
     public static void Formal_Param_Sec_Tail() {
         // 23. Formal_Param_Sec_Tail -> MP_SCOLON Formal_Param_Sec Formal_Param_Sec_Tail
         // 24. Formal_Param_Sec_Tail -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_SCOLON")) {
-            index += 4;
-            Formal_Param_Sec();
-            frmlParamState = 1;
-        } else if (frmlParamState == 1) {
-            frmlParamState = 0;
-            Formal_Param_Sec_Tail();
-        } //postcondition
-        else {
-//            state = returnToState;
+        G_Check = Match("MP_SCOLON");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Formal_Param_Sec();
+                Formal_Param_Sec_Tail();
+            default:
+                potentialError = "Formal_Param_Sec_Tail, Treated as Empty";
         }
     }
 
     public static void Formal_Param_Sec() {
         // 25. Formal_Param_Sec -> Val_Param_Sec
         // 26. Formal_Param_Sec -> Var_Param_Sec
-        if (lookahead.equals("MP_VAL")) {
-            Val_Param_Sec();
-        } else {
-            Var_Param_Sec();
+        switch(lookahead) {
+            case "MP_VAR":
+                Var_Param_Sec();
+            case "MP_IDENTIFIER":
+                Val_Param_Sec();
+            default:
+                potentialError = "Formal_Param_Sec, something happened here, "
+                        + "check your logic.";
         }
     }
 
     public static void Val_Param_Sec() {
         // 27. Val_Param_Sec -> Id_List MP_COLON Type
-        if (lookahead.equals("MP_IDENTIFIER")) {
-            Id_List();
+        Id_List();
+        G_Check = Match("MP_COLON");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Type();
+            default:
+                sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
+                        + "" + lookahead;
         }
     }
 
     public static void Var_Param_Sec() {
         // 28. Var_Param_Sec -> MP_VAR Id_List MP_COLON Type
-        if (lookahead.equals("MP_VAR")) {
-            index += 4;
-//            returnToState = State.Var_Param_Sec;
-            Id_List();
-        } else if (lookahead.equals("MP_COLON")) {
-            index += 4;
-//            returnToState = State.Opt_Formal_Param_List;
-            Type();
-        } else {
-            sourceOfError = "Var_Param_Sec"
-                    + "<usage> [VAR | VAL] example () { integer";
-            Error();
+        G_Check = Match("MP_VAR");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Id_List();
+                G_Check = Match("MP_COLON");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Type();
+                    default:
+                        sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
+                                + ": " + lookahead;
+                        Error();
+                }
+            default:
+                sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
+                        + "" + lookahead;
+                Error();
         }
     }
 
     public static void Statement_Part() {
         // 29. Statement_Part -> Compound_Statement
-        if (lookahead.equals("MP_BEGIN")) {
-            Compound_Statement();
-        } else {
-            sourceOfError = "Statement_Part, no MP_BEGIN";
-            Error();
-        }
+        Compound_Statement();
     }
 
     public static void Compound_Statement() {
         // 30. Compound_Statement -> MP_BEGIN Statement_Seq MP_END
-        if (lookahead.equals("MP_BEGIN")) {
-            index += 4;
-            Statement_Seq();
-        } else if (lookahead.equals("MP_END")) {
-            index += 4;
-            Get_Lookahead();
-            Sys_Goal();
+        G_Check = Match("MP_BEGIN");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Statement_Seq();
+                G_Check = Match("MP_END");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                    default:
+                        sourceOfError = "Compound_Statement, Expected MP_END "
+                                + "found: " + lookahead;
+                        Error();
+                }
+            default:
+                sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
+                        + "" + lookahead;
+                Error();
         }
     }
 
     public static void Statement_Seq() {
         // 31. Statement_Seq -> Statement Statement_Tail
-        if (stmntSeqMark == 0) {
-            stmntSeqMark = 1;
-//            returnToState = State.Statement_Seq;
-            Statement();
-        } else if (stmntSeqMark == 1) {
-            stmntSeqMark = 0;
-            Statement_Tail();
-        }
+        Statement();
+        Statement_Tail();
     }
 
     public static void Statement_Tail() {
         // 32. Statement_Tail -> MP_SCOLON Statement Statement_Tail
         // 33. Statement_Tail -> MP_EMPTY
-        if (lookahead.equals("MP_SCOLON")) {
-            index += 4;
-            Statement();
-//            returnToState = State.Statement_Tail;
-        } else //empty statement
-        {
-            Compound_Statement();
+        G_Check = Match("MP_SCOLON");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                Statement();
+                Statement_Tail();
+            default:
+                potentialError = "Statement_Tail, Treated as Empty";
         }
-
     }
 
     public static void Statement() {
@@ -477,42 +531,72 @@ public class parser {
         // 35. Statement -> Compound_Statement
         if (lookahead.equals("MP_BEGIN")) {
             Compound_Statement();
-        } // 36. Statement -> Read_Statement
+        } 
+        // 36. Statement -> Read_Statement
         else if (lookahead.equals("MP_READ")) {
             Read_Statement();
-        } // 37. Statement -> Write_Statement
+        } 
+        // 37. Statement -> Write_Statement
         else if (lookahead.equals("MP_WRITE") || lookahead.equals("MP_WRITELN")) {
             Write_Statement();
-        } // 38. Statement -> Assign_Statement
+        } 
+        // 38. Statement -> Assign_Statement
         else if (lookahead.equals("MP_ASSIGN")) {
             Assign_Statement();
-        } // 39. Statement -> If_Statement
+        } 
+        // 39. Statement -> If_Statement
         else if (lookahead.equals("MP_IF")) {
             If_Statement();
-        } // 40. Statement -> While_Statement
+        } 
+        // 40. Statement -> While_Statement
         else if (lookahead.equals("MP_WHILE")) {
             While_Statement();
-        } // 41. Statement -> Repeat_Statement
+        } 
+        // 41. Statement -> Repeat_Statement
         else if (lookahead.equals("MP_REPEAT")) {
             Repeat_Statement();
-        } // 42. Statement -> For_Statement
+        } 
+        // 42. Statement -> For_Statement
         else if (lookahead.equals("MP_FOR")) {
             For_Statement();
-        } // 43. Statement -> Procedure_Statement
+        } 
+        // 43. Statement -> Procedure_Statement
         else if (lookahead.equals("MP_PROCEDURE")) {
             Proc_Statement();
-        } //post condition
+        } 
+        //post condition
         else {
-//            state = returnToState;
+            Empty_Statement();
         }
     }
 
     public static void Empty_Statement() {
         // 44. Empty_Statement -> MP_EMPTY
+        potentialError = "Statement, Treated as Empty";
     }
 
     public static void Read_Statement() {
         // 45. Read_Statement -> MP_READ_WORD MP_LPAREN Read_Param Read_Param_Tail MP_RPAREN
+        G_Check = Match("MP_READ");
+        switch(G_Check) {
+            case 1:
+                Advance_Pointer();
+                G_Check = Match("MP_LPAREN");
+                switch(G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Read_Param();
+                        Read_Param_Tail();
+                        G_Check = Match("MP_RPAREN");
+                        switch(G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                            default:
+                                sourceOfError = "Read_Statement, Expected "
+                                        + "MP_RPAREN found: ";
+                        }
+                }
+        }
     }
 
     public static void Read_Param_Tail() {
