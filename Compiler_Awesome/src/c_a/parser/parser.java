@@ -1064,7 +1064,7 @@ public class parser {
     public static void Opt_Relational_Part() {
         // 74. Opt_Relational_Part -> Relational_Op Simple_Expression
         // 75. Opt_Relational_Part -> MP_EMPTY
-        Relational_Op();
+         Relational_Op();
         Simple_Expression();
 
         //how to deal with epsilon here?????????????????????????????????????????
@@ -1516,15 +1516,17 @@ public class parser {
                         + "MP_COMMA found: " + lookAhead;
                 Error();
                 break;
-                //what to do with epsilon
+                //what to do with epsilon???????????????????????????????????????
         } //end case Comma
     }
 
     public static void Error() {
         // if found error enter this case
-        /* MONICA!!!!!!! */
+        /* MONICA!!!!!!! Make red and get formatted correctly!!!!!!!!!!!!!!!!!!!*/
         /* TODO LOGIC HERE FOR ERROR */
+        //Don't think we will want to terminate, in case multiple error messages
         String message = "Error in state: " + sourceOfError;
+        //System.out.println(message);
         Terminate(message);
     }
 
@@ -1534,6 +1536,7 @@ public class parser {
          * exit program 
          */
         done = true;
+        //think this is always printing error message - check into this
         System.out.println(message);
         System.exit(0);
     }
@@ -1550,4 +1553,4 @@ public class parser {
             return 0;
         }
     }
-}
+}       

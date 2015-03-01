@@ -85,7 +85,7 @@ public class Dispatcher {
 
     public static void handleToken(char item) throws IOException {
         boolean runOnQuote = false;
-        System.out.println("\nScanner Output\n");
+        //System.out.println("\nScanner Output\n");
 
         while (loop == true) {
             item = MPscanner.getNextToken();
