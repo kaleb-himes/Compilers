@@ -1125,14 +1125,14 @@ public class parser {
                                                         Error();
                                                         break;
                                                 } //end case NEqual
-                                            
+
                                             default:
                                                 sourceOfError = "Relational_Op, Expected "
                                                         + "MP_GEQUAL found: " + lookAhead;
                                                 Error();
                                                 break;
                                         } //end case GEqual
-                                    
+
                                     default:
                                         sourceOfError = "Relational_Op, Expected "
                                                 + "MP_LEQUAL found: " + lookAhead;
@@ -1197,27 +1197,76 @@ public class parser {
 
                     default:
                         sourceOfError = "Step_Val, Expected "
-                                + "MP_DOWNTO found: " + lookAhead;
+                                + "MP_MINUS found: " + lookAhead;
                         Error();
-                } //end case DownTo
-        } //end case To
+                        break;
+                } //end case Minus
+
+                sourceOfError = "Step_Val, Expected "
+                        + "MP_PLUS found: " + lookAhead;
+                Error();
+                break;
+        } //end case Plus
+        //what to do with epsilon???????????????????????????????????????????????
     }
 
-    //here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public static void Add_Op() {
         // 88. Add_Op -> MP_PLUS
         // 89. Add_Op -> MP_MINUS
         // 90. Add_Op -> MP_OR
 
+        G_Check = Match("MP_PLUS");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                break;
+
+            case 0:
+                G_Check = Match("MP_MINUS");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        break;
+
+                    case 0:
+                        G_Check = Match("MP_OR");
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                                break;
+
+                            default:
+                                sourceOfError = "Step_Val, Expected "
+                                        + "MP_OR found: " + lookAhead;
+                                Error();
+                                break;
+                        } //end case OR
+                    default:
+                        sourceOfError = "Step_Val, Expected "
+                                + "MP_MINUS found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case Minus 
+                sourceOfError = "Step_Val, Expected "
+                        + "MP_PLUS found: " + lookAhead;
+                Error();
+                break;
+        } //end case Plus
     }
 
     public static void Term() {
         // 91. Term -> Factor Factor_Tail
+        Factor();
+        Factor_Tail();
     }
 
     public static void Factor_Tail() {
         // 92. Factor_Tail -> Multiply_Op Factor Factor_Tail
         // 93. Factor_Tail -> MP_EMPTY
+        Multiply_Op();
+        Factor();
+        Factor_Tail();
+        //what to do with epsilon??????????????????????????????????????????????
     }
 
     public static void Multiply_Op() {
@@ -1226,6 +1275,75 @@ public class parser {
         // 96. Multiply_Op -> MP_DIV_WORD
         // 97. Multiply_Op -> MP_MOD_WORD
         // 98. Multiply_Op -> MP_AND_WORD
+        G_Check = Match("MP_TIMES");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                break;
+
+            case 0:
+                G_Check = Match("MP_FORWARD_SLASH");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        break;
+
+                    case 0:
+                        G_Check = Match("MP_DIV");
+
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                                break;
+
+                            case 0:
+                                G_Check = Match("MP_MOD");
+                                switch (G_Check) {
+                                    case 1:
+                                        Advance_Pointer();
+                                        break;
+
+                                    case 0:
+                                        G_Check = Match("MP_AND");
+                                        switch (G_Check) {
+                                            case 1:
+                                                Advance_Pointer();
+                                                break;
+
+                                            default:
+                                                sourceOfError = "Multiply_Op, Expected "
+                                                        + "MP_AND found: " + lookAhead;
+                                                Error();
+                                                break;
+                                        } //end case AND
+
+                                    default:
+                                        sourceOfError = "Step_Val, Expected "
+                                                + "MP_MOD found: " + lookAhead;
+                                        Error();
+                                        break;
+                                } //end case Mod
+
+                            default:
+                                sourceOfError = "Step_Val, Expected "
+                                        + "MP_DIV found: " + lookAhead;
+                                Error();
+                                break;
+                        } //end case Div
+
+                    default:
+                        sourceOfError = "Step_Val, Expected "
+                                + "MP_FORWARD_SLASH found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case ForwardSlash
+
+            default:
+                sourceOfError = "Step_Val, Expected "
+                        + "M switch (lookAhead) {P_TIMES found: " + lookAhead;
+                Error();
+                break;
+        } //end case Times
     }
 
     public static void Factor() {
@@ -1237,44 +1355,115 @@ public class parser {
         // 104. Factor -> MP_NOT_WORD Factor
         // 105. Factor -> MP_LPAREN Expression MP_RPAREN
         // 106. Factor -> Func_Id Opt_Actual_Param_List
+        switch (lookAhead) {
+            case "MP_INTEGER":
+                G_Check = Match("MP_INTEGER");
+                Advance_Pointer();
+                break;
+
+            case "MP_FLOAT":
+                G_Check = Match("MP_FLOAT");
+                Advance_Pointer();
+                break;
+
+            case "MP_STRING_LIT":
+                G_Check = Match("MP_STRING_LIT");
+                Advance_Pointer();
+                break;
+
+            case "MP_TRUE":
+                G_Check = Match("MP_TRUE");
+                Advance_Pointer();
+                break;
+
+            case "MP_FALSE":
+                G_Check = Match("MP_FALSE");
+                Advance_Pointer();
+                break;
+
+            case "MP_NOT":
+                G_Check = Match("MP_NOT");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Factor();
+                        break;
+
+                    default:
+                        sourceOfError = "Factor, Expected "
+                                + "MP_NOT found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case Not
+
+            case "(":
+                G_Check = Match("MP_LPAREN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Expression();
+                        G_Check = Match("MP_RPAREN");
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                                break;
+
+                            default:
+                                sourceOfError = "Factor, Expected "
+                                        + "MP_RPAREN found: " + lookAhead;
+                                Error();
+                                break;
+                        } //end RParen
+
+                    default:
+                        sourceOfError = "Factor, Expected "
+                                + "MP_LPAREN found: " + lookAhead;
+                        Error();
+                        break;
+                } //end LParen
+
+            default:
+                Function_Id();
+                Opt_Actual_Param_List();
+
+                //if not here, where to put error case?
+                // sourceOfError = "Factor, Expected "
+                //         + "INTEGER, FLOAT, STRING, TRUE or FALSE found: " + lookAhead;
+                // Error();
+                break;
+        } //the rest of the default cases
+
     }
 
     public static void Prog_Id() {
         // 107. Prog_Id -> MP_IDENTIFIER
         //precondition
-        switch (lookAhead) {
-            case "MP_IDENTIFIER":
-                index += 4;
-                Get_Lookahead();
-                Program();
-            default:
-                sourceOfError = "Prog_Id";
-                Error();
-        }
+        G_Check = Match("MP_IDENTIFIER");
+        Advance_Pointer();
+        //add error cases???????????????????????????????????????????????????????
     }
 
     public static void Var_Id() {
         // 108. Var_Id -> MP_IDENTIFIER
+        G_Check = Match("MP_IDENTIFIER");
+        Advance_Pointer();
     }
 
     public static void Proc_Id() {
         // 109. Proc_Id -> MP_IDENTIFIER
-        if (lookAhead.equals("MP_IDENTIFIER")) {
-            procIdFound = 1;
-            index += 4;
-            Proc_Head();
-        } else {
-            sourceOfError = "Proc_Id, no identifier found";
-            Error();
-        }
+        G_Check = Match("MP_IDENTIFIER");
+        Advance_Pointer();
     }
 
     public static void Function_Id() {
         // 110. Function_Id -> MP_IDENTIFIER
+        G_Check = Match("MP_IDENTIFIER");
+        Advance_Pointer();
     }
 
     public static void Boolean_Expression() {
         // 111. Boolean_Expression -> Expression
+        Expression();
     }
 
     public static void Ordinal_Expression() {
@@ -1285,13 +1474,18 @@ public class parser {
     public static void Id_List() {
         // 113. Id_List -> MP_IDENTIFIER Id_Tail
         //precondition
-        if (lookAhead.equals("MP_IDENTIFIER")) {
-            index += 4;
-            Id_Tail();
-        } //postcondition
-        else {
-            sourceOfError = "Id_List";
-            Error();
+        G_Check = Match("MP_IDENTIFIER");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Id_Tail();
+                break;
+
+            default:
+                sourceOfError = "Id_List, Expected "
+                        + "MP_IDENTIFIER found: " + lookAhead;
+                Error();
+                break;
         }
     }
 
@@ -1299,20 +1493,31 @@ public class parser {
         // 114. Id_Tail -> MP_COMMA MP_IDENTIFIER Id_Tail
         // 115. Id_Tail -> MP_EMPTY
         //precondition
-        if (lookAhead.equals("MP_COMMA")) {
-            index += 4;
-            lookAhead = parseTokens.get(index);
-            if (lookAhead.equals("MP_IDENTIFIER")) {
-                index += 4;
-                Id_Tail();
-            } else {
-                sourceOfError = "Id_Tail, no ID following comma";
+        G_Check = Match("MP_COMMA");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                G_Check = Match("MP_IDENTIFIER");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Id_Tail();
+                        break;
+
+                    default:
+                        sourceOfError = "Id_Tail, Expected "
+                                + "MP_IDENTIFIER found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case Identifier
+
+            default:
+                sourceOfError = "Id_Tail, Expected "
+                        + "MP_COMMA found: " + lookAhead;
                 Error();
-            }
-        } //postcondition
-        else {
-//            state = returnToState;
-        }
+                break;
+                //what to do with epsilon
+        } //end case Comma
     }
 
     public static void Error() {
