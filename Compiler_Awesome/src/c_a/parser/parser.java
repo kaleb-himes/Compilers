@@ -94,6 +94,7 @@ public class parser {
         simpExpMark = 0;
         procIdFound = 0;
         frmlParamState = 0;
+
 //        Sys_Goal;
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
@@ -117,6 +118,7 @@ public class parser {
 
         /* kick off our parse with a lookahead set then call Sys_Goal */
         Get_Lookahead();
+
         Sys_Goal();
     }
 
@@ -150,8 +152,11 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Terminate("Program parsed successfully, found MP_EOF");
+                break;
+
             default:
                 sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookAhead;
+                break;
         }
 //                    System.out.println("Parser Default");
     }
@@ -166,19 +171,25 @@ public class parser {
                 Advance_Pointer();
                 Block();
                 G_Check = Match("MP_PERIOD");
+                //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 0:
                         sourceOfError = "Prog_Head, Expected MP_PERIOD found:"
                                 + " " + lookAhead;
                         Error();
+                        break;
+
                     default:
                         Advance_Pointer();
                         Sys_Goal();
+                        break;
                 }
+
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: "
                         + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -190,9 +201,13 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Prog_Id();
+                break;
+
             default:
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
                         + " " + lookAhead;
+                Error();
+                break;
         }
 
     }
@@ -216,16 +231,22 @@ public class parser {
                 Advance_Pointer();
                 Var_Dec();
                 G_Check = Match("MP_SCOLON");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Var_Dec_Tail();
+                        break;
+
                     default:
                         sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
                                 + "found:  " + lookAhead;
+                        break;
                 }
+
             default:
                 potentialError = "Var_Dec_Part, treated as empty";
+                break;
         }
     }
 
@@ -239,8 +260,11 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Var_Dec_Tail();
+                break;
+
             default:
                 potentialError = "Var_Dec_Tail, treated as empty";
+                break;
         }
     }
 
@@ -253,13 +277,17 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Type();
+                break;
+
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
+    //Not sure this will work as expected???????????????????????????????????????
     public static void Type() {
         // 10. Type -> MP_INTEGER_WORD
         // 11. Type -> MP_FLOAT_WORD
@@ -270,6 +298,7 @@ public class parser {
         switch (G_Check) {
             case 0:
                 G_Check = Match("MP_FLOAT");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 0:
                         G_Check = Match("MP_STRING_LIT");
@@ -297,11 +326,16 @@ public class parser {
             case "MP_PROCEDURE":
                 Proc_Dec();
                 Proc_Func_Dec_Part();
+                break;
+
             case "MP_FUNCTION":
                 Func_Dec();
                 Proc_Func_Dec_Part();
+                break;
+
             default:
-            /* Do Nothing */
+                /* Do Nothing */
+                break;
         }
     }
 
@@ -315,18 +349,24 @@ public class parser {
                 Advance_Pointer();
                 Block();
                 G_Check = Match("MP_SCOLON");
+                //we do want to fall through here, to evaluate second G_Check                
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        break;
+
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
                         Error();
+                        break;
                 }
+
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -339,18 +379,24 @@ public class parser {
                 Advance_Pointer();
                 Block();
                 G_Check = Match("MP_SCOLON");
+                //we do want to fall through here, to evaluate second G_Check                 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        break;
+
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
                         Error();
+                        break;
                 }
+
             default:
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -362,10 +408,13 @@ public class parser {
                 Advance_Pointer();
                 Proc_Id();
                 Opt_Formal_Param_List();
+                break;
+
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
                         + " " + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -377,10 +426,13 @@ public class parser {
                 Advance_Pointer();
                 Function_Id();
                 Opt_Formal_Param_List();
+                break;
+
             default:
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -395,17 +447,24 @@ public class parser {
                 Formal_Param_Sec();
                 Formal_Param_Sec_Tail();
                 G_Check = Match("MP_RPAREN");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        break;
+
                     default:
                         sourceOfError = "Opt_Formal_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
+                        Error();
+                        break;
                 }
+
             default:
                 sourceOfError = "Opt_Formal_Param_List, Expected MP_LPAREN "
                         + "found: " + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -419,8 +478,11 @@ public class parser {
                 Advance_Pointer();
                 Formal_Param_Sec();
                 Formal_Param_Sec_Tail();
+                break;
+
             default:
                 potentialError = "Formal_Param_Sec_Tail, Treated as Empty";
+                break;
         }
     }
 
@@ -430,8 +492,12 @@ public class parser {
         switch (lookAhead) {
             case "MP_VAR":
                 Var_Param_Sec();
+                break;
+
             case "MP_IDENTIFIER":
                 Val_Param_Sec();
+                break;
+
             default:
                 potentialError = "Formal_Param_Sec, something happened here, "
                         + "check your logic.";
@@ -446,9 +512,12 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Type();
+                break;
+
             default:
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
                         + "" + lookAhead;
+                break;
         }
     }
 
@@ -460,19 +529,25 @@ public class parser {
                 Advance_Pointer();
                 Id_List();
                 G_Check = Match("MP_COLON");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Type();
+                        break;
+
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
                                 + ": " + lookAhead;
                         Error();
+                        break;
                 }
+
             default:
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -489,18 +564,23 @@ public class parser {
                 Advance_Pointer();
                 Statement_Seq();
                 G_Check = Match("MP_END");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        break;
+
                     default:
                         sourceOfError = "Compound_Statement, Expected MP_END "
                                 + "found: " + lookAhead;
                         Error();
+                        break;
                 }
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
                 Error();
+                break;
         }
     }
 
@@ -519,8 +599,11 @@ public class parser {
                 Advance_Pointer();
                 Statement();
                 Statement_Tail();
+                break;
+
             default:
                 potentialError = "Statement_Tail, Treated as Empty";
+                break;
         }
     }
 
@@ -580,22 +663,30 @@ public class parser {
                         Read_Param();
                         Read_Param_Tail();
                         G_Check = Match("MP_RPAREN");
+                        //we do want to fall through here, to evaluate second G_Check 
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
+                                break;
+
                             default:
                                 sourceOfError = "Read_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
                                 Error();
+                                break;
                         } //end case for R_PAREN
+
                     default:
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for LPAREN
+
             default:
                 sourceOfError = "Read_Statement, Expected "
                         + "MP_READ found: " + lookAhead;
+                break;
         } //end case for READ
     }
 
@@ -608,8 +699,11 @@ public class parser {
                 Advance_Pointer();
                 Read_Param();
                 Read_Param_Tail();
+                break;
+
             default:
                 potentialError = "Read_Param_Tail, Treated as Empty";
+                break;
         }
 
     }
@@ -629,31 +723,38 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 G_Check = Match("MP_LPAREN");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Write_Param();
                         Write_Param_Tail();
                         G_Check = Match("MP_RPAREN");
+                        //we do want to fall through here, to evaluate third G_Check 
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
+                                break;
 
                             default:
                                 sourceOfError = "Write_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
                                 Error();
+                                break;
                         } //end case for RParen
 
                     default:
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for LParen
+
             default:
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
                 Error();
+                break;
         } //end case for MP_WRITE
     }
 
@@ -666,8 +767,11 @@ public class parser {
                 Advance_Pointer();
                 Write_Param();
                 Write_Param_Tail();
+                break;
+
             default:
                 potentialError = "Write_Param_Tail, Treated as Empty";
+                break;
         } //end case for Comma   
     }
 
@@ -686,10 +790,13 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Expression();
+                break;
+
             default:
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
                 Error();
+                break;
         } //end case for Assign
     }
 
@@ -701,21 +808,26 @@ public class parser {
                 Advance_Pointer();
                 Boolean_Expression();
                 G_Check = Match("MP_THEN");
+                //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Statement();
                         Opt_Else_Part();
+                        break;
 
                     default:
                         sourceOfError = "If_Statement, Expected "
                                 + "MP_THEN found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for Then
+
             default:
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
                 Error();
+                break;
         } //end case for If
     }
 
@@ -727,9 +839,11 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Statement();
+                break;
 
             default:
                 potentialError = "Opt_Else_Part, Treated as Empty";
+                break;
         } //end case for else
     }
 
@@ -741,19 +855,25 @@ public class parser {
                 Advance_Pointer();
                 Statement_Seq();
                 G_Check = Match("MP_UNTIL");
+                //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Boolean_Expression();
+                        break;
+
                     default:
                         sourceOfError = "Repeat_Statement, Expected "
                                 + "MP_UNTIL found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for Until
+
             default:
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
                 Error();
+                break;
         } //end case for Repeat
     }
 
@@ -765,20 +885,25 @@ public class parser {
                 Advance_Pointer();
                 Boolean_Expression();
                 G_Check = Match("MP_DO");
+                //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Statement();
+                        break;
 
                     default:
                         sourceOfError = "While_Statement, Expected "
                                 + "MP_DO found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for Do
+
             default:
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
                 Error();
+                break;
         } //end case for While
     }
 
@@ -790,6 +915,7 @@ public class parser {
                 Advance_Pointer();
                 Control_Var();
                 G_Check = Match("MP_ASSIGN");
+                //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
@@ -797,24 +923,32 @@ public class parser {
                         Step_Val();
                         Final_Val();
                         G_Check = Match("MP_DO");
+                        //we do want to fall through here, to evaluate third G_Check
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
                                 Statement();
+                                break;
+
                             default:
                                 sourceOfError = "For_Statement, Expected "
                                         + "MP_DO found: " + lookAhead;
                                 Error();
+                                break;
                         } //end case for Do
+
                     default:
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
                         Error();
+                        break;
                 } //end case for Assign
+
             default:
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
                 Error();
+                break;
         } //end case for For
     }
 
@@ -831,7 +965,32 @@ public class parser {
     public static void Step_Val() {
         // 64. Step_Val -> MP_TO_WORD
         // 65. Step_Val -> MP_DOWNTO_WORD
-        //what to do with termnals??????????????????????????????????????????????
+        G_Check = Match("MP_TO");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                break;
+
+            case 0:
+                G_Check = Match("MP_DOWNTO");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        break;
+
+                    default:
+                        sourceOfError = "Step_Val, Expected "
+                                + "MP_DOWNTO found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case DownTo
+
+            default:
+                sourceOfError = "Step_Val, Expected "
+                        + "MP_TO found: " + lookAhead;
+                Error();
+                break;
+        } //end case To
     }
 
     public static void Final_Val() {
@@ -855,17 +1014,22 @@ public class parser {
                 Actual_Param();
                 Actual_Param_Tail();
                 G_Check = Match("MP_RPAREN");
+                //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        break;
 
                     default:
                         sourceOfError = "Opt_Actual_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
                         Error();
+                        break;
                 } //end case RParen
+
             default:
                 potentialError = "Opt_Actual_Param_List, Treated as Empty";
+                break;
         }
     }
 
@@ -878,9 +1042,11 @@ public class parser {
                 Advance_Pointer();
                 Actual_Param();
                 Actual_Param_Tail();
+                break;
 
             default:
-                potentialError = "Actual_Param_List, Treated as Empty";                
+                potentialError = "Actual_Param_List, Treated as Empty";
+                break;
         }
     }
 
@@ -891,12 +1057,17 @@ public class parser {
 
     public static void Expression() {
         // 73. Expression -> Simple_Expression Opt_Relational_Part
-
+        Simple_Expression();
+        Opt_Relational_Part();
     }
 
     public static void Opt_Relational_Part() {
         // 74. Opt_Relational_Part -> Relational_Op Simple_Expression
         // 75. Opt_Relational_Part -> MP_EMPTY
+        Relational_Op();
+        Simple_Expression();
+
+        //how to deal with epsilon here?????????????????????????????????????????
     }
 
     public static void Relational_Op() {
@@ -906,37 +1077,138 @@ public class parser {
         // 79. Relational_Op -> MP_LEQUAL
         // 80. Relational_Op -> MP_GEQUAL
         // 81. Relational_Op -> MP_NEQUAL
+
+        G_Check = Match("MP_EQUAL");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                break;
+
+            case 0:
+                G_Check = Match("MP_LTHAN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        break;
+
+                    case 0:
+                        G_Check = Match("MP_GTHAN");
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                                break;
+
+                            case 0:
+                                G_Check = Match("MP_LEQUAL");
+                                switch (G_Check) {
+                                    case 1:
+                                        Advance_Pointer();
+                                        break;
+
+                                    case 0:
+                                        G_Check = Match("MP_GEQUAL");
+                                        switch (G_Check) {
+                                            case 1:
+                                                Advance_Pointer();
+                                                break;
+
+                                            case 0:
+                                                G_Check = Match("MP_NEQUAL");
+                                                switch (G_Check) {
+                                                    case 1:
+                                                        Advance_Pointer();
+                                                        break;
+
+                                                    default:
+                                                        sourceOfError = "Relational_Op, Expected "
+                                                                + "MP_NEQUAL found: " + lookAhead;
+                                                        Error();
+                                                        break;
+                                                } //end case NEqual
+                                            
+                                            default:
+                                                sourceOfError = "Relational_Op, Expected "
+                                                        + "MP_GEQUAL found: " + lookAhead;
+                                                Error();
+                                                break;
+                                        } //end case GEqual
+                                    
+                                    default:
+                                        sourceOfError = "Relational_Op, Expected "
+                                                + "MP_LEQUAL found: " + lookAhead;
+                                        Error();
+                                        break;
+                                } //end case LEqual
+
+                            default:
+                                sourceOfError = "Step_Val, Expected "
+                                        + "MP_GTHAN found: " + lookAhead;
+                                Error();
+                                break;
+                        } //end case GThan
+
+                    default:
+                        sourceOfError = "Step_Val, Expected "
+                                + "MP_LTHAN found: " + lookAhead;
+                        Error();
+                        break;
+                } //end case LThan
+
+            default:
+                sourceOfError = "Step_Val, Expected "
+                        + "MP_EQUAL found: " + lookAhead;
+                Error();
+                break;
+        } //end case Equal   
     }
 
     public static void Simple_Expression() {
         // 82. Simple_Expression -> Optional_Sign Term Term_Tail
-        if (simpExpMark == 0) {
-            simpExpMark = 1;
-            Optional_Sign();
-        } else if (simpExpMark == 1) {
-            simpExpMark = 2;
-            Term();
-        } else {
-            simpExpMark = 0;
-            Term_Tail();
-        }
+        Optional_Sign();
+        Term();
+        Term_Tail();
     }
 
     public static void Term_Tail() {
         // 83. Term_Tail -> Add_Op Term Term_Tail
         // 84. Term_Tail -> MP_EMPTY
+        Add_Op();
+        Term();
+        Term_Tail();
+        //how to deal with epsilon??????????????????????????????????????????????
     }
 
     public static void Optional_Sign() {
         // 85. Optional_Sign -> MP_PLUS
         // 86. Optional_Sign -> MP_MINUS
         // 87. Optional_Sign -> MP_EMPTY
+        G_Check = Match("MP_PLUS");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                break;
+
+            case 0:
+                G_Check = Match("MP_MINUS");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        break;
+
+                    default:
+                        sourceOfError = "Step_Val, Expected "
+                                + "MP_DOWNTO found: " + lookAhead;
+                        Error();
+                } //end case DownTo
+        } //end case To
     }
 
+    //here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public static void Add_Op() {
         // 88. Add_Op -> MP_PLUS
         // 89. Add_Op -> MP_MINUS
         // 90. Add_Op -> MP_OR
+
     }
 
     public static void Term() {
