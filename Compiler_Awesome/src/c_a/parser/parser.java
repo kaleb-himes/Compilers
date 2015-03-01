@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
 public class parser {
 
     static Boolean done = false;
-    static String lookahead = "";
+    static String lookAhead = "";
     static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
             expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
@@ -85,7 +85,7 @@ public class parser {
                 c_a.fileReader.file_reader.outLocation);
         parseTokens = new ArrayList<String>();
         String line = null;
-        lookahead = "";
+        lookAhead = "";
         index = 0;
         blockState = 1;
         sColonMark = 0;
@@ -123,17 +123,17 @@ public class parser {
     public static void Get_Lookahead() {
         /* Get Look Ahead */
         /* TODO LOGIC HERE FOR LOOK AHEAD */
-        lookahead = parseTokens.get(index);
+        lookAhead = parseTokens.get(index);
 
         //skipping over comments and strings.
-        if (lookahead.equals("MP_COMMENT")
-                || lookahead.equals("MP_STRING_LIT")) {
+        if (lookAhead.equals("MP_COMMENT")
+                || lookAhead.equals("MP_STRING_LIT")) {
             index += 3;
-            lookahead = parseTokens.get(index);
-            while (!lookahead.contains("MP_")) {
-                System.out.println("skipping: " + lookahead);
+            lookAhead = parseTokens.get(index);
+            while (!lookAhead.contains("MP_")) {
+                System.out.println("skipping: " + lookAhead);
                 index++;
-                lookahead = parseTokens.get(index);
+                lookAhead = parseTokens.get(index);
             }
         }
     }
@@ -151,7 +151,7 @@ public class parser {
             case 1:
                 Terminate("Program parsed successfully, found MP_EOF");
             default:
-                sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookahead;
+                sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookAhead;
         }
 //                    System.out.println("Parser Default");
     }
@@ -169,7 +169,7 @@ public class parser {
                 switch (G_Check) {
                     case 0:
                         sourceOfError = "Prog_Head, Expected MP_PERIOD found:"
-                                + " " + lookahead;
+                                + " " + lookAhead;
                         Error();
                     default:
                         Advance_Pointer();
@@ -177,7 +177,7 @@ public class parser {
                 }
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: "
-                        + lookahead;
+                        + lookAhead;
                 Error();
         }
     }
@@ -192,7 +192,7 @@ public class parser {
                 Prog_Id();
             default:
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
-                        + " " + lookahead;
+                        + " " + lookAhead;
         }
 
     }
@@ -222,7 +222,7 @@ public class parser {
                         Var_Dec_Tail();
                     default:
                         sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
-                                + "found:  " + lookahead;
+                                + "found:  " + lookAhead;
                 }
             default:
                 potentialError = "Var_Dec_Part, treated as empty";
@@ -255,7 +255,7 @@ public class parser {
                 Type();
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -281,7 +281,7 @@ public class parser {
                                         sourceOfError = "Type, Expected "
                                                 + "[MP_INTEGER | MP_FLOAT |"
                                                 + " MP_STRING_LIT | MP_BOOLEAN."
-                                                + " found: " + lookahead;
+                                                + " found: " + lookAhead;
                                 }
                         }
                 }
@@ -293,7 +293,7 @@ public class parser {
         // 15. Proc_Func_Dec_Part -> Func_Dec Proc_Func_Dec_Part 
         // 16. Proc_Func_Dec_Part -> MP_EMPTY
         //precondition
-        switch(lookahead) {
+        switch (lookAhead) {
             case "MP_PROCEDURE":
                 Proc_Dec();
                 Proc_Func_Dec_Part();
@@ -301,7 +301,7 @@ public class parser {
                 Func_Dec();
                 Proc_Func_Dec_Part();
             default:
-                /* Do Nothing */ 
+            /* Do Nothing */
         }
     }
 
@@ -310,22 +310,22 @@ public class parser {
         //precondition
         Proc_Head();
         G_Check = Match("MP_SCOLON");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Block();
                 G_Check = Match("MP_SCOLON");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
-                                + "" + lookahead;
+                                + "" + lookAhead;
                         Error();
                 }
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -334,22 +334,22 @@ public class parser {
         // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON
         Func_Head();
         G_Check = Match("MP_SCOLON");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Block();
                 G_Check = Match("MP_SCOLON");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
-                                + "" + lookahead;
+                                + "" + lookAhead;
                         Error();
                 }
             default:
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -357,14 +357,14 @@ public class parser {
     public static void Proc_Head() {
         // 19. Proc_Head -> MP_PROCEDURE Proc_Id Opt_Formal_Param_List
         G_Check = Match("MP_PROCEDURE");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Proc_Id();
                 Opt_Formal_Param_List();
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
-                        + " " + lookahead;
+                        + " " + lookAhead;
                 Error();
         }
     }
@@ -372,14 +372,14 @@ public class parser {
     public static void Func_Head() {
         // 20. Func_Head -> MP_FUNCTION Function_Id Opt_Formal_Param_List
         G_Check = Match("MP_FUNCTION");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Function_Id();
                 Opt_Formal_Param_List();
             default:
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -389,22 +389,22 @@ public class parser {
         // 22. Opt_Formal_Param_List -> MP_EMPTY
         //precondition
         G_Check = Match("MP_LPAREN");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Formal_Param_Sec();
                 Formal_Param_Sec_Tail();
                 G_Check = Match("MP_RPAREN");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                     default:
                         sourceOfError = "Opt_Formal_Param_List, Expected "
-                                + "MP_RPAREN found: " + lookahead;
+                                + "MP_RPAREN found: " + lookAhead;
                 }
             default:
                 sourceOfError = "Opt_Formal_Param_List, Expected MP_LPAREN "
-                        + "found: " + lookahead;
+                        + "found: " + lookAhead;
                 Error();
         }
     }
@@ -414,7 +414,7 @@ public class parser {
         // 24. Formal_Param_Sec_Tail -> MP_EMPTY
         //precondition
         G_Check = Match("MP_SCOLON");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Formal_Param_Sec();
@@ -427,7 +427,7 @@ public class parser {
     public static void Formal_Param_Sec() {
         // 25. Formal_Param_Sec -> Val_Param_Sec
         // 26. Formal_Param_Sec -> Var_Param_Sec
-        switch(lookahead) {
+        switch (lookAhead) {
             case "MP_VAR":
                 Var_Param_Sec();
             case "MP_IDENTIFIER":
@@ -442,36 +442,36 @@ public class parser {
         // 27. Val_Param_Sec -> Id_List MP_COLON Type
         Id_List();
         G_Check = Match("MP_COLON");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Type();
             default:
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
         }
     }
 
     public static void Var_Param_Sec() {
         // 28. Var_Param_Sec -> MP_VAR Id_List MP_COLON Type
         G_Check = Match("MP_VAR");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Id_List();
                 G_Check = Match("MP_COLON");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Type();
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
-                                + ": " + lookahead;
+                                + ": " + lookAhead;
                         Error();
                 }
             default:
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -484,22 +484,22 @@ public class parser {
     public static void Compound_Statement() {
         // 30. Compound_Statement -> MP_BEGIN Statement_Seq MP_END
         G_Check = Match("MP_BEGIN");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Statement_Seq();
                 G_Check = Match("MP_END");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                     default:
                         sourceOfError = "Compound_Statement, Expected MP_END "
-                                + "found: " + lookahead;
+                                + "found: " + lookAhead;
                         Error();
                 }
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
-                        + "" + lookahead;
+                        + "" + lookAhead;
                 Error();
         }
     }
@@ -514,7 +514,7 @@ public class parser {
         // 32. Statement_Tail -> MP_SCOLON Statement Statement_Tail
         // 33. Statement_Tail -> MP_EMPTY
         G_Check = Match("MP_SCOLON");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 Statement();
@@ -529,47 +529,39 @@ public class parser {
 //                    System.out.println("LOOKAHEAD = " + lookahead);
         // 34. Statement -> Empty_Statement (post condition)
         // 35. Statement -> Compound_Statement
-        if (lookahead.equals("MP_BEGIN")) {
+        if (lookAhead.equals("MP_BEGIN")) {
             Compound_Statement();
-        } 
-        // 36. Statement -> Read_Statement
-        else if (lookahead.equals("MP_READ")) {
+        } // 36. Statement -> Read_Statement
+        else if (lookAhead.equals("MP_READ")) {
             Read_Statement();
-        } 
-        // 37. Statement -> Write_Statement
-        else if (lookahead.equals("MP_WRITE") || lookahead.equals("MP_WRITELN")) {
+        } // 37. Statement -> Write_Statement
+        else if (lookAhead.equals("MP_WRITE") || lookAhead.equals("MP_WRITELN")) {
             Write_Statement();
-        } 
-        // 38. Statement -> Assign_Statement
-        else if (lookahead.equals("MP_ASSIGN")) {
+        } // 38. Statement -> Assign_Statement
+        else if (lookAhead.equals("MP_ASSIGN")) {
             Assign_Statement();
-        } 
-        // 39. Statement -> If_Statement
-        else if (lookahead.equals("MP_IF")) {
+        } // 39. Statement -> If_Statement
+        else if (lookAhead.equals("MP_IF")) {
             If_Statement();
-        } 
-        // 40. Statement -> While_Statement
-        else if (lookahead.equals("MP_WHILE")) {
+        } // 40. Statement -> While_Statement
+        else if (lookAhead.equals("MP_WHILE")) {
             While_Statement();
-        } 
-        // 41. Statement -> Repeat_Statement
-        else if (lookahead.equals("MP_REPEAT")) {
+        } // 41. Statement -> Repeat_Statement
+        else if (lookAhead.equals("MP_REPEAT")) {
             Repeat_Statement();
-        } 
-        // 42. Statement -> For_Statement
-        else if (lookahead.equals("MP_FOR")) {
+        } // 42. Statement -> For_Statement
+        else if (lookAhead.equals("MP_FOR")) {
             For_Statement();
-        } 
-        // 43. Statement -> Procedure_Statement
-        else if (lookahead.equals("MP_PROCEDURE")) {
+        } // 43. Statement -> Procedure_Statement
+        else if (lookAhead.equals("MP_PROCEDURE")) {
             Proc_Statement();
-        } 
-        //post condition
+        } //post condition
         else {
             Empty_Statement();
         }
     }
 
+    //Monica started here writing rules
     public static void Empty_Statement() {
         // 44. Empty_Statement -> MP_EMPTY
         potentialError = "Statement, Treated as Empty";
@@ -578,81 +570,105 @@ public class parser {
     public static void Read_Statement() {
         // 45. Read_Statement -> MP_READ_WORD MP_LPAREN Read_Param Read_Param_Tail MP_RPAREN
         G_Check = Match("MP_READ");
-        switch(G_Check) {
+        switch (G_Check) {
             case 1:
                 Advance_Pointer();
                 G_Check = Match("MP_LPAREN");
-                switch(G_Check) {
+                switch (G_Check) {
                     case 1:
                         Advance_Pointer();
                         Read_Param();
                         Read_Param_Tail();
                         G_Check = Match("MP_RPAREN");
-                        switch(G_Check) {
+                        switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
                             default:
                                 sourceOfError = "Read_Statement, Expected "
-                                        + "MP_RPAREN found: ";
-                        }
-                }
-        }
+                                        + "MP_RPAREN found: " + lookAhead;
+                                Error();
+                        } //end case for R_PAREN
+                    default:
+                        sourceOfError = "Read_Statement, Expected "
+                                + "MP_LPAREN found: " + lookAhead;
+                        Error();
+                } //end case for LPAREN
+            default:
+                sourceOfError = "Read_Statement, Expected "
+                        + "MP_READ found: " + lookAhead;
+        } //end case for READ
     }
 
     public static void Read_Param_Tail() {
         // 46. Read_Param_Tail -> MP_COMMA Read_Param Read_Param_Tail
         // 47. Read_Param_Tail -> MP_EMPTY
-    }
-
-    public static void Read_Param() {
-        // 48. Read_Param -> Var_Id
-    }
-
-    public static void Write_Statement() {
-        // 49. Write_Statement -> MP_WRITE_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
-        if (lookahead.equals("MP_WRITE")) {
-            index += 4;
-            lookahead = parseTokens.get(index);
-
-            if (lookahead.equals("MP_LPAREN")) {
-                index += 4;
-//                returnToState = State.Write_Statement;
-                Write_Param();
-            } else if (lookahead.equals("MP_RPAREN")) {
-                index += 4;
-            } else if (!lookahead.equals("MP_WRITE")
-                    && !lookahead.equals("MP_LPAREN")
-                    && !lookahead.equals("MP_RPAREN")) {
-                Write_Param_Tail();
-            }
-        } else if (lookahead.equals("MP_WRITELN")) {
-            // 50. Write_Statement -> MP_WRITELN_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
-            index += 4;
-            lookahead = parseTokens.get(index);
-            System.out.println("LOOKAHEAD: " + lookahead);
-            if (lookahead.equals("MP_LPAREN")) {
-                index += 4;
-//                returnToState = State.Write_Statement;
-                Write_Param();
-            } else if (lookahead.equals("MP_RPAREN")) {
-                index += 4;
-            } else if (!lookahead.equals("MP_WRITE")
-                    && !lookahead.equals("MP_LPAREN")
-                    && !lookahead.equals("MP_RPAREN")) {
-                Write_Param_Tail();
-            }
-        } else {
-            sourceOfError = "Write_Statement, something went wrong.\n"
-                    + "<usage> [WRITE | WRITELN] (Write_Param Write_Param_Tail)";
-            Error();
+        G_Check = Match("MP_COMMA");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Read_Param();
+                Read_Param_Tail();
+            default:
+                potentialError = "Read_Param_Tail, Treated as Empty";
         }
 
     }
 
+    public static void Read_Param() {
+        // 48. Read_Param -> Var_Id
+        Var_Id();
+    }
+
+    public static void Write_Statement() {
+        // 49. Write_Statement -> MP_WRITE_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
+        G_Check = Match("MP_WRITE");
+        if (G_Check == 0) {
+            G_Check = Match("MP_WRITE_LN");
+        }
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                G_Check = Match("MP_LPAREN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Write_Param();
+                        Write_Param_Tail();
+                        G_Check = Match("MP_RPAREN");
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+
+                            default:
+                                sourceOfError = "Write_Statement, Expected "
+                                        + "MP_RPAREN found: " + lookAhead;
+                                Error();
+                        } //end case for RParen
+
+                    default:
+                        sourceOfError = "Write_Statement, Expected "
+                                + "MP_LPAREN found: " + lookAhead;
+                        Error();
+                } //end case for LParen
+            default:
+                sourceOfError = "Write_Statement, Expected "
+                        + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
+                Error();
+        } //end case for MP_WRITE
+    }
+
     public static void Write_Param_Tail() {
-        Terminate("default exit, parser not yet complete");
         // 51. Write_Param_Tail -> MP_COMMA Write_Param Write_Param_Tail
         // 52. Write_Param_Tail -> MP_EMPTY
+        G_Check = Match("MP_COMMA");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Write_Param();
+                Write_Param_Tail();
+            default:
+                potentialError = "Write_Param_Tail, Treated as Empty";
+        } //end case for Comma   
     }
 
     public static void Write_Param() {
@@ -663,21 +679,84 @@ public class parser {
     public static void Assign_Statement() {
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
+        //THIS CAN LEAD EITHER TO A VAR OR FUNC_ID, WILL NEED TO SEP LATER??????
+        Var_Id();
+        G_Check = Match("MP_ASSIGN");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Expression();
+            default:
+                sourceOfError = "Assign_Statement, Expected "
+                        + "MP_ASSIGN found: " + lookAhead;
+                Error();
+        } //end case for Assign
     }
 
     public static void If_Statement() {
         // 56. If_Statement -> MP_IF_WORD Boolean_Expression MP_THEN Statement Opt_Else_Part
+        G_Check = Match("MP_IF");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Boolean_Expression();
+                G_Check = Match("MP_THEN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Statement();
+                        Opt_Else_Part();
+
+                    default:
+                        sourceOfError = "If_Statement, Expected "
+                                + "MP_THEN found: " + lookAhead;
+                        Error();
+                } //end case for Then
+            default:
+                sourceOfError = "If_Statement, Expected "
+                        + "MP_IF found: " + lookAhead;
+                Error();
+        } //end case for If
     }
 
     public static void Opt_Else_Part() {
         // 57. Opt_Else_Part -> MP_ELSE_WORD Statement
         // 58. Opt_Else_Part -> MP_EMPTY
+        G_Check = Match("MP_ELSE");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Statement();
+
+            default:
+                potentialError = "Opt_Else_Part, Treated as Empty";
+        } //end case for else
     }
 
     public static void Repeat_Statement() {
         // 59. Repeat_Statement -> MP_REPEAT_WORD Statement_Seq MP_UNTIL Boolean_Expression
+        G_Check = Match("MP_REPEAT");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Statement_Seq();
+                G_Check = Match("MP_UNTIL");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Boolean_Expression();
+                    default:
+                        sourceOfError = "Repeat_Statement, Expected "
+                                + "MP_UNTIL found: " + lookAhead;
+                        Error();
+                } //end case for Until
+            default:
+                sourceOfError = "Repeat_Statement, Expected "
+                        + "MP_REPEAT found: " + lookAhead;
+                Error();
+        } //end case for Repeat
     }
-
+//to here!!!!!!!!!!!!!!!!!!!111
     public static void While_Statement() {
         // 60. While_Statement -> MP_WHILE_WORD Boolean_Expression MP_DO Statement
     }
@@ -808,7 +887,7 @@ public class parser {
     public static void Prog_Id() {
         // 107. Prog_Id -> MP_IDENTIFIER
         //precondition
-        switch (lookahead) {
+        switch (lookAhead) {
             case "MP_IDENTIFIER":
                 index += 4;
                 Get_Lookahead();
@@ -825,7 +904,7 @@ public class parser {
 
     public static void Proc_Id() {
         // 109. Proc_Id -> MP_IDENTIFIER
-        if (lookahead.equals("MP_IDENTIFIER")) {
+        if (lookAhead.equals("MP_IDENTIFIER")) {
             procIdFound = 1;
             index += 4;
             Proc_Head();
@@ -851,7 +930,7 @@ public class parser {
     public static void Id_List() {
         // 113. Id_List -> MP_IDENTIFIER Id_Tail
         //precondition
-        if (lookahead.equals("MP_IDENTIFIER")) {
+        if (lookAhead.equals("MP_IDENTIFIER")) {
             index += 4;
             Id_Tail();
         } //postcondition
@@ -865,10 +944,10 @@ public class parser {
         // 114. Id_Tail -> MP_COMMA MP_IDENTIFIER Id_Tail
         // 115. Id_Tail -> MP_EMPTY
         //precondition
-        if (lookahead.equals("MP_COMMA")) {
+        if (lookAhead.equals("MP_COMMA")) {
             index += 4;
-            lookahead = parseTokens.get(index);
-            if (lookahead.equals("MP_IDENTIFIER")) {
+            lookAhead = parseTokens.get(index);
+            if (lookAhead.equals("MP_IDENTIFIER")) {
                 index += 4;
                 Id_Tail();
             } else {
@@ -905,7 +984,7 @@ public class parser {
      */
 
     public static Integer Match(String in) {
-        if (in.equals(lookahead)) {
+        if (in.equals(lookAhead)) {
             return 1;
         } else {
             return 0;
