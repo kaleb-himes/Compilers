@@ -756,59 +756,142 @@ public class parser {
                 Error();
         } //end case for Repeat
     }
-//to here!!!!!!!!!!!!!!!!!!!111
+
     public static void While_Statement() {
         // 60. While_Statement -> MP_WHILE_WORD Boolean_Expression MP_DO Statement
+        G_Check = Match("MP_WHILE");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Boolean_Expression();
+                G_Check = Match("MP_DO");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Statement();
+
+                    default:
+                        sourceOfError = "While_Statement, Expected "
+                                + "MP_DO found: " + lookAhead;
+                        Error();
+                } //end case for Do
+            default:
+                sourceOfError = "While_Statement, Expected "
+                        + "MP_WHILE found: " + lookAhead;
+                Error();
+        } //end case for While
     }
 
     public static void For_Statement() {
         // 61. For_Statement -> MP_FOR_WORD Control_Var MP_ASSIGN Init_Val Step_Val Final_Val MP_DO Statement
+        G_Check = Match("MP_FOR");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Control_Var();
+                G_Check = Match("MP_ASSIGN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+                        Init_Val();
+                        Step_Val();
+                        Final_Val();
+                        G_Check = Match("MP_DO");
+                        switch (G_Check) {
+                            case 1:
+                                Advance_Pointer();
+                                Statement();
+                            default:
+                                sourceOfError = "For_Statement, Expected "
+                                        + "MP_DO found: " + lookAhead;
+                                Error();
+                        } //end case for Do
+                    default:
+                        sourceOfError = "For_Statement, Expected "
+                                + "MP_ASSIGN found: " + lookAhead;
+                        Error();
+                } //end case for Assign
+            default:
+                sourceOfError = "For_Statement, Expected "
+                        + "MP_FOR found: " + lookAhead;
+                Error();
+        } //end case for For
     }
 
     public static void Control_Var() {
         // 62. Control_Var -> Var_Id
+        Var_Id();
     }
 
     public static void Init_Val() {
         // 63. Init_Val -> Ordinal_Expression
+        Ordinal_Expression();
     }
 
     public static void Step_Val() {
         // 64. Step_Val -> MP_TO_WORD
         // 65. Step_Val -> MP_DOWNTO_WORD
+        //what to do with termnals??????????????????????????????????????????????
     }
 
     public static void Final_Val() {
         // 66. Final_Val -> Ordinal_Expression
+        Ordinal_Expression();
     }
 
     public static void Proc_Statement() {
         // 67. Proc_Statement -> Proc_Id Opt_Actual_Param_List
+        Proc_Id();
+        Opt_Actual_Param_List();
     }
 
     public static void Opt_Actual_Param_List() {
         // 68. Opt_Actual_Param_List -> MP_LPAREN Actual_Param Actual_Param_Tail MP_RPAREN
         // 69. Opt_Actual_Param_List -> MP_EMPTY
+        G_Check = Match("MP_LPAREN");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Actual_Param();
+                Actual_Param_Tail();
+                G_Check = Match("MP_RPAREN");
+                switch (G_Check) {
+                    case 1:
+                        Advance_Pointer();
+
+                    default:
+                        sourceOfError = "Opt_Actual_Param_List, Expected "
+                                + "MP_RPAREN found: " + lookAhead;
+                        Error();
+                } //end case RParen
+            default:
+                potentialError = "Opt_Actual_Param_List, Treated as Empty";
+        }
     }
 
     public static void Actual_Param_Tail() {
         // 70. Actual_Param_Tail -> MP_COMMA Actual_Param Actual_Param_Tail
         // 71. Actual_Param_Tail -> MP_EMPTY
+        G_Check = Match("MP_COMMA");
+        switch (G_Check) {
+            case 1:
+                Advance_Pointer();
+                Actual_Param();
+                Actual_Param_Tail();
+
+            default:
+                potentialError = "Actual_Param_List, Treated as Empty";                
+        }
     }
 
     public static void Actual_Param() {
         // 72. Actual_Param -> Ordinal_Expression
+        Ordinal_Expression();
     }
 
     public static void Expression() {
         // 73. Expression -> Simple_Expression Opt_Relational_Part
-        if (expMark == 0) {
-            expMark = 1;
-            Simple_Expression();
-        } else {
-            expMark = 0;
-            Opt_Relational_Part();
-        }
+
     }
 
     public static void Opt_Relational_Part() {
