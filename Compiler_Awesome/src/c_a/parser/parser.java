@@ -51,7 +51,8 @@ public class parser {
     static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
             expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
-    static String sourceOfError, potentialError;
+    static String sourceOfError = "";
+    static String potentialError = "";
     static int blockState;
 
 //    public enum State {
@@ -138,6 +139,8 @@ public class parser {
                 lookAhead = parseTokens.get(index);
             }
         }
+        System.out.println("Lookahead --------------------->" + lookAhead);
+        System.out.println("Potential Error ------------------------------>" + potentialError);
     }
 
     public static void Advance_Pointer() {
@@ -1512,9 +1515,7 @@ public class parser {
                 } //end case Identifier
 
             default:
-                sourceOfError = "Id_Tail, Expected "
-                        + "MP_COMMA found: " + lookAhead;
-                Error();
+                potentialError = "Id_Tail, Treated as empty";
                 break;
                 //what to do with epsilon???????????????????????????????????????
         } //end case Comma
