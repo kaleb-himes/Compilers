@@ -51,6 +51,7 @@ public class parser {
     static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
             expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
+    static List<String> stackTrace;
     static String sourceOfError = "";
     static String potentialError = "";
     static int blockState;
@@ -85,6 +86,7 @@ public class parser {
         c_a.fileReader.file_reader.fileReaderInit(
                 c_a.fileReader.file_reader.outLocation);
         parseTokens = new ArrayList<String>();
+        stackTrace = new ArrayList<String>();
         String line = null;
         lookAhead = "";
         index = 0;
@@ -140,7 +142,9 @@ public class parser {
             }
         }
         System.out.println("Lookahead --------------------->" + lookAhead);
-        System.out.println("Potential Error ------------------------------>" + potentialError);
+        if (!potentialError.equals("")) {
+            System.out.println("Potential Error ------------------------------>" + potentialError);
+        }
     }
 
     public static void Advance_Pointer() {
@@ -149,6 +153,7 @@ public class parser {
     }
 
     public static void Sys_Goal() {
+        stackTrace.add("Sys_Goal");
         // 1. SystemGoal -> Program MP_EOF
         Program();
         G_Check = Match("MP_EOF");
@@ -161,10 +166,11 @@ public class parser {
                 sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookAhead;
                 break;
         }
-//                    System.out.println("Parser Default");
+        stackTrace.remove("Sys_Goal");
     }
 
     public static void Program() {
+        stackTrace.add("Program");
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
         Prog_Head();
@@ -194,9 +200,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Program");
     }
 
     public static void Prog_Head() {
+        stackTrace.add("Prog_Head");
         // 3. ProgramHeading -> MP_PROGRAM_WORD Prog_Id
         //precondition
         G_Check = Match("MP_PROGRAM");
@@ -212,19 +220,21 @@ public class parser {
                 Error();
                 break;
         }
-
+        stackTrace.remove("Prog_Head");
     }
 
     public static void Block() {
+        stackTrace.add("Block");
         //track which lookaheads we have used so far;
         //4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement_Part
         Var_Dec_Part();
         Proc_Func_Dec_Part();
         Statement_Part();
-//                    Var_Dec_Part;
+        stackTrace.remove("Block");
     }
 
     public static void Var_Dec_Part() {
+        stackTrace.add("Var_Dec_Part");
         // 5. Var_Dec_Part -> MP_VAR_WORD Var_Dec MP_SCOLON Var_Dec_Tail
         // 6. Var_Dec_Part -> MP_EMPTY
         //precondition
@@ -251,13 +261,18 @@ public class parser {
                 potentialError = "Var_Dec_Part, treated as empty";
                 break;
         }
+        stackTrace.remove("Var_Dec_Part");
     }
 
     public static void Var_Dec_Tail() {
+        stackTrace.add("Var_Dec_Tail");
         // 7. Var_Dec_Tail -> Var_Dec MP_SCOLON Var_Dec_Tail 
         // 8. Var_Dec_Tail -> MP_EMPTY
         //precondition
-        Var_Dec();
+        G_Check = Match("MP_IDENTIFIER");
+        if (G_Check == 1) {
+            Var_Dec();
+        }
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
@@ -269,9 +284,11 @@ public class parser {
                 potentialError = "Var_Dec_Tail, treated as empty";
                 break;
         }
+        stackTrace.remove("Var_Dec_Tail");
     }
 
     public static void Var_Dec() {
+        stackTrace.add("Var_Dec");
         // 9. Var_Dec -> Id_List MP_COLON Type
         //precondition
         Id_List();
@@ -288,10 +305,12 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Var_Dec");
     }
 
     //Not sure this will work as expected???????????????????????????????????????
     public static void Type() {
+        stackTrace.add("Type");
         // 10. Type -> MP_INTEGER_WORD
         // 11. Type -> MP_FLOAT_WORD
         // 12. Type -> MP_STRING_WORD
@@ -314,13 +333,32 @@ public class parser {
                                                 + "[MP_INTEGER | MP_FLOAT |"
                                                 + " MP_STRING_LIT | MP_BOOLEAN."
                                                 + " found: " + lookAhead;
+                                        break;
+                                    default:
+                                        System.out.println("++++++++++++++++++++++++++++ Bottom Type");
+                                        Advance_Pointer();
+                                        break;
                                 }
+                            default:
+                                System.out.println("++++++++++++++++++++++++++++ Bottom -1 Type");
+                                Advance_Pointer();
+                                break;
                         }
+                    default:
+                        System.out.println("++++++++++++++++++++++++++++ Bottom -2 Type");
+                        Advance_Pointer();
+                        break;
                 }
+            default:
+                System.out.println("++++++++++++++++++++++++++++ Top Type");
+                Advance_Pointer();
+                break;
         }
+        stackTrace.remove("Type");
     }
 
     public static void Proc_Func_Dec_Part() {
+        stackTrace.add("Proc_Func_Dec_Part");
         // 14. Proc_Func_Dec_Part -> Proc_Dec Proc_Func_Dec_Part 
         // 15. Proc_Func_Dec_Part -> Func_Dec Proc_Func_Dec_Part 
         // 16. Proc_Func_Dec_Part -> MP_EMPTY
@@ -340,9 +378,11 @@ public class parser {
                 /* Do Nothing */
                 break;
         }
+        stackTrace.remove("Proc_Func_Dec_Part");
     }
 
     public static void Proc_Dec() {
+        stackTrace.add("Proc_Dec");
         // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
         //precondition
         Proc_Head();
@@ -371,9 +411,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Proc_Dec");
     }
 
     public static void Func_Dec() {
+        stackTrace.add("Func_Dec");
         // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON
         Func_Head();
         G_Check = Match("MP_SCOLON");
@@ -401,9 +443,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Func_Dec");
     }
 
     public static void Proc_Head() {
+        stackTrace.add("Proc_Head");
         // 19. Proc_Head -> MP_PROCEDURE Proc_Id Opt_Formal_Param_List
         G_Check = Match("MP_PROCEDURE");
         switch (G_Check) {
@@ -419,9 +463,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Proc_Head");
     }
 
     public static void Func_Head() {
+        stackTrace.add("Func_Head");
         // 20. Func_Head -> MP_FUNCTION Function_Id Opt_Formal_Param_List
         G_Check = Match("MP_FUNCTION");
         switch (G_Check) {
@@ -437,9 +483,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Func_Head");
     }
 
     public static void Opt_Formal_Param_List() {
+        stackTrace.add("Opt_Formal_Param_List");
         // 21. Opt_Formal_Param_List -> MP_LPAREN Formal_Param_Sec Formal_Param_Sec_Tail MP_RPAREN 
         // 22. Opt_Formal_Param_List -> MP_EMPTY
         //precondition
@@ -469,9 +517,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Opt_Formal_Param_List");
     }
 
     public static void Formal_Param_Sec_Tail() {
+        stackTrace.add("Formal_Param_Sec_Tail");
         // 23. Formal_Param_Sec_Tail -> MP_SCOLON Formal_Param_Sec Formal_Param_Sec_Tail
         // 24. Formal_Param_Sec_Tail -> MP_EMPTY
         //precondition
@@ -487,9 +537,11 @@ public class parser {
                 potentialError = "Formal_Param_Sec_Tail, Treated as Empty";
                 break;
         }
+        stackTrace.remove("Formal_Param_Sec_Tail");
     }
 
     public static void Formal_Param_Sec() {
+        stackTrace.add("Formal_Param_Sec");
         // 25. Formal_Param_Sec -> Val_Param_Sec
         // 26. Formal_Param_Sec -> Var_Param_Sec
         switch (lookAhead) {
@@ -505,9 +557,11 @@ public class parser {
                 potentialError = "Formal_Param_Sec, something happened here, "
                         + "check your logic.";
         }
+        stackTrace.remove("Formal_Param_Sec");
     }
 
     public static void Val_Param_Sec() {
+        stackTrace.add("Val_Param_Sec");
         // 27. Val_Param_Sec -> Id_List MP_COLON Type
         Id_List();
         G_Check = Match("MP_COLON");
@@ -522,9 +576,11 @@ public class parser {
                         + "" + lookAhead;
                 break;
         }
+        stackTrace.remove("Val_Param_Sec");
     }
 
     public static void Var_Param_Sec() {
+        stackTrace.add("Var_Param_Sec");
         // 28. Var_Param_Sec -> MP_VAR Id_List MP_COLON Type
         G_Check = Match("MP_VAR");
         switch (G_Check) {
@@ -552,14 +608,18 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Var_Param_Sec");
     }
 
     public static void Statement_Part() {
+        stackTrace.add("Statement_Part");
         // 29. Statement_Part -> Compound_Statement
         Compound_Statement();
+        stackTrace.remove("Statement_Part");
     }
 
     public static void Compound_Statement() {
+        stackTrace.add("Compound_Statement");
         // 30. Compound_Statement -> MP_BEGIN Statement_Seq MP_END
         G_Check = Match("MP_BEGIN");
         switch (G_Check) {
@@ -585,15 +645,19 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Compound_Statement");
     }
 
     public static void Statement_Seq() {
+        stackTrace.add("Statement_Seq");
         // 31. Statement_Seq -> Statement Statement_Tail
         Statement();
         Statement_Tail();
+        stackTrace.remove("Statement_Seq");
     }
 
     public static void Statement_Tail() {
+        stackTrace.add("Statement_Tail");
         // 32. Statement_Tail -> MP_SCOLON Statement Statement_Tail
         // 33. Statement_Tail -> MP_EMPTY
         G_Check = Match("MP_SCOLON");
@@ -608,9 +672,11 @@ public class parser {
                 potentialError = "Statement_Tail, Treated as Empty";
                 break;
         }
+        stackTrace.remove("Statement_Tail");
     }
 
     public static void Statement() {
+        stackTrace.add("Statement");
 //                    System.out.println("CHECKPOINT");
 //                    System.out.println("LOOKAHEAD = " + lookahead);
         // 34. Statement -> Empty_Statement (post condition)
@@ -645,15 +711,19 @@ public class parser {
         else {
             Empty_Statement();
         }
+        stackTrace.remove("Statement");
     }
 
     //Monica started here writing rules
     public static void Empty_Statement() {
+        stackTrace.add("Empty_Statement");
         // 44. Empty_Statement -> MP_EMPTY
         potentialError = "Statement, Treated as Empty";
+        stackTrace.remove("Empty_Statement");
     }
 
     public static void Read_Statement() {
+        stackTrace.add("Read_Statement");
         // 45. Read_Statement -> MP_READ_WORD MP_LPAREN Read_Param Read_Param_Tail MP_RPAREN
         G_Check = Match("MP_READ");
         switch (G_Check) {
@@ -691,9 +761,11 @@ public class parser {
                         + "MP_READ found: " + lookAhead;
                 break;
         } //end case for READ
+        stackTrace.remove("Read_Statement");
     }
 
     public static void Read_Param_Tail() {
+        stackTrace.add("Read_Param_Tail");
         // 46. Read_Param_Tail -> MP_COMMA Read_Param Read_Param_Tail
         // 47. Read_Param_Tail -> MP_EMPTY
         G_Check = Match("MP_COMMA");
@@ -708,19 +780,22 @@ public class parser {
                 potentialError = "Read_Param_Tail, Treated as Empty";
                 break;
         }
-
+        stackTrace.remove("Read_Param_Tail");
     }
 
     public static void Read_Param() {
+        stackTrace.add("Read_Param");
         // 48. Read_Param -> Var_Id
         Var_Id();
+        stackTrace.remove("Read_Param");
     }
 
     public static void Write_Statement() {
+        stackTrace.add("Write_Statement");
         // 49. Write_Statement -> MP_WRITE_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
         G_Check = Match("MP_WRITE");
         if (G_Check == 0) {
-            G_Check = Match("MP_WRITE_LN");
+            G_Check = Match("MP_WRITELN");
         }
         switch (G_Check) {
             case 1:
@@ -759,9 +834,11 @@ public class parser {
                 Error();
                 break;
         } //end case for MP_WRITE
+        stackTrace.remove("Write_Statement");
     }
 
     public static void Write_Param_Tail() {
+        stackTrace.add("Write_Param_Tail");
         // 51. Write_Param_Tail -> MP_COMMA Write_Param Write_Param_Tail
         // 52. Write_Param_Tail -> MP_EMPTY
         G_Check = Match("MP_COMMA");
@@ -775,15 +852,19 @@ public class parser {
             default:
                 potentialError = "Write_Param_Tail, Treated as Empty";
                 break;
-        } //end case for Comma   
+        } //end case for Comma
+        stackTrace.remove("Write_Param_Tail");
     }
 
     public static void Write_Param() {
+        stackTrace.add("Write_Param");
         // 53. Write_Param -> Ordinal_Expression
         Ordinal_Expression();
+        stackTrace.remove("Write_Param");
     }
 
     public static void Assign_Statement() {
+        stackTrace.add("Assign_Statement");
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
         //THIS CAN LEAD EITHER TO A VAR OR FUNC_ID, WILL NEED TO SEP LATER??????
@@ -801,9 +882,11 @@ public class parser {
                 Error();
                 break;
         } //end case for Assign
+        stackTrace.remove("Assign_Statement");
     }
 
     public static void If_Statement() {
+        stackTrace.add("If_Statement");
         // 56. If_Statement -> MP_IF_WORD Boolean_Expression MP_THEN Statement Opt_Else_Part
         G_Check = Match("MP_IF");
         switch (G_Check) {
@@ -832,9 +915,11 @@ public class parser {
                 Error();
                 break;
         } //end case for If
+        stackTrace.remove("If_Statement");
     }
 
     public static void Opt_Else_Part() {
+        stackTrace.add("Opt_Else_Part");
         // 57. Opt_Else_Part -> MP_ELSE_WORD Statement
         // 58. Opt_Else_Part -> MP_EMPTY
         G_Check = Match("MP_ELSE");
@@ -848,9 +933,11 @@ public class parser {
                 potentialError = "Opt_Else_Part, Treated as Empty";
                 break;
         } //end case for else
+        stackTrace.remove("Opt_Else_Part");
     }
 
     public static void Repeat_Statement() {
+        stackTrace.add("Repeat_Statement");
         // 59. Repeat_Statement -> MP_REPEAT_WORD Statement_Seq MP_UNTIL Boolean_Expression
         G_Check = Match("MP_REPEAT");
         switch (G_Check) {
@@ -878,9 +965,11 @@ public class parser {
                 Error();
                 break;
         } //end case for Repeat
+        stackTrace.remove("Repeat_Statement");
     }
 
     public static void While_Statement() {
+        stackTrace.add("While_Statement");
         // 60. While_Statement -> MP_WHILE_WORD Boolean_Expression MP_DO Statement
         G_Check = Match("MP_WHILE");
         switch (G_Check) {
@@ -908,9 +997,11 @@ public class parser {
                 Error();
                 break;
         } //end case for While
+        stackTrace.remove("While_Statement");
     }
 
     public static void For_Statement() {
+        stackTrace.add("For_Statement");
         // 61. For_Statement -> MP_FOR_WORD Control_Var MP_ASSIGN Init_Val Step_Val Final_Val MP_DO Statement
         G_Check = Match("MP_FOR");
         switch (G_Check) {
@@ -953,19 +1044,25 @@ public class parser {
                 Error();
                 break;
         } //end case for For
+        stackTrace.remove("For_Statement");
     }
 
     public static void Control_Var() {
+        stackTrace.add("Control_Var");
         // 62. Control_Var -> Var_Id
         Var_Id();
+        stackTrace.remove("Control_Var");
     }
 
     public static void Init_Val() {
+        stackTrace.add("Init_Val");
         // 63. Init_Val -> Ordinal_Expression
         Ordinal_Expression();
+        stackTrace.remove("Init_Val");
     }
 
     public static void Step_Val() {
+        stackTrace.add("Step_Val");
         // 64. Step_Val -> MP_TO_WORD
         // 65. Step_Val -> MP_DOWNTO_WORD
         G_Check = Match("MP_TO");
@@ -994,20 +1091,26 @@ public class parser {
                 Error();
                 break;
         } //end case To
+        stackTrace.remove("Step_Val");
     }
 
     public static void Final_Val() {
+        stackTrace.add("Final_Val");
         // 66. Final_Val -> Ordinal_Expression
         Ordinal_Expression();
+        stackTrace.remove("Final_Val");
     }
 
     public static void Proc_Statement() {
+        stackTrace.add("Proc_Statement");
         // 67. Proc_Statement -> Proc_Id Opt_Actual_Param_List
         Proc_Id();
         Opt_Actual_Param_List();
+        stackTrace.remove("Proc_Statement");
     }
 
     public static void Opt_Actual_Param_List() {
+        stackTrace.add("Opt_Actual_Param_List");
         // 68. Opt_Actual_Param_List -> MP_LPAREN Actual_Param Actual_Param_Tail MP_RPAREN
         // 69. Opt_Actual_Param_List -> MP_EMPTY
         G_Check = Match("MP_LPAREN");
@@ -1034,9 +1137,11 @@ public class parser {
                 potentialError = "Opt_Actual_Param_List, Treated as Empty";
                 break;
         }
+        stackTrace.remove("Opt_Actual_Param_List");
     }
 
     public static void Actual_Param_Tail() {
+        stackTrace.add("Actual_Param_Tail");
         // 70. Actual_Param_Tail -> MP_COMMA Actual_Param Actual_Param_Tail
         // 71. Actual_Param_Tail -> MP_EMPTY
         G_Check = Match("MP_COMMA");
@@ -1051,29 +1156,36 @@ public class parser {
                 potentialError = "Actual_Param_List, Treated as Empty";
                 break;
         }
+        stackTrace.remove("Actual_Param_Tail");
     }
 
     public static void Actual_Param() {
+        stackTrace.add("Actual_Param");
         // 72. Actual_Param -> Ordinal_Expression
         Ordinal_Expression();
+        stackTrace.remove("Actual_Param");
     }
 
     public static void Expression() {
+        stackTrace.add("Expression");
         // 73. Expression -> Simple_Expression Opt_Relational_Part
         Simple_Expression();
         Opt_Relational_Part();
+        stackTrace.remove("Expression");
     }
 
     public static void Opt_Relational_Part() {
+        stackTrace.add("Opt_Relational_Part");
         // 74. Opt_Relational_Part -> Relational_Op Simple_Expression
         // 75. Opt_Relational_Part -> MP_EMPTY
-         Relational_Op();
+        Relational_Op();
         Simple_Expression();
-
+        stackTrace.remove("Opt_Relational_Part");
         //how to deal with epsilon here?????????????????????????????????????????
     }
 
     public static void Relational_Op() {
+        stackTrace.add("Relational_Op");
         // 76. Relational_Op -> MP_EQUAL
         // 77. Relational_Op -> MP_LTHAN
         // 78. Relational_Op -> MP_GTHAN
@@ -1162,26 +1274,32 @@ public class parser {
                         + "MP_EQUAL found: " + lookAhead;
                 Error();
                 break;
-        } //end case Equal   
+        } //end case Equal
+        stackTrace.remove("Relational_Op");
     }
 
     public static void Simple_Expression() {
+        stackTrace.add("Simple_Expression");
         // 82. Simple_Expression -> Optional_Sign Term Term_Tail
         Optional_Sign();
         Term();
         Term_Tail();
+        stackTrace.remove("Simple_Expression");
     }
 
     public static void Term_Tail() {
+        stackTrace.add("Term_Tail");
         // 83. Term_Tail -> Add_Op Term Term_Tail
         // 84. Term_Tail -> MP_EMPTY
         Add_Op();
         Term();
         Term_Tail();
+        stackTrace.remove("Term_Tail");
         //how to deal with epsilon??????????????????????????????????????????????
     }
 
     public static void Optional_Sign() {
+        stackTrace.add("Optional_Sign");
         // 85. Optional_Sign -> MP_PLUS
         // 86. Optional_Sign -> MP_MINUS
         // 87. Optional_Sign -> MP_EMPTY
@@ -1210,10 +1328,12 @@ public class parser {
                 Error();
                 break;
         } //end case Plus
+        stackTrace.remove("Optional_Sign");
         //what to do with epsilon???????????????????????????????????????????????
     }
 
     public static void Add_Op() {
+        stackTrace.add("Add_Op");
         // 88. Add_Op -> MP_PLUS
         // 89. Add_Op -> MP_MINUS
         // 90. Add_Op -> MP_OR
@@ -1255,24 +1375,30 @@ public class parser {
                 Error();
                 break;
         } //end case Plus
+        stackTrace.remove("Add_Op");
     }
 
     public static void Term() {
+        stackTrace.add("Term");
         // 91. Term -> Factor Factor_Tail
         Factor();
         Factor_Tail();
+        stackTrace.remove("Term");
     }
 
     public static void Factor_Tail() {
+        stackTrace.add("Factor_Tail");
         // 92. Factor_Tail -> Multiply_Op Factor Factor_Tail
         // 93. Factor_Tail -> MP_EMPTY
         Multiply_Op();
         Factor();
         Factor_Tail();
+        stackTrace.remove("Factor_Tail");
         //what to do with epsilon??????????????????????????????????????????????
     }
 
     public static void Multiply_Op() {
+        stackTrace.add("Multiply_Op");
         // 94. Multiply_Op -> MP_TIMES
         // 95. Multiply_Op -> MP_FORWARD_SLASH /* (different then div)*/
         // 96. Multiply_Op -> MP_DIV_WORD
@@ -1347,9 +1473,11 @@ public class parser {
                 Error();
                 break;
         } //end case Times
+        stackTrace.remove("Multiply_Op");
     }
 
     public static void Factor() {
+        stackTrace.add("Factor");
         // 99.  Factor -> MP_INTEGER (unsigned int)
         // 100. Factor -> MP_FLOAT   (unsigned float)
         // 101. Factor -> MP_STRING_LIT
@@ -1435,46 +1563,59 @@ public class parser {
                 // Error();
                 break;
         } //the rest of the default cases
-
+        stackTrace.remove("Factor");
     }
 
     public static void Prog_Id() {
+        stackTrace.add("Prog_Id");
         // 107. Prog_Id -> MP_IDENTIFIER
         //precondition
         G_Check = Match("MP_IDENTIFIER");
         Advance_Pointer();
+        stackTrace.remove("Prog_Id");
         //add error cases???????????????????????????????????????????????????????
     }
 
     public static void Var_Id() {
+        stackTrace.add("Var_Id");
         // 108. Var_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         Advance_Pointer();
+        stackTrace.remove("Var_Id");
     }
 
     public static void Proc_Id() {
+        stackTrace.add("Proc_Id");
         // 109. Proc_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         Advance_Pointer();
+        stackTrace.remove("Proc_Id");
     }
 
     public static void Function_Id() {
+        stackTrace.add("Function_Id");
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         Advance_Pointer();
+        stackTrace.remove("Function_Id");
     }
 
     public static void Boolean_Expression() {
+        stackTrace.add("Boolean_Expression");
         // 111. Boolean_Expression -> Expression
         Expression();
+        stackTrace.remove("Boolean_Expression");
     }
 
     public static void Ordinal_Expression() {
+        stackTrace.add("Ordinal_Expression");
         // 112. Ordinal_Expression -> Expression
         Expression();
+        stackTrace.remove("Ordinal_Expression");
     }
 
     public static void Id_List() {
+        stackTrace.add("Id_List");
         // 113. Id_List -> MP_IDENTIFIER Id_Tail
         //precondition
         G_Check = Match("MP_IDENTIFIER");
@@ -1490,9 +1631,11 @@ public class parser {
                 Error();
                 break;
         }
+        stackTrace.remove("Id_List");
     }
 
     public static void Id_Tail() {
+        stackTrace.add("Id_Tail");
         // 114. Id_Tail -> MP_COMMA MP_IDENTIFIER Id_Tail
         // 115. Id_Tail -> MP_EMPTY
         //precondition
@@ -1513,12 +1656,13 @@ public class parser {
                         Error();
                         break;
                 } //end case Identifier
-
+                break;
             default:
                 potentialError = "Id_Tail, Treated as empty";
                 break;
-                //what to do with epsilon???????????????????????????????????????
+            //what to do with epsilon???????????????????????????????????????
         } //end case Comma
+        stackTrace.remove("Id_Tail");
     }
 
     public static void Error() {
@@ -1526,6 +1670,11 @@ public class parser {
         /* MONICA!!!!!!! Make red and get formatted correctly!!!!!!!!!!!!!!!!!!!*/
         /* TODO LOGIC HERE FOR ERROR */
         //Don't think we will want to terminate, in case multiple error messages
+        System.out.println("\nSTACKTRACE: ");
+        for (int i = 0; i < stackTrace.size(); i++) {
+            System.out.println(i + ": " + stackTrace.get(i));
+        }
+        System.out.println();
         String message = "Error in state: " + sourceOfError;
         //System.out.println(message);
         Terminate(message);
@@ -1554,4 +1703,4 @@ public class parser {
             return 0;
         }
     }
-}       
+}

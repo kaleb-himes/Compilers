@@ -10,9 +10,13 @@ MP_COMMENT     5   1   {procedure this (VAR example:integer x)}
 MP_BEGIN       6   3   begin
 MP_COMMENT     6   9   {tester}
 MP_WRITELN     7   5   Writeln
-MP_SCOLON      7   12   ;
-MP_WRITELN     7   14   Writeln
-MP_SCOLON      7   21   ;
+MP_LPAREN      7   12   (
+MP_RPAREN      7   13   )
+MP_SCOLON      7   14   ;
+MP_WRITELN     7   16   Writeln
+MP_LPAREN      7   23   (
+MP_RPAREN      7   24   )
+MP_SCOLON      7   25   ;
 MP_WRITE       8   5   Write
 MP_LPAREN      8   10   (
 MP_STRING_LIT  8   11   Please enter an integer value for I: 
@@ -39,8 +43,13 @@ MP_INTEGER_LIT 11   43   0
 MP_RPAREN      11   44   )
 MP_SCOLON      11   45   ;
 MP_WRITELN     12   5   Writeln
-MP_SCOLON      12   12   ;
-MP_WRITELN     12   14   Writeln
+MP_LPAREN      12   12   (
+MP_RPAREN      12   13   )
+MP_SCOLON      12   14   ;
+MP_WRITELN     12   16   Writeln
+MP_LPAREN      12   23   (
+MP_RPAREN      12   24   )
+MP_SCOLON      12   25   ;
 MP_IDENTIFIER  13   3   end
 MP_PERIOD      13   6   .
 MP_COMMENT     13   8   {tester}
