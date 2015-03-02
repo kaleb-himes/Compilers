@@ -1256,21 +1256,21 @@ public class parser {
                                 } //end case LEqual
 
                             default:
-                                sourceOfError = "Step_Val, Expected "
+                                sourceOfError = "Relational_Op, Expected "
                                         + "MP_GTHAN found: " + lookAhead;
                                 Error();
                                 break;
                         } //end case GThan
 
                     default:
-                        sourceOfError = "Step_Val, Expected "
+                        sourceOfError = "Relational_Op, Expected "
                                 + "MP_LTHAN found: " + lookAhead;
                         Error();
                         break;
                 } //end case LThan
 
             default:
-                sourceOfError = "Step_Val, Expected "
+                sourceOfError = "Relational_Op, Expected "
                         + "MP_EQUAL found: " + lookAhead;
                 Error();
                 break;
@@ -1317,13 +1317,13 @@ public class parser {
                         break;
 
                     default:
-                        sourceOfError = "Step_Val, Expected "
+                        sourceOfError = "Optional_Sign, Expected "
                                 + "MP_MINUS found: " + lookAhead;
                         Error();
                         break;
                 } //end case Minus
 
-                sourceOfError = "Step_Val, Expected "
+                sourceOfError = "Optional_Sign, Expected "
                         + "MP_PLUS found: " + lookAhead;
                 Error();
                 break;
@@ -1359,18 +1359,18 @@ public class parser {
                                 break;
 
                             default:
-                                sourceOfError = "Step_Val, Expected "
+                                sourceOfError = "Add_Op, Expected "
                                         + "MP_OR found: " + lookAhead;
                                 Error();
                                 break;
                         } //end case OR
                     default:
-                        sourceOfError = "Step_Val, Expected "
+                        sourceOfError = "Add_Op, Expected "
                                 + "MP_MINUS found: " + lookAhead;
                         Error();
                         break;
                 } //end case Minus 
-                sourceOfError = "Step_Val, Expected "
+                sourceOfError = "Add_Op, Expected "
                         + "MP_PLUS found: " + lookAhead;
                 Error();
                 break;
@@ -1447,28 +1447,28 @@ public class parser {
                                         } //end case AND
 
                                     default:
-                                        sourceOfError = "Step_Val, Expected "
+                                        sourceOfError = "Multiply_Op, Expected "
                                                 + "MP_MOD found: " + lookAhead;
                                         Error();
                                         break;
                                 } //end case Mod
 
                             default:
-                                sourceOfError = "Step_Val, Expected "
+                                sourceOfError = "Multiply_Op, Expected "
                                         + "MP_DIV found: " + lookAhead;
                                 Error();
                                 break;
                         } //end case Div
 
                     default:
-                        sourceOfError = "Step_Val, Expected "
+                        sourceOfError = "Multiply_Op, Expected "
                                 + "MP_FORWARD_SLASH found: " + lookAhead;
                         Error();
                         break;
                 } //end case ForwardSlash
 
             default:
-                sourceOfError = "Step_Val, Expected "
+                sourceOfError = "Multiply_Op, Expected "
                         + "M switch (lookAhead) {P_TIMES found: " + lookAhead;
                 Error();
                 break;
