@@ -4,7 +4,8 @@ program Tester;
 
 {procedure this (VAR example:integer x)}
   begin {tester}
-    Writeln(); Writeln();
+    Writeln();
+    Writeln();
     Write('Please enter an integer value for I: ');
     Read(I);
     I := I + 1;
