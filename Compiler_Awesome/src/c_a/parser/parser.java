@@ -85,18 +85,18 @@ public class parser {
          */
         c_a.fileReader.file_reader.fileReaderInit(
                 c_a.fileReader.file_reader.outLocation);
-        parseTokens     = new ArrayList<String>();
-        stackTrace      = new ArrayList<String>();
-        String line     = null;
-        lookAhead       = "";
-        index           = 0;
-        blockState      = 1;
-        sColonMark      = 0;
-        stmntSeqMark    = 0;
-        expMark         = 0;
-        simpExpMark     = 0;
-        procIdFound     = 0;
-        frmlParamState  = 0;
+        parseTokens = new ArrayList<String>();
+        stackTrace = new ArrayList<String>();
+        String line = null;
+        lookAhead = "";
+        index = 0;
+        blockState = 1;
+        sColonMark = 0;
+        stmntSeqMark = 0;
+        expMark = 0;
+        simpExpMark = 0;
+        procIdFound = 0;
+        frmlParamState = 0;
 
 //        Sys_Goal;
         //read in one line at a time from the output file
@@ -125,16 +125,17 @@ public class parser {
         Sys_Goal();
     }
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
+
     public static void Get_Lookahead() {
+        int temp_index = 0;
         /* Get Look Ahead */
         /* TODO LOGIC HERE FOR LOOK AHEAD */
         if (index < parseTokens.size()) {
             lookAhead = parseTokens.get(index);
         }
-       
+
         //skipping over comments and strings.
-        if (lookAhead.equals("MP_COMMENT")
-                || lookAhead.equals("MP_STRING_LIT")) {
+        if (lookAhead.equals("MP_COMMENT")) {
             index += 3;
             lookAhead = parseTokens.get(index);
             while (!lookAhead.contains("MP_")) {
@@ -145,17 +146,19 @@ public class parser {
         }
         System.out.println("Lookahead --------------------->" + lookAhead);
         if (!potentialError.equals("")) {
-            System.out.println("Potential Error ------------------------------>" + potentialError);
             potentialError = "";
         }
+        System.out.println("INDEX ------------------------------>" + index);
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
     public static void Advance_Pointer() {
         index += 4;
         Get_Lookahead();
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Sys_Goal"> 
     public static void Sys_Goal() {
         stackTrace.add("Sys_Goal");
@@ -174,6 +177,7 @@ public class parser {
         stackTrace.remove("Sys_Goal");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Program"> 
     public static void Program() {
         stackTrace.add("Program");
@@ -209,6 +213,7 @@ public class parser {
         stackTrace.remove("Program");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Prog_Head"> 
     public static void Prog_Head() {
         stackTrace.add("Prog_Head");
@@ -230,6 +235,7 @@ public class parser {
         stackTrace.remove("Prog_Head");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Block"> 
     public static void Block() {
         stackTrace.add("Block");
@@ -241,6 +247,7 @@ public class parser {
         stackTrace.remove("Block");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Var_Dec_Part"> 
     public static void Var_Dec_Part() {
         stackTrace.add("Var_Dec_Part");
@@ -273,6 +280,7 @@ public class parser {
         stackTrace.remove("Var_Dec_Part");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Var_Dec_Tail"> 
     public static void Var_Dec_Tail() {
         stackTrace.add("Var_Dec_Tail");
@@ -297,6 +305,7 @@ public class parser {
         stackTrace.remove("Var_Dec_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Var_Dec"> 
     public static void Var_Dec() {
         stackTrace.add("Var_Dec");
@@ -321,6 +330,7 @@ public class parser {
 // </editor-fold>
     //Not sure this will work as expected???????????????????????????????????????
 // <editor-fold defaultstate="collapsed" desc="Type"> 
+
     public static void Type() {
         stackTrace.add("Type");
         // 10. Type -> MP_INTEGER_WORD
@@ -369,6 +379,7 @@ public class parser {
         stackTrace.remove("Type");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Proc_Func_Dec_Part"> 
     public static void Proc_Func_Dec_Part() {
         stackTrace.add("Proc_Func_Dec_Part");
@@ -394,6 +405,7 @@ public class parser {
         stackTrace.remove("Proc_Func_Dec_Part");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Proc_Dec"> 
     public static void Proc_Dec() {
         stackTrace.add("Proc_Dec");
@@ -428,6 +440,7 @@ public class parser {
         stackTrace.remove("Proc_Dec");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Func_Dec"> 
     public static void Func_Dec() {
         stackTrace.add("Func_Dec");
@@ -481,6 +494,7 @@ public class parser {
         stackTrace.remove("Proc_Head");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Func_Head">
     public static void Func_Head() {
         stackTrace.add("Func_Head");
@@ -502,6 +516,7 @@ public class parser {
         stackTrace.remove("Func_Head");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Opt_Formal_Param_List">
     public static void Opt_Formal_Param_List() {
         stackTrace.add("Opt_Formal_Param_List");
@@ -537,6 +552,7 @@ public class parser {
         stackTrace.remove("Opt_Formal_Param_List");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Formal_Param_Sec_Tail">
     public static void Formal_Param_Sec_Tail() {
         stackTrace.add("Formal_Param_Sec_Tail");
@@ -558,6 +574,7 @@ public class parser {
         stackTrace.remove("Formal_Param_Sec_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Formal_Param_Sec">
     public static void Formal_Param_Sec() {
         stackTrace.add("Formal_Param_Sec");
@@ -579,6 +596,7 @@ public class parser {
         stackTrace.remove("Formal_Param_Sec");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Val_Param_Sec">
     public static void Val_Param_Sec() {
         stackTrace.add("Val_Param_Sec");
@@ -599,6 +617,7 @@ public class parser {
         stackTrace.remove("Val_Param_Sec");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Var_Param_Sec">
     public static void Var_Param_Sec() {
         stackTrace.add("Var_Param_Sec");
@@ -632,6 +651,7 @@ public class parser {
         stackTrace.remove("Var_Param_Sec");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Statement_Part">
     public static void Statement_Part() {
         stackTrace.add("Statement_Part");
@@ -640,6 +660,7 @@ public class parser {
         stackTrace.remove("Statement_Part");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Compound_Statement">
     public static void Compound_Statement() {
         stackTrace.add("Compound_Statement");
@@ -671,6 +692,7 @@ public class parser {
         stackTrace.remove("Compound_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Statement_Seq">
     public static void Statement_Seq() {
         stackTrace.add("Statement_Seq");
@@ -680,6 +702,7 @@ public class parser {
         stackTrace.remove("Statement_Seq");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Statement_Tail">
     public static void Statement_Tail() {
         stackTrace.add("Statement_Tail");
@@ -700,6 +723,7 @@ public class parser {
         stackTrace.remove("Statement_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Statement">
     public static void Statement() {
         stackTrace.add("Statement");
@@ -740,6 +764,7 @@ public class parser {
         stackTrace.remove("Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Empty_Statement">
     //Monica started here writing rules
     public static void Empty_Statement() {
@@ -749,6 +774,7 @@ public class parser {
         stackTrace.remove("Empty_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Read_Statement">
     public static void Read_Statement() {
         stackTrace.add("Read_Statement");
@@ -792,6 +818,7 @@ public class parser {
         stackTrace.remove("Read_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Read_Param_Tail">
     public static void Read_Param_Tail() {
         stackTrace.add("Read_Param_Tail");
@@ -812,6 +839,7 @@ public class parser {
         stackTrace.remove("Read_Param_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Read_Param">
     public static void Read_Param() {
         stackTrace.add("Read_Param");
@@ -820,6 +848,7 @@ public class parser {
         stackTrace.remove("Read_Param");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Write_Statement">
     public static void Write_Statement() {
         stackTrace.add("Write_Statement");
@@ -845,11 +874,16 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
+                                
                                 break;
 
                             default:
+                                String line = parseTokens.get(index + 1);
+                                String col = parseTokens.get(index + 2);
                                 sourceOfError = "Write_Statement, Expected "
-                                        + "MP_RPAREN found: " + lookAhead;
+                                        + "MP_RPAREN found: " + lookAhead
+                                        + " line: " + line + " col: " + col;
+
                                 Error();
                                 break;
                         } //end case for RParen
@@ -870,6 +904,7 @@ public class parser {
         stackTrace.remove("Write_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Write_Param_Tail">
     public static void Write_Param_Tail() {
         stackTrace.add("Write_Param_Tail");
@@ -890,6 +925,7 @@ public class parser {
         stackTrace.remove("Write_Param_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Write_Param">
     public static void Write_Param() {
         stackTrace.add("Write_Param");
@@ -898,6 +934,7 @@ public class parser {
         stackTrace.remove("Write_Param");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Assign_Statement">
     public static void Assign_Statement() {
         stackTrace.add("Assign_Statement");
@@ -921,6 +958,7 @@ public class parser {
         stackTrace.remove("Assign_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="If_Statement">
     public static void If_Statement() {
         stackTrace.add("If_Statement");
@@ -955,6 +993,7 @@ public class parser {
         stackTrace.remove("If_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Opt_Else_Part">
     public static void Opt_Else_Part() {
         stackTrace.add("Opt_Else_Part");
@@ -974,6 +1013,7 @@ public class parser {
         stackTrace.remove("Opt_Else_Part");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Repeat_Statement">
     public static void Repeat_Statement() {
         stackTrace.add("Repeat_Statement");
@@ -1007,6 +1047,7 @@ public class parser {
         stackTrace.remove("Repeat_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="While_Statement">
     public static void While_Statement() {
         stackTrace.add("While_Statement");
@@ -1040,6 +1081,7 @@ public class parser {
         stackTrace.remove("While_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="For_Statement">
     public static void For_Statement() {
         stackTrace.add("For_Statement");
@@ -1088,6 +1130,7 @@ public class parser {
         stackTrace.remove("For_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Control_Var">
     public static void Control_Var() {
         stackTrace.add("Control_Var");
@@ -1096,6 +1139,7 @@ public class parser {
         stackTrace.remove("Control_Var");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Init_Val">
     public static void Init_Val() {
         stackTrace.add("Init_Val");
@@ -1104,6 +1148,7 @@ public class parser {
         stackTrace.remove("Init_Val");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Step_Val">
     public static void Step_Val() {
         stackTrace.add("Step_Val");
@@ -1138,6 +1183,7 @@ public class parser {
         stackTrace.remove("Step_Val");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Final_Val">
     public static void Final_Val() {
         stackTrace.add("Final_Val");
@@ -1146,6 +1192,7 @@ public class parser {
         stackTrace.remove("Final_Val");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Proc_Statement">
     public static void Proc_Statement() {
         stackTrace.add("Proc_Statement");
@@ -1155,6 +1202,7 @@ public class parser {
         stackTrace.remove("Proc_Statement");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Opt_Actual_Param_List">
     public static void Opt_Actual_Param_List() {
         stackTrace.add("Opt_Actual_Param_List");
@@ -1187,6 +1235,7 @@ public class parser {
         stackTrace.remove("Opt_Actual_Param_List");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Actual_Param_Tail">
     public static void Actual_Param_Tail() {
         stackTrace.add("Actual_Param_Tail");
@@ -1207,6 +1256,7 @@ public class parser {
         stackTrace.remove("Actual_Param_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Actual_Param">
     public static void Actual_Param() {
         stackTrace.add("Actual_Param");
@@ -1215,6 +1265,7 @@ public class parser {
         stackTrace.remove("Actual_Param");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Expression">
     public static void Expression() {
         stackTrace.add("Expression");
@@ -1224,19 +1275,25 @@ public class parser {
         stackTrace.remove("Expression");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Opt_Relational_Part">
     public static void Opt_Relational_Part() {
         stackTrace.add("Opt_Relational_Part");
         // 74. Opt_Relational_Part -> Relational_Op Simple_Expression
         // 75. Opt_Relational_Part -> MP_EMPTY
-        Relational_Op();
-        Simple_Expression();
+        int tempCheck = Relational_Op();
+        if (tempCheck == -1) {
+            potentialError = "Opt_Relational_Part treated as Empty";
+        } else {
+            Simple_Expression();
+        }
         stackTrace.remove("Opt_Relational_Part");
         //how to deal with epsilon here?????????????????????????????????????????
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Relational_Op">
-    public static void Relational_Op() {
+    public static int Relational_Op() {
         stackTrace.add("Relational_Op");
         // 76. Relational_Op -> MP_EQUAL
         // 77. Relational_Op -> MP_LTHAN
@@ -1288,7 +1345,8 @@ public class parser {
 
                                                     default:
                                                         potentialError = "Relational_Op";
-                                                        break;
+                                                        stackTrace.remove("Relational_Op");
+                                                        return -1;
                                                 } //end case NEqual
                                         } //end case GEqual
                                 } //end case LEqual
@@ -1296,21 +1354,24 @@ public class parser {
                 } //end case LThan
         } //end case Equal
         stackTrace.remove("Relational_Op");
+        return 0;
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Simple_Expression">
     public static void Simple_Expression() {
         stackTrace.add("Simple_Expression");
         // 82. Simple_Expression -> Optional_Sign Term Term_Tail
         int tempCheck = Optional_Sign();
-        if (tempCheck != 0) {
-            potentialError = "Simple_Expression treated Optional_Sign as N/A";
+        if (tempCheck == -1) {
+            potentialError = "Simple_Expression treated Optional_Sign as Empty";
         }
         Term();
         Term_Tail();
         stackTrace.remove("Simple_Expression");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Term_Tail">
     public static void Term_Tail() {
         stackTrace.add("Term_Tail");
@@ -1327,6 +1388,7 @@ public class parser {
         //how to deal with epsilon??????????????????????????????????????????????
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Optional_Sign">
     public static int Optional_Sign() {
         stackTrace.add("Optional_Sign");
@@ -1348,6 +1410,7 @@ public class parser {
 
                     default:
                         System.out.println("OPT_SIGN RETURNED -1");
+                        stackTrace.remove("Optional_Sign");
                         return -1;
                 } //end case Minus
         } //end case Plus
@@ -1356,6 +1419,7 @@ public class parser {
         //what to do with epsilon???????????????????????????????????????????????
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Add_Op">
     public static int Add_Op() {
         stackTrace.add("Add_Op");
@@ -1384,6 +1448,7 @@ public class parser {
                                 break;
 
                             default:
+                                stackTrace.remove("Add_Op");
                                 return -1;
                         } //end case OR
                 } //end case Minus 
@@ -1392,6 +1457,7 @@ public class parser {
         return 0;
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Term">
     public static void Term() {
         stackTrace.add("Term");
@@ -1401,6 +1467,7 @@ public class parser {
         stackTrace.remove("Term");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Factor_Tail">
     public static void Factor_Tail() {
         stackTrace.add("Factor_Tail");
@@ -1417,6 +1484,7 @@ public class parser {
         //what to do with epsilon??????????????????????????????????????????????
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Multiply_Op">
     public static int Multiply_Op() {
         stackTrace.add("Multiply_Op");
@@ -1461,6 +1529,7 @@ public class parser {
                                                 break;
 
                                             default:
+                                                stackTrace.remove("Multiply_Op");
                                                 return -1;
                                         } //end case AND
                                 } //end case Mod
@@ -1471,106 +1540,91 @@ public class parser {
         return 0;
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Factor">
-    public static void Factor() {
+    public static int Factor() {
         stackTrace.add("Factor");
-        // 99.  Factor -> MP_INTEGER (unsigned int)
+        // 99.  Factor -> MP_INTEGER_LIT (unsigned int)
         // 100. Factor -> MP_FLOAT   (unsigned float)
         // 101. Factor -> MP_STRING_LIT
         // 102. Factor -> MP_TRUE_WORD
         // 103. Factor -> MP_FALSE_WORD
         // 104. Factor -> MP_NOT_WORD Factor
         // 105. Factor -> MP_LPAREN Expression MP_RPAREN
-        // 106. Factor -> Func_Id Opt_Actual_Param_List
-        switch (lookAhead) {
-            case "MP_INTEGER":
-                G_Check = Match("MP_INTEGER");
+        // 106. Factor -> Function_Id Opt_Actual_Param_List
+        G_Check = Match("MP_INTEGER_LIT");
+        if (G_Check == 1) {
+            Advance_Pointer();
+            stackTrace.remove("Factor");
+            return 0;
+        } else {
+            G_Check = Match("MP_FLOAT");
+            if (G_Check == 1) {
                 Advance_Pointer();
-                break;
-
-            case "MP_FLOAT":
-                G_Check = Match("MP_FLOAT");
-                Advance_Pointer();
-                break;
-
-            case "MP_STRING_LIT":
+                stackTrace.remove("Factor");
+                return 0;
+            } else {
                 G_Check = Match("MP_STRING_LIT");
-                Advance_Pointer();
-                break;
-
-            case "MP_TRUE":
-                G_Check = Match("MP_TRUE");
-                Advance_Pointer();
-                break;
-
-            case "MP_FALSE":
-                G_Check = Match("MP_FALSE");
-                Advance_Pointer();
-                break;
-
-            case "MP_NOT":
-                G_Check = Match("MP_NOT");
-                switch (G_Check) {
-                    case 1:
+                if (G_Check == 1) {
+                    Advance_Pointer();
+                    stackTrace.remove("Factor");
+                    return 0;
+                } else {
+                    G_Check = Match("MP_TRUE");
+                    if (G_Check == 1) {
                         Advance_Pointer();
-                        Factor();
-                        break;
-
-                    default:
-                        sourceOfError = "Factor, Expected "
-                                + "MP_NOT found: " + lookAhead;
-                        Error();
-                        break;
-                } //end case Not
-
-            case "MP_LPAREN":
-                G_Check = Match("MP_LPAREN");
-                switch (G_Check) {
-                    case 1:
-                        Advance_Pointer();
-                        Expression();
-                        G_Check = Match("MP_RPAREN");
-                        switch (G_Check) {
-                            case 1:
+                        stackTrace.remove("Factor");
+                        return 0;
+                    } else {
+                        G_Check = Match("MP_FALSE");
+                        if (G_Check == 1) {
+                            Advance_Pointer();
+                            stackTrace.remove("Factor");
+                            return 0;
+                        } else {
+                            G_Check = Match("MP_NOT");
+                            if (G_Check == 1) {
                                 Advance_Pointer();
-                                break;
-
-                            default:
-                                sourceOfError = "Factor, Expected "
-                                        + "MP_RPAREN found: " + lookAhead;
-                                Error();
-                                break;
-                        } //end RParen
-
-                    default:
-                        sourceOfError = "Factor, Expected "
-                                + "MP_LPAREN found: " + lookAhead;
-                        Error();
-                        break;
-                } //end LParen
-
-            default:
-                Function_Id();
-                Opt_Actual_Param_List();
-
-                //if not here, where to put error case?
-                // sourceOfError = "Factor, Expected "
-                //         + "INTEGER, FLOAT, STRING, TRUE or FALSE found: " + lookAhead;
-                // Error();
-                break;
-        } //the rest of the default cases
+                                stackTrace.remove("Factor");
+                                return 0;
+                            } else {
+                                G_Check = Match("MP_LPAREN");
+                                if (G_Check == 1) {
+                                    Advance_Pointer();
+                                    Expression();
+                                    G_Check = Match("MP_RPAREN");
+                                    if (G_Check == 1) {
+                                        Advance_Pointer();
+                                        stackTrace.remove("Factor");
+                                        return 0;
+                                    } else {
+                                        sourceOfError = "Factor, expected MP_RPAREN, found: " + lookAhead;
+                                        Error();
+                                    }
+                                } else {
+                                    Function_Id();
+                                    Opt_Actual_Param_List();
+                                }
+                            } //else for MP_NOT
+                        } //else for MP_FALSE
+                    } //else for MP_TRUE
+                } //else for MP_STRING_LIT
+            } //else for MP_FLOAT
+        } //else for MP_INTEGER_LIT
         stackTrace.remove("Factor");
+        return 0;
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Prog_Id">
     public static void Prog_Id() {
         stackTrace.add("Prog_Id");
         // 107. Prog_Id -> MP_IDENTIFIER
         //precondition
         G_Check = Match("MP_IDENTIFIER");
-        if (G_Check == 1)
+        if (G_Check == 1) {
             Advance_Pointer();
-        else {
+        } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
         }
@@ -1578,48 +1632,52 @@ public class parser {
         //add error cases???????????????????????????????????????????????????????
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
     public static void Var_Id() {
         stackTrace.add("Var_Id");
         // 108. Var_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
-        if (G_Check == 1)
+        if (G_Check == 1) {
             Advance_Pointer();
-        else {
+        } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
         }
         stackTrace.remove("Var_Id");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Proc_Id">
     public static void Proc_Id() {
         stackTrace.add("Proc_Id");
         // 109. Proc_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
-        if (G_Check == 1)
+        if (G_Check == 1) {
             Advance_Pointer();
-        else {
+        } else {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
         }
         stackTrace.remove("Proc_Id");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Function_Id">
     public static void Function_Id() {
         stackTrace.add("Function_Id");
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
-        if (G_Check == 1)
+        if (G_Check == 1) {
             Advance_Pointer();
-        else {
+        } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
         }
         stackTrace.remove("Function_Id");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Boolean_Expression">
     public static void Boolean_Expression() {
         stackTrace.add("Boolean_Expression");
@@ -1628,6 +1686,7 @@ public class parser {
         stackTrace.remove("Boolean_Expression");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Ordinal_Expression">
     public static void Ordinal_Expression() {
         stackTrace.add("Ordinal_Expression");
@@ -1636,6 +1695,7 @@ public class parser {
         stackTrace.remove("Ordinal_Expression");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Id_List">
     public static void Id_List() {
         stackTrace.add("Id_List");
@@ -1657,6 +1717,7 @@ public class parser {
         stackTrace.remove("Id_List");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Id_Tail">
     public static void Id_Tail() {
         stackTrace.add("Id_Tail");
@@ -1689,6 +1750,7 @@ public class parser {
         stackTrace.remove("Id_Tail");
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Error">
     public static void Error() {
         // if found error enter this case
@@ -1705,6 +1767,7 @@ public class parser {
         Terminate(message);
     }
 // </editor-fold>
+
 // <editor-fold defaultstate="collapsed" desc="Terminate">
     public static void Terminate(String message) {
         /* 
