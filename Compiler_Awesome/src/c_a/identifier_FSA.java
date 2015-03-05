@@ -22,7 +22,6 @@ public class identifier_FSA extends mp {
     Boolean eof = false;
 
     public enum State {
-
         START, IDACCEPT, S0
     }
 
@@ -163,7 +162,7 @@ public class identifier_FSA extends mp {
             token = "MP_DOWNTO    ";
         else if (in.equals("else"))
             token = "MP_ELSE      ";
-        else if (in.equals("MP_END"))
+        else if (in.equals("end"))
             token = "MP_END       ";
         else if (in.equals("false"))
             token = "MP_FALSE     ";

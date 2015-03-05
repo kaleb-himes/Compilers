@@ -127,25 +127,29 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
 
     public static void Get_Lookahead() {
-        int temp_index = 0;
         /* Get Look Ahead */
         /* TODO LOGIC HERE FOR LOOK AHEAD */
         if (index < parseTokens.size()) {
             lookAhead = parseTokens.get(index);
         }
 
-        //skipping over comments and strings.
+        //if lookahead is a comment, skip it.
         if (lookAhead.equals("MP_COMMENT")) {
             index += 3;
             lookAhead = parseTokens.get(index);
             while (!lookAhead.contains("MP_")) {
                 System.out.println("skipping: " + lookAhead);
                 index++;
+                if (index > parseTokens.size()) {
+                    sourceOfError = "Get_Lookahead ran over EOF";
+                    Error();
+                }
                 lookAhead = parseTokens.get(index);
             }
         }
         System.out.println("Lookahead --------------------->" + lookAhead);
         if (!potentialError.equals("")) {
+            System.out.println("Potential Error ------------------------------>" + potentialError);
             potentialError = "";
         }
         System.out.println("INDEX ------------------------------>" + index);
@@ -154,7 +158,20 @@ public class parser {
 
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
     public static void Advance_Pointer() {
-        index += 4;
+        if (lookAhead.equals("MP_STRING_LIT")) {
+            index += 3;
+            String peek = parseTokens.get(index);
+            while (!peek.contains("MP_")) {
+                index++;
+                if (index > parseTokens.size()) {
+                    sourceOfError = "Advance_Pointer ran over EOF";
+                    Error();
+                }
+                peek = parseTokens.get(index);
+            }
+        } else {
+            index += 4;
+        }
         Get_Lookahead();
     }
 // </editor-fold>
@@ -1780,6 +1797,7 @@ public class parser {
         System.exit(0);
     }
 // </editor-fold>
+    
 // <editor-fold defaultstate="collapsed" desc="Match">    
     /*
      * @param in: the value of lookahead at the time it is called.
