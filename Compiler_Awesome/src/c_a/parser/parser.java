@@ -56,27 +56,6 @@ public class parser {
     static String potentialError = "";
     static int blockState;
 
-//    public enum State {
-//
-//        Sys_Goal, Program, Prog_Head, Block, Var_Dec_Part,
-//        Var_Dec_Tail, Var_Dec, Type,
-//        Proc_Func_Dec_Part, Proc_Dec, Func_Dec,
-//        Proc_Head, Func_Head, Opt_Formal_Param_List,
-//        Formal_Param_Sec_Tail, Formal_Param_Sec, Val_Param_Sec,
-//        Var_Param_Sec, Statement_Part, Compound_Statement, Statement_Seq,
-//        Statement_Tail, Statement, Empty_Statement, Read_Statement,
-//        Read_Param_Tail, Read_Param, Write_Statement, Write_Param_Tail,
-//        Write_Param, Assign_Statement, If_Statement, Opt_Else_Part,
-//        Repeat_Statement, While_Statement, For_Statement, Control_Var,
-//        Init_Val, Step_Val, Final_Val, Proc_Statement, Opt_Actual_Param_List,
-//        Actual_Param_Tail, Actual_Param, Expression, Opt_Relational_Part,
-//        Relational_Op, Simple_Expression, Term_Tail, Optional_Sign, Add_Op,
-//        Term, Factor_Tail, Multiply_Op, Factor, Prog_Id, Var_Id, Proc_Id,
-//        Function_Id, Boolean_Expression, Ordinal_Expression, Id_List, Id_Tail,
-//        Error, Terminate
-//    }
-//    State state;
-//    State returnToState;
     public void runParse() throws FileNotFoundException, IOException {
 
         /* 
@@ -98,7 +77,6 @@ public class parser {
         procIdFound = 0;
         frmlParamState = 0;
 
-//        Sys_Goal;
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
@@ -124,6 +102,7 @@ public class parser {
 
         Sys_Goal();
     }
+    
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
 
     public static void Get_Lookahead() {
@@ -188,7 +167,7 @@ public class parser {
                 break;
 
             default:
-                sourceOfError = "Sys_Goal, Expected MP_EO found: " + lookAhead;
+                sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
                 break;
         }
         stackTrace.remove("Sys_Goal");
@@ -217,7 +196,6 @@ public class parser {
 
                     default:
                         Advance_Pointer();
-                        Sys_Goal();
                         break;
                 }
 
