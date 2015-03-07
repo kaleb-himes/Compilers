@@ -1,6 +1,60 @@
 MP_PROGRAM     1   1   program
 MP_IDENTIFIER  1   9   Tester
 MP_SCOLON      1   15   ;
-MP_BEGIN       2   1   begin
-MP_END         3   1   end
-MP_EOF         4   1   -1
+MP_VAR         3   2   var
+MP_IDENTIFIER  3   6   I
+MP_COLON       3   7   :
+MP_INTEGER     3   9   Integer
+MP_SCOLON      3   16   ;
+MP_COMMENT     5   1   {procedure this (VAR example:integer x)}
+MP_BEGIN       6   3   begin
+MP_COMMENT     6   9   {tester}
+MP_WRITELN     7   5   Writeln
+MP_LPAREN      7   12   (
+MP_STRING_LIT  7   13   hi
+MP_RPAREN      7   15   )
+MP_SCOLON      7   16   ;
+MP_WRITELN     7   18   Writeln
+MP_LPAREN      7   25   (
+MP_STRING_LIT  7   26   THis is a crazy string for testing purposes.
+MP_RPAREN      7   70   )
+MP_SCOLON      7   71   ;
+MP_WRITE       8   5   Write
+MP_LPAREN      8   10   (
+MP_STRING_LIT  8   11   Please enter an integer value for I: 
+MP_RPAREN      8   48   )
+MP_SCOLON      8   49   ;
+MP_READ        9   5   Read
+MP_LPAREN      9   9   (
+MP_IDENTIFIER  9   10   I
+MP_RPAREN      9   11   )
+MP_SCOLON      9   12   ;
+MP_IDENTIFIER  10   5   I
+MP_ASSIGN      10   7   :=
+MP_IDENTIFIER  10   11   I
+MP_PLUS        10   13   +
+MP_INTEGER_LIT 10   15   1
+MP_SCOLON      10   16   ;
+MP_WRITELN     11   5   Writeln
+MP_LPAREN      11   12   (
+MP_STRING_LIT  11   13   The current value of I is 
+MP_COMMA       11   39   ,
+MP_IDENTIFIER  11   41   I
+MP_EQUAL       11   42   =
+MP_INTEGER_LIT 11   43   0
+MP_RPAREN      11   44   )
+MP_SCOLON      11   45   ;
+MP_WRITELN     12   5   Writeln
+MP_LPAREN      12   12   (
+MP_STRING_LIT  12   13   
+MP_RPAREN      12   13   )
+MP_SCOLON      12   14   ;
+MP_WRITELN     12   16   Writeln
+MP_LPAREN      12   23   (
+MP_STRING_LIT  12   24   
+MP_RPAREN      12   24   )
+MP_SCOLON      12   25   ;
+MP_END         13   3   end
+MP_PERIOD      13   6   .
+MP_COMMENT     13   8   {tester}
+MP_EOF         14   1   -1

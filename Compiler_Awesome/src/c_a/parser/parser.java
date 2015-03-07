@@ -64,9 +64,9 @@ public class parser {
          */
         c_a.fileReader.file_reader.fileReaderInit(
                 c_a.fileReader.file_reader.outLocation);
-        parseTokens = new ArrayList<String>();
-        stackTrace = new ArrayList<String>();
-        String line = null;
+        parseTokens = new ArrayList<>();
+        stackTrace = new ArrayList<>();
+        String line;
         lookAhead = "";
         index = 0;
         blockState = 1;
@@ -126,12 +126,11 @@ public class parser {
                 lookAhead = parseTokens.get(index);
             }
         }
-        System.out.println("Lookahead --------------------->" + lookAhead);
+        System.out.println("Lookahead ------------------------------------>" + lookAhead);
         if (!potentialError.equals("")) {
             System.out.println("Potential Error ------------------------------>" + potentialError);
             potentialError = "";
         }
-        System.out.println("INDEX ------------------------------>" + index);
     }
 // </editor-fold>
 
@@ -141,6 +140,7 @@ public class parser {
             index += 3;
             String peek = parseTokens.get(index);
             while (!peek.contains("MP_")) {
+                System.out.println("skipping: " + peek);
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Advance_Pointer ran over EOF";
@@ -164,13 +164,14 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Terminate("Program parsed successfully, found MP_EOF");
+                stackTrace.remove("Sys_Goal");
                 break;
 
             default:
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
+                stackTrace.remove("Sys_Goal");
                 break;
         }
-        stackTrace.remove("Sys_Goal");
     }
 // </editor-fold>
 
@@ -187,21 +188,16 @@ public class parser {
                 Block();
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
-                switch (G_Check) {
-                    case 0:
-                        sourceOfError = "Prog_Head, Expected MP_PERIOD found:"
-                                + " " + lookAhead;
-                        Error();
-                        break;
-
-                    default:
-                        Advance_Pointer();
-                        break;
+                if (G_Check == 1) {
+                    Advance_Pointer();
+                    break;
+                } else {
+                    sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
+                    Error();
                 }
 
             default:
-                sourceOfError = "Program, Expected MP_SCOLON found: "
-                        + lookAhead;
+                sourceOfError = "Program, Expected MP_SCOLON found: " + lookAhead;
                 Error();
                 break;
         }
@@ -256,23 +252,24 @@ public class parser {
                 Var_Dec();
                 G_Check = Match("MP_SCOLON");
                 //we do want to fall through here, to evaluate second G_Check 
-                switch (G_Check) {
-                    case 1:
+                if (G_Check == 1) {
                         Advance_Pointer();
-                        Var_Dec_Tail();
-                        break;
-
-                    default:
+//                        Var_Dec_Tail();
+                        stackTrace.remove("Var_Dec_Part");
+                    break;
+                } else {
                         sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
                                 + "found:  " + lookAhead;
+                        stackTrace.remove("Var_Dec_Part");
+                        Error();
                         break;
                 }
 
             default:
+                stackTrace.remove("Var_Dec_Part");
                 potentialError = "Var_Dec_Part, treated as empty";
                 break;
         }
-        stackTrace.remove("Var_Dec_Part");
     }
 // </editor-fold>
 
@@ -356,16 +353,19 @@ public class parser {
                                         Advance_Pointer();
                                         break;
                                 }
+                                break;
                             default:
                                 System.out.println("++++++++++++++++++++++++++++ Bottom -1 Type");
                                 Advance_Pointer();
                                 break;
                         }
+                        break;
                     default:
                         System.out.println("++++++++++++++++++++++++++++ Bottom -2 Type");
                         Advance_Pointer();
                         break;
                 }
+                break;
             default:
                 System.out.println("++++++++++++++++++++++++++++ Top Type");
                 Advance_Pointer();
@@ -678,6 +678,7 @@ public class parser {
                         Error();
                         break;
                 }
+                break;
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
@@ -797,7 +798,7 @@ public class parser {
                                 Error();
                                 break;
                         } //end case for R_PAREN
-
+                    break;
                     default:
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
@@ -882,14 +883,14 @@ public class parser {
                                 Error();
                                 break;
                         } //end case for RParen
-
+                        break;
                     default:
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
                         Error();
                         break;
                 } //end case for LParen
-
+                break;
             default:
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
@@ -978,7 +979,7 @@ public class parser {
                         Error();
                         break;
                 } //end case for Then
-
+                break;
             default:
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
@@ -1032,7 +1033,7 @@ public class parser {
                         Error();
                         break;
                 } //end case for Until
-
+                break;
             default:
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
@@ -1066,7 +1067,7 @@ public class parser {
                         Error();
                         break;
                 } //end case for Do
-
+                break;
             default:
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
@@ -1108,14 +1109,14 @@ public class parser {
                                 Error();
                                 break;
                         } //end case for Do
-
+                        break;
                     default:
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
                         Error();
                         break;
                 } //end case for Assign
-
+                break;
             default:
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
@@ -1168,7 +1169,7 @@ public class parser {
                         Error();
                         break;
                 } //end case DownTo
-
+                break;
             default:
                 sourceOfError = "Step_Val, Expected "
                         + "MP_TO found: " + lookAhead;
@@ -1222,7 +1223,7 @@ public class parser {
                         Error();
                         break;
                 } //end case RParen
-
+                break;
             default:
                 potentialError = "Opt_Actual_Param_List, Treated as Empty";
                 break;
@@ -1309,7 +1310,6 @@ public class parser {
                     case 1:
                         Advance_Pointer();
                         break;
-
                     default:
                         G_Check = Match("MP_GTHAN");
                         switch (G_Check) {
@@ -1343,10 +1343,15 @@ public class parser {
                                                         stackTrace.remove("Relational_Op");
                                                         return -1;
                                                 } //end case NEqual
+                                                break;
                                         } //end case GEqual
+                                        break;
                                 } //end case LEqual
+                                break;
                         } //end case GThan
+                        break;
                 } //end case LThan
+                break;
         } //end case Equal
         stackTrace.remove("Relational_Op");
         return 0;
@@ -1408,6 +1413,7 @@ public class parser {
                         stackTrace.remove("Optional_Sign");
                         return -1;
                 } //end case Minus
+                break;
         } //end case Plus
         stackTrace.remove("Optional_Sign");
         return 0;
@@ -1446,7 +1452,9 @@ public class parser {
                                 stackTrace.remove("Add_Op");
                                 return -1;
                         } //end case OR
-                } //end case Minus 
+                        break;
+                } //end case Minus
+                break;
         } //end case Plus
         stackTrace.remove("Add_Op");
         return 0;
@@ -1527,9 +1535,13 @@ public class parser {
                                                 stackTrace.remove("Multiply_Op");
                                                 return -1;
                                         } //end case AND
+                                        break;
                                 } //end case Mod
+                                break;
                         } //end case Div
+                        break;
                 } //end case ForwardSlash
+                break;
         } //end case Times
         stackTrace.remove("Multiply_Op");
         return 0;
@@ -1752,11 +1764,11 @@ public class parser {
         /* MONICA!!!!!!! Make red and get formatted correctly!!!!!!!!!!!!!!!!!!!*/
         /* TODO LOGIC HERE FOR ERROR */
         //Don't think we will want to terminate, in case multiple error messages
-        System.out.println("\nSTACKTRACE: ");
-        for (int i = 0; i < stackTrace.size(); i++) {
-            System.out.println(i + ": " + stackTrace.get(i));
-        }
-        System.out.println();
+//        System.out.println("\nSTACKTRACE: ");
+//        for (int i = 0; i < stackTrace.size(); i++) {
+//            System.out.println(i + ": " + stackTrace.get(i));
+//        }
+//        System.out.println();
         String message = "Error in state: " + sourceOfError;
         //System.out.println(message);
         Terminate(message);
@@ -1769,6 +1781,11 @@ public class parser {
          * Print anything we want to before exiting parser then 
          * exit program 
          */
+        System.out.println("\nSTACKTRACE: ");
+        for (int i = 0; i < stackTrace.size(); i++) {
+            System.out.println(i + ": " + stackTrace.get(i));
+        }
+        System.out.println();
         done = true;
         //think this is always printing error message - check into this
         System.out.println(message);
