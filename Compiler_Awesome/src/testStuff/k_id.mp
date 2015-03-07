@@ -54,4 +54,4 @@ program Tester;
     Writeln('The current value of I is ', I = 0);
     Writeln(''); 
     Writeln('');
-END
+END.

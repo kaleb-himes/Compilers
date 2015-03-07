@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 public class file_reader {
     public static BufferedReader reader;
     public static String outLocation;
+    public static String outFile;
     public static synchronized void Initialize() throws FileNotFoundException, UnsupportedEncodingException {
         
         /* file reader for reading in program to be compiled */
@@ -32,8 +33,7 @@ public class file_reader {
         
         pbr = new PushbackReader(reader, 5);
         
-        /* initialize the output file for scanner */
-        String outFile = "scanner.out";
+        
         File currentDirFile = new File(".");
         String helper = currentDirFile.getAbsolutePath();
         outLocation = "src/parser_resources/" + outFile;

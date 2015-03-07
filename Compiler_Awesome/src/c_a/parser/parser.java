@@ -34,8 +34,10 @@
 package c_a.parser;
 
 import static c_a.fileReader.file_reader.reader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -56,9 +58,10 @@ public class parser {
     static String sourceOfError = "";
     static String potentialError = "";
     static int blockState;
+    static PrintWriter parserWriter;
 
     public void runParse() throws FileNotFoundException, IOException {
-
+        parserWriter = new PrintWriter("src/parser_resources/parser.out", "UTF-8");
         /* 
          * Re-initialize the file reader to read from our scanner output file
          * instead of reading the program input file
@@ -101,8 +104,11 @@ public class parser {
 
         /* kick off our parse with a lookahead set then call Sys_Goal */
         Get_Lookahead();
-
+       
+        
+        
         Sys_Goal();
+        
     }
 
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
@@ -163,12 +169,14 @@ public class parser {
     public static void Sys_Goal() {
         stackTrace.add("Sys_Goal");
         // 1. SystemGoal -> Program MP_EOF
+        parserWriter.println("rule #1: EXPANDING Program");
         Program();
         G_Check = Match("MP_EOF");
         switch (G_Check) {
             case 1:
-                Terminate("Program parsed successfully, found MP_EOF");
+                parserWriter.println("rule #1: \"MP_EOF\" REACHED");
                 stackTrace.remove("Sys_Goal");
+                Terminate("Program parsed successfully, found MP_EOF");
                 break;
 
             default:
@@ -184,15 +192,19 @@ public class parser {
         stackTrace.add("Program");
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
+        parserWriter.println("rule #2: EXPANDING Prog_Head");
         Prog_Head();
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
+                parserWriter.println("rule #2: \"MP_SCOLON\" REACHED");
                 Advance_Pointer();
+                parserWriter.println("rule #2: EXPANDING Block");
                 Block();
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
+                    parserWriter.println("rule #2: \"MP_PERIOD\" REACHED");
                     Advance_Pointer();
                     stackTrace.remove("Program");
                     break;
@@ -219,7 +231,9 @@ public class parser {
         G_Check = Match("MP_PROGRAM");
         switch (G_Check) {
             case 1:
+                parserWriter.println("rule #3: \"MP_PROGRAM\" REACHED");
                 Advance_Pointer();
+                parserWriter.println("rule #3: EXPANDING Prog_Id");
                 Prog_Id();
                 stackTrace.remove("Prog_Head");
                 break;
@@ -238,8 +252,11 @@ public class parser {
         stackTrace.add("Block");
         //track which lookaheads we have used so far;
         //4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement_Part
+        parserWriter.println("rule #4: EXPANDING Var_Dec_Part");
         Var_Dec_Part();
+        parserWriter.println("rule #4: EXPANDING Proc_Func_Dec_Part");
         Proc_Func_Dec_Part();
+        parserWriter.println("rule #4: EXPANDING Statement_Part");
         Statement_Part();
         stackTrace.remove("Block");
     }
@@ -253,11 +270,15 @@ public class parser {
         G_Check = Match("MP_VAR");
         switch (G_Check) {
             case 1:
+                parserWriter.println("rule #5: \"MP_VAR\" REACHED");
                 Advance_Pointer();
+                parserWriter.println("rule #5: EXPANDING Var_Dec");
                 Var_Dec();
                 G_Check = Match("MP_SCOLON");
                 if (G_Check == 1) {
+                    parserWriter.println("rule #5: \"MP_SCOLON\" REACHED");
                     Advance_Pointer();
+                    parserWriter.println("rule #5: EXPANDING Var_Dec_Tail");
                     Var_Dec_Tail();
                     stackTrace.remove("Var_Dec_Part");
                     break;
@@ -293,6 +314,7 @@ public class parser {
                 break;
             default:
                 potentialError = "Var_Dec_Tail, treated as empty";
+                stackTrace.remove("Var_Dec_Tail");
                 break;
         }
     }
@@ -1133,6 +1155,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
+                        stackTrace.remove("Step_Val");
                         break;
 
                     default:
@@ -1669,6 +1692,7 @@ public class parser {
         done = true;
         //think this is always printing error message - check into this
         System.out.println(message);
+        parserWriter.close();
         System.exit(0);
     }
 // </editor-fold>

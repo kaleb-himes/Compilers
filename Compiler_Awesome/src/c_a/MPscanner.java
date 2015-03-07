@@ -1,5 +1,6 @@
 package c_a;
 
+import static c_a.fileReader.file_reader.outFile;
 import static c_a.fileReader.file_reader.reader;
 import static c_a.mp.fLocation;
 import c_a.parser.parser;
@@ -33,6 +34,8 @@ public class MPscanner extends mp {
     private static boolean begin = false;
 
     public static void scanFile() throws IOException {
+        /* initialize the output file for scanner */
+        outFile = "scanner.out";
         File currentDirFile = new File(".");
         String helper = currentDirFile.getAbsolutePath();
         fLocation = "src/testStuff/" + testFile;

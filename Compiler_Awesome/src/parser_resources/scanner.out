@@ -223,5 +223,6 @@ MP_LPAREN      56   12   (
 MP_STRING_LIT  56   13   
 MP_RPAREN      56   13   )
 MP_SCOLON      56   14   ;
-  57   1   END
-MP_EOF         57   5   -1
+MP_END         57   1   END
+MP_PERIOD      57   4   .
+MP_EOF         57   6   -1
