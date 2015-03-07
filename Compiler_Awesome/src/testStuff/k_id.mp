@@ -3,7 +3,8 @@ program Tester;
  var I: Integer;
 
 {procedure this (VAR example:integer x)}
-  begin {tester}
+
+  begin tester
     Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
     Write('Please enter an integer value for I: ');
     Read(I);
