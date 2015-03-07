@@ -8,7 +8,7 @@ MP_INTEGER     3   9   Integer
 MP_SCOLON      3   16   ;
 MP_COMMENT     5   1   {procedure this (VAR example:integer x)}
 MP_BEGIN       7   3   begin
-MP_IDENTIFIER  7   9   tester
+MP_COMMENT     7   9   {tester}
 MP_WRITELN     8   5   Writeln
 MP_LPAREN      8   12   (
 MP_STRING_LIT  8   13   hi

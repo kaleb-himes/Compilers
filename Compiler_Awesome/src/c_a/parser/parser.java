@@ -692,7 +692,7 @@ public class parser {
         else if (lookAhead.equals("MP_WRITE") || lookAhead.equals("MP_WRITELN")) {
             Write_Statement();
         } // 38. Statement -> Assign_Statement
-        else if (lookAhead.equals("MP_ASSIGN")) {
+        else if (lookAhead.equals("MP_IDENTIFIER")) {
             Assign_Statement();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
