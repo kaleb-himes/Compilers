@@ -152,7 +152,7 @@ public class identifier_FSA extends mp {
             token = "MP_AND       ";
         else if (in.equals("begin"))
             token = "MP_BEGIN     ";
-        else if (in.equals("Boolean"))
+        else if (in.equals("boolean"))
             token = "MP_BOOLEAN   ";
         else if (in.equals("div"))
             token = "MP_DIV       ";
@@ -170,8 +170,6 @@ public class identifier_FSA extends mp {
             token = "MP_FIXED     ";
         else if (in.equals("float"))
             token = "MP_FLOAT     ";
-        else if (in.equals("for"))
-            token = "MP_FOR       ";
         else if (in.equals("function"))
             token = "MP_FUNCTION  ";
         else if (in.equals("if"))

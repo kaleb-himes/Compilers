@@ -128,6 +128,7 @@ public class symbol_FSA extends mp {
                             //and set the reader back
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
+                                mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.GEQACCEPT;
                             } else {
@@ -179,6 +180,7 @@ public class symbol_FSA extends mp {
                  * GEQACCEPT state indicates that we have read a > and an =.
                  */
                 case GEQACCEPT:
+                    token = "MP_GEQUAL";
 
                     /* return to dispatcher*/
                     return token;

@@ -104,9 +104,8 @@ public class parser {
 
         Sys_Goal();
     }
-    
-// <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
 
+// <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
     public static void Get_Lookahead() {
         /* Get Look Ahead */
         /* TODO LOGIC HERE FOR LOOK AHEAD */
@@ -124,9 +123,10 @@ public class parser {
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Get_Lookahead ran over EOF";
-                    Error(); break;
+                    Error();
+                    break;
                 }
-                lookAhead = parseTokens.get(index);
+                Get_Lookahead();
             }
         }
         System.out.println("Lookahead ------------------------------------>" + lookAhead);
@@ -147,7 +147,8 @@ public class parser {
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Advance_Pointer ran over EOF";
-                    Error(); break;
+                    Error();
+                    break;
                 }
                 peek = parseTokens.get(index);
             }
@@ -197,14 +198,16 @@ public class parser {
                     break;
                 } else {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
-                    Error(); break;
+                    Error();
+                    break;
                 }
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: " + lookAhead;
-                
-                Error(); break;
+
+                Error();
+                break;
         }
-        
+
     }
 // </editor-fold>
 
@@ -224,7 +227,8 @@ public class parser {
             default:
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
                         + " " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -259,8 +263,9 @@ public class parser {
                     break;
                 } else {
                     sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
-                                + "found:  " + lookAhead;
-                    Error(); break;
+                            + "found:  " + lookAhead;
+                    Error();
+                    break;
                 }
             default:
                 //stackTrace.remove("Var_Dec_Part");
@@ -308,13 +313,13 @@ public class parser {
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
-    
-// <editor-fold defaultstate="collapsed" desc="Type"> 
 
+// <editor-fold defaultstate="collapsed" desc="Type"> 
     public static void Type() {
         stackTrace.add("Type");
         // 10. Type -> MP_INTEGER_WORD
@@ -344,7 +349,8 @@ public class parser {
             default:
                 sourceOfError = "Type, Expected MP_INTEGER, MP_FLOAT, MP_STRING, or"
                         + " MP_BOOLEAN instead found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
         //stackTrace.remove("Type");
     }
@@ -388,7 +394,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Block();
-                G_Check = Match("MP_SCOLON");                
+                G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
@@ -398,12 +404,15 @@ public class parser {
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 }
+                break;
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -418,7 +427,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Block();
-                G_Check = Match("MP_SCOLON");                 
+                G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
@@ -427,17 +436,19 @@ public class parser {
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 }
                 break;
             default:
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
-    
+
 // <editor-fold defaultstate="collapsed" desc="Proc_Head"> 
     public static void Proc_Head() {
         stackTrace.add("Proc_Head");
@@ -453,7 +464,8 @@ public class parser {
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
                         + " " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -477,12 +489,14 @@ public class parser {
                 } else {
                     sourceOfError = "Func_Head, Expected MP_COLON found: "
                             + "" + lookAhead;
-                    Error(); break;
+                    Error();
+                    break;
                 }
             default:
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -509,7 +523,8 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Formal_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 }
                 break;
             default:
@@ -550,8 +565,7 @@ public class parser {
         if (lookAhead.equals("MP_VAR")) {
             Var_Param_Sec();
             //stackTrace.remove("Formal_Param_Sec_Tail");
-        }
-        else {
+        } else {
             Val_Param_Sec();
             //stackTrace.remove("Formal_Param_Sec_Tail");
         }
@@ -597,13 +611,15 @@ public class parser {
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
                                 + ": " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 }
                 break;
             default:
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -636,13 +652,15 @@ public class parser {
                     default:
                         sourceOfError = "Compound_Statement, Expected MP_END "
                                 + "found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 }
                 break;
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -670,7 +688,7 @@ public class parser {
                 Statement_Tail();
                 //stackTrace.remove("Statement_Tail");
                 break;
-                
+
             default:
                 potentialError = "Statement_Tail, Treated as Empty";
                 //stackTrace.remove("Statement_Tail");
@@ -751,19 +769,22 @@ public class parser {
                             default:
                                 sourceOfError = "Read_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                Error(); break;
+                                Error();
+                                break;
                         } //end case for R_PAREN
                         break;
                     default:
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for LPAREN
                 break;
             default:
                 sourceOfError = "Read_Statement, Expected "
                         + "MP_READ found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for READ
     }
 // </editor-fold>
@@ -826,19 +847,22 @@ public class parser {
                             default:
                                 sourceOfError = "Write_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                Error(); break;
+                                Error();
+                                break;
                         } //end case for RParen
                         break;
                     default:
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for LParen
                 break;
             default:
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for MP_WRITE
     }
 // </editor-fold>
@@ -893,7 +917,8 @@ public class parser {
             default:
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for Assign
     }
 // </editor-fold>
@@ -920,13 +945,15 @@ public class parser {
                     default:
                         sourceOfError = "If_Statement, Expected "
                                 + "MP_THEN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for Then
                 break;
             default:
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for If
     }
 // </editor-fold>
@@ -936,19 +963,24 @@ public class parser {
         stackTrace.add("Opt_Else_Part");
         // 57. Opt_Else_Part -> MP_ELSE_WORD Statement
         // 58. Opt_Else_Part -> MP_EMPTY
-        G_Check = Match("MP_ELSE");
-        switch (G_Check) {
-            case 1:
-                Advance_Pointer();
-                Statement();
-                //stackTrace.remove("Opt_Else_Part");
-                break;
+        if (lookAhead.equals("MP_SCOLON")) {
+            potentialError = "Semi-colon in if part, terminates the if statement"
+                    + " before else part can be evaluated.";
+        } else {
+            G_Check = Match("MP_ELSE");
+            switch (G_Check) {
+                case 1:
+                    Advance_Pointer();
+                    Statement();
+                    //stackTrace.remove("Opt_Else_Part");
+                    break;
 
-            default:
-                potentialError = "Opt_Else_Part, Treated as Empty";
-                //stackTrace.remove("Opt_Else_Part");
-                break;
-        } //end case for else
+                default:
+                    potentialError = "Opt_Else_Part, Treated as Empty";
+                    //stackTrace.remove("Opt_Else_Part");
+                    break;
+            } //end case for else
+        }
     }
 // </editor-fold>
 
@@ -973,13 +1005,15 @@ public class parser {
                     default:
                         sourceOfError = "Repeat_Statement, Expected "
                                 + "MP_UNTIL found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for Until
                 break;
             default:
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for Repeat
     }
 // </editor-fold>
@@ -1004,13 +1038,15 @@ public class parser {
                     default:
                         sourceOfError = "While_Statement, Expected "
                                 + "MP_DO found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for Do
                 break;
             default:
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for While
     }
 // </editor-fold>
@@ -1043,19 +1079,22 @@ public class parser {
                             default:
                                 sourceOfError = "For_Statement, Expected "
                                         + "MP_DO found: " + lookAhead;
-                                Error(); break;
+                                Error();
+                                break;
                         } //end case for Do
                         break;
                     default:
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case for Assign
                 break;
             default:
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         } //end case for For
     }
 // </editor-fold>
@@ -1099,7 +1138,8 @@ public class parser {
                     default:
                         sourceOfError = "Step_Val, Expected "
                                 + "MP_TO or MP_DOWNTO found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case DownTo
         }
     }
@@ -1145,7 +1185,8 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Actual_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case RParen
                 break;
             default:
@@ -1235,7 +1276,7 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             Advance_Pointer();
-        } else if (lookAhead.equals("MP_LGEQUAL")) {
+        } else if (lookAhead.equals("MP_GEQUAL")) {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             Advance_Pointer();
@@ -1296,7 +1337,7 @@ public class parser {
                         break;
                     default:
                         potentialError = "Optional_Sign treated as Empty";
-                        //stackTrace.remove("Optional_Sign");
+                    //stackTrace.remove("Optional_Sign");
                 } //end case Minus
                 break;
         } //end case Plus
@@ -1446,14 +1487,15 @@ public class parser {
             Advance_Pointer();
             Expression();
             G_Check = Match("MP_RPAREN");
-            switch(G_Check) {
+            switch (G_Check) {
                 case 1:
                     Advance_Pointer();
                     //stackTrace.remove("Factor");
                     break;
                 default:
                     sourceOfError = "Factor, expected MP_RPAREN found: " + lookAhead;
-                    Error(); break;
+                    Error();
+                    break;
             }
         } else {
             Function_Id();
@@ -1556,7 +1598,8 @@ public class parser {
             default:
                 sourceOfError = "Id_List, Expected "
                         + "MP_IDENTIFIER found: " + lookAhead;
-                Error(); break;
+                Error();
+                break;
         }
     }
 // </editor-fold>
@@ -1582,12 +1625,13 @@ public class parser {
                     default:
                         sourceOfError = "Id_Tail, Expected "
                                 + "MP_IDENTIFIER found: " + lookAhead;
-                        Error(); break;
+                        Error();
+                        break;
                 } //end case Identifier
                 break;
             default:
                 potentialError = "Id_Tail, Treated as empty";
-                //stackTrace.remove("Id_Tail");
+            //stackTrace.remove("Id_Tail");
         } //end case Comma
     }
 // </editor-fold>
@@ -1626,14 +1670,13 @@ public class parser {
         System.exit(0);
     }
 // </editor-fold>
-    
+
 // <editor-fold defaultstate="collapsed" desc="Match">    
     /*
      * @param in: the value of lookahead at the time it is called.
      * @function match: matches the token to see if it is a reserved word
      *                  or variable.
      */
-
     public static Integer Match(String in) {
         if (in.equals(lookAhead)) {
             return 1;
