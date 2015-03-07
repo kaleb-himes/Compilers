@@ -312,7 +312,7 @@ public class parser {
         }
     }
 // </editor-fold>
-    //Not sure this will work as expected???????????????????????????????????????
+    
 // <editor-fold defaultstate="collapsed" desc="Type"> 
 
     public static void Type() {
@@ -1231,13 +1231,13 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             Advance_Pointer();
-        } else if (lookAhead.equals("MP_LTHAN")) {
+        } else if (lookAhead.equals("MP_GTHAN")) {
             Advance_Pointer();
-        } else if (lookAhead.equals("MP_LTHAN")) {
+        } else if (lookAhead.equals("MP_LEQUAL")) {
             Advance_Pointer();
-        } else if (lookAhead.equals("MP_LTHAN")) {
+        } else if (lookAhead.equals("MP_LGEQUAL")) {
             Advance_Pointer();
-        } else if (lookAhead.equals("MP_LTHAN")) {
+        } else if (lookAhead.equals("MP_NEQUAL")) {
             Advance_Pointer();
         } else {
             return -1;

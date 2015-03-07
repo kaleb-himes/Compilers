@@ -1,43 +1,23 @@
-PROGRAM Sort;
-    CONST
-        { Max array size. }
-        MaxElts = 50;
-    TYPE 
-        { Type of the element array. }
-        IntArrType = ARRAY [1..MaxElts] OF Integer;
+program Tester;
 
-    VAR
-        { Indexes, exchange temp, array size. }
-        i, j, tmp, size: integer;
+ var I: Integer;
 
-        { Array of ints }
-        arr: Integer;
+{procedure this (VAR example:integer x)}
 
-    { Read in the integers. }
-    PROCEDURE Read(VAR size: Integer; VAR a: IntArrType);
-        BEGIN
-            size := 1;
-            WHILE NOT eof DO BEGIN
-                read(a[size]);
-                IF NOT eof THEN 
-                    size := size + 1
-            END
-        END;
+  begin {tester}
+    Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
+    Write('Please enter an integer value for I: ');
+    Read(I);
+    I := I + 1;
 
-    BEGIN
-        { Read }
-        Read(size, arr);
+    FOR I:=5 to 12 do
+        If I <= 6 then
+            Write ( 'this stuff');
+        else
+            Write ( 'that stuff') ;
+        I := I + 1;
 
-        { Sort using bubble sort. }
-        FOR i := size - 1 DOWNTO 1 DO
-            FOR j := 1 TO i DO 
-                IF arr[j] > arr[j + 1] THEN BEGIN
-                    tmp := arr[j];
-                    arr[j] := arr[j + 1];
-                    arr[j + 1] := tmp;
-                END;
-
-        { Print. }
-        FOR i := 1 TO size DO
-            writeln(arr[i])
-    END.
+    Writeln('The current value of I is ', I=0);
+    Writeln(''); 
+    Writeln('');
+  end. {tester}
