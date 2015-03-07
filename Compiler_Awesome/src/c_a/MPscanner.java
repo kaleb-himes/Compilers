@@ -43,7 +43,6 @@ public class MPscanner extends mp {
 
         if (f.exists() && !f.isDirectory()) {
             char nextT = getNextToken();
-//            System.out.println("nextT = " + nextT);
             Dispatcher.handleToken(nextT);
         } else {
             System.out.println("Error: file not found exception.");

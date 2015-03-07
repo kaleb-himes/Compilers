@@ -2,12 +2,12 @@ program Tester;
 
  var I: Integer;
 
-    procedure junk (VAR test:Float);
+    procedure junk (VAR test:Float; VAR garbage,junk,plop:Boolean);
     begin
         read(somestuff)
     end; {tester}
 
-    function junk (VAR test:Float) : Boolean;
+    function junk (VAR test:Float; VAR garbage:Boolean) : Boolean;
     begin
         read(somestuff)
     end; {tester}
@@ -22,7 +22,7 @@ program Tester;
         read(somestuff)
     end; {tester}
 
-{procedure this (VAR example:integer x)}
+{procedure this (VAR example:integer x, Var garbage:FLOAT y)}
   begin {tester}
     Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
     Write('Please enter an integer value for I: ');
@@ -37,7 +37,7 @@ program Tester;
         I := I + 1;
 
     FOR I:=5 downto 12 do
-        If I <= 6 then
+        If I <= -6 then
             Write ( 'this stuff')
         else
             Write ( 'that stuff');
@@ -54,5 +54,4 @@ program Tester;
     Writeln('The current value of I is ', I = 0);
     Writeln(''); 
     Writeln('');
-END. {tester}
-
+END

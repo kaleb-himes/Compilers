@@ -168,12 +168,12 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Terminate("Program parsed successfully, found MP_EOF");
-                //stackTrace.remove("Sys_Goal");
+                stackTrace.remove("Sys_Goal");
                 break;
 
             default:
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
-                //stackTrace.remove("Sys_Goal");
+                stackTrace.remove("Sys_Goal");
                 break;
         }
     }
@@ -194,7 +194,7 @@ public class parser {
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
                     Advance_Pointer();
-                    //stackTrace.remove("Program");
+                    stackTrace.remove("Program");
                     break;
                 } else {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
@@ -221,7 +221,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Prog_Id();
-                //stackTrace.remove("Prog_Head");
+                stackTrace.remove("Prog_Head");
                 break;
 
             default:
@@ -241,7 +241,7 @@ public class parser {
         Var_Dec_Part();
         Proc_Func_Dec_Part();
         Statement_Part();
-        //stackTrace.remove("Block");
+        stackTrace.remove("Block");
     }
 // </editor-fold>
 
@@ -259,7 +259,7 @@ public class parser {
                 if (G_Check == 1) {
                     Advance_Pointer();
                     Var_Dec_Tail();
-                    //stackTrace.remove("Var_Dec_Part");
+                    stackTrace.remove("Var_Dec_Part");
                     break;
                 } else {
                     sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
@@ -268,7 +268,7 @@ public class parser {
                     break;
                 }
             default:
-                //stackTrace.remove("Var_Dec_Part");
+                stackTrace.remove("Var_Dec_Part");
                 potentialError = "Var_Dec_Part, treated as empty";
                 break;
         }
@@ -289,7 +289,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Var_Dec_Tail();
-                //stackTrace.remove("Var_Dec_Tail");
+                stackTrace.remove("Var_Dec_Tail");
                 break;
             default:
                 potentialError = "Var_Dec_Tail, treated as empty";
@@ -308,7 +308,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Type();
-                //stackTrace.remove("Var_Dec");
+                stackTrace.remove("Var_Dec");
                 break;
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
@@ -352,7 +352,7 @@ public class parser {
                 Error();
                 break;
         }
-        //stackTrace.remove("Type");
+        stackTrace.remove("Type");
     }
 // </editor-fold>
 
@@ -367,18 +367,18 @@ public class parser {
             case "MP_PROCEDURE":
                 Proc_Dec();
                 Proc_Func_Dec_Part();
-                //stackTrace.remove("Proc_Func_Dec_Part");
+                stackTrace.remove("Proc_Func_Dec_Part");
                 break;
 
             case "MP_FUNCTION":
                 Func_Dec();
                 Proc_Func_Dec_Part();
-                //stackTrace.remove("Proc_Func_Dec_Part");
+                stackTrace.remove("Proc_Func_Dec_Part");
                 break;
 
             default:
                 potentialError = "Proc_Func_Dec_Part treated as Empty.";
-                //stackTrace.remove("Proc_Func_Dec_Part");
+                stackTrace.remove("Proc_Func_Dec_Part");
                 break;
         }
     }
@@ -398,7 +398,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Proc_Dec");
+                        stackTrace.remove("Proc_Dec");
                         break;
 
                     default:
@@ -431,7 +431,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Func_Dec");
+                        stackTrace.remove("Func_Dec");
                         break;
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
@@ -459,7 +459,7 @@ public class parser {
                 Advance_Pointer();
                 Proc_Id();
                 Opt_Formal_Param_List();
-                //stackTrace.remove("Proc_Head");
+                stackTrace.remove("Proc_Head");
                 break;
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
@@ -484,7 +484,7 @@ public class parser {
                 if (G_Check == 1) {
                     Advance_Pointer();
                     Type();
-                    //stackTrace.remove("Func_Head");
+                    stackTrace.remove("Func_Head");
                     break;
                 } else {
                     sourceOfError = "Func_Head, Expected MP_COLON found: "
@@ -517,7 +517,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Opt_Formal_Param_List");
+                        stackTrace.remove("Opt_Formal_Param_List");
                         break;
 
                     default:
@@ -529,7 +529,7 @@ public class parser {
                 break;
             default:
                 potentialError = "Opt_Formal_Param_List treated as Empty";
-                //stackTrace.remove("Opt_Formal_Param_List");
+                stackTrace.remove("Opt_Formal_Param_List");
                 break;
         }
     }
@@ -547,11 +547,11 @@ public class parser {
                 Advance_Pointer();
                 Formal_Param_Sec();
                 Formal_Param_Sec_Tail();
-                //stackTrace.remove("Formal_Param_Sec_Tail");
+                stackTrace.remove("Formal_Param_Sec_Tail");
                 break;
             default:
                 potentialError = "Formal_Param_Sec_Tail, Treated as Empty";
-                //stackTrace.remove("Formal_Param_Sec_Tail");
+                stackTrace.remove("Formal_Param_Sec_Tail");
                 break;
         }
     }
@@ -564,10 +564,10 @@ public class parser {
         // 26. Formal_Param_Sec -> Var_Param_Sec
         if (lookAhead.equals("MP_VAR")) {
             Var_Param_Sec();
-            //stackTrace.remove("Formal_Param_Sec_Tail");
+            stackTrace.remove("Formal_Param_Sec");
         } else {
             Val_Param_Sec();
-            //stackTrace.remove("Formal_Param_Sec_Tail");
+            stackTrace.remove("Formal_Param_Sec");
         }
     }
 // </editor-fold>
@@ -582,7 +582,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Type();
-                //stackTrace.remove("Val_Param_Sec");
+                stackTrace.remove("Val_Param_Sec");
                 break;
             default:
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
@@ -606,7 +606,7 @@ public class parser {
                     case 1:
                         Advance_Pointer();
                         Type();
-                        //stackTrace.remove("Var_Param_Sec");
+                        stackTrace.remove("Var_Param_Sec");
                         break;
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
@@ -629,7 +629,7 @@ public class parser {
         stackTrace.add("Statement_Part");
         // 29. Statement_Part -> Compound_Statement
         Compound_Statement();
-        //stackTrace.remove("Statement_Part");
+        stackTrace.remove("Statement_Part");
     }
 // </editor-fold>
 
@@ -646,7 +646,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Compound_Statement");
+                        stackTrace.remove("Compound_Statement");
                         break;
 
                     default:
@@ -671,7 +671,7 @@ public class parser {
         // 31. Statement_Seq -> Statement Statement_Tail
         Statement();
         Statement_Tail();
-        //stackTrace.remove("Statement_Seq");
+        stackTrace.remove("Statement_Seq");
     }
 // </editor-fold>
 
@@ -686,12 +686,12 @@ public class parser {
                 Advance_Pointer();
                 Statement();
                 Statement_Tail();
-                //stackTrace.remove("Statement_Tail");
+                stackTrace.remove("Statement_Tail");
                 break;
 
             default:
                 potentialError = "Statement_Tail, Treated as Empty";
-                //stackTrace.remove("Statement_Tail");
+                stackTrace.remove("Statement_Tail");
                 break;
         }
     }
@@ -731,7 +731,7 @@ public class parser {
         else {
             Empty_Statement();
         }
-        //stackTrace.remove("Statement");
+        stackTrace.remove("Statement");
     }
 // </editor-fold>
 
@@ -741,7 +741,7 @@ public class parser {
         stackTrace.add("Empty_Statement");
         // 44. Empty_Statement -> MP_EMPTY
         potentialError = "Statement, Treated as Empty";
-        //stackTrace.remove("Empty_Statement");
+        stackTrace.remove("Empty_Statement");
     }
 // </editor-fold>
 
@@ -763,7 +763,7 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
-                                //stackTrace.remove("Read_Statement");
+                                stackTrace.remove("Read_Statement");
                                 break;
 
                             default:
@@ -800,12 +800,12 @@ public class parser {
                 Advance_Pointer();
                 Read_Param();
                 Read_Param_Tail();
-                //stackTrace.remove("Read_Param_Tail");
+                stackTrace.remove("Read_Param_Tail");
                 break;
 
             default:
                 potentialError = "Read_Param_Tail, Treated as Empty";
-                //stackTrace.remove("Read_Param_Tail");
+                stackTrace.remove("Read_Param_Tail");
                 break;
         }
     }
@@ -816,7 +816,7 @@ public class parser {
         stackTrace.add("Read_Param");
         // 48. Read_Param -> Var_Id
         Var_Id();
-        //stackTrace.remove("Read_Param");
+        stackTrace.remove("Read_Param");
     }
 // </editor-fold>
 
@@ -842,7 +842,7 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
-                                //stackTrace.remove("Write_Statement");
+                                stackTrace.remove("Write_Statement");
                                 break;
                             default:
                                 sourceOfError = "Write_Statement, Expected "
@@ -878,12 +878,12 @@ public class parser {
                 Advance_Pointer();
                 Write_Param();
                 Write_Param_Tail();
-                //stackTrace.remove("Write_Param_Tail");
+                stackTrace.remove("Write_Param_Tail");
                 break;
 
             default:
                 potentialError = "Write_Param_Tail, Treated as Empty";
-                //stackTrace.remove("Write_Param_Tail");
+                stackTrace.remove("Write_Param_Tail");
                 break;
         } //end case for Comma
     }
@@ -894,7 +894,7 @@ public class parser {
         stackTrace.add("Write_Param");
         // 53. Write_Param -> Ordinal_Expression
         Ordinal_Expression();
-        //stackTrace.remove("Write_Param");
+        stackTrace.remove("Write_Param");
     }
 // </editor-fold>
 
@@ -911,7 +911,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Expression();
-                //stackTrace.remove("Assign_Statement");
+                stackTrace.remove("Assign_Statement");
                 break;
 
             default:
@@ -939,7 +939,7 @@ public class parser {
                         Advance_Pointer();
                         Statement();
                         Opt_Else_Part();
-                        //stackTrace.remove("If_Statement");
+                        stackTrace.remove("If_Statement");
                         break;
 
                     default:
@@ -972,12 +972,12 @@ public class parser {
                 case 1:
                     Advance_Pointer();
                     Statement();
-                    //stackTrace.remove("Opt_Else_Part");
+                    stackTrace.remove("Opt_Else_Part");
                     break;
 
                 default:
                     potentialError = "Opt_Else_Part, Treated as Empty";
-                    //stackTrace.remove("Opt_Else_Part");
+                    stackTrace.remove("Opt_Else_Part");
                     break;
             } //end case for else
         }
@@ -999,7 +999,7 @@ public class parser {
                     case 1:
                         Advance_Pointer();
                         Boolean_Expression();
-                        //stackTrace.remove("Repeat_Statement");
+                        stackTrace.remove("Repeat_Statement");
                         break;
 
                     default:
@@ -1032,7 +1032,7 @@ public class parser {
                     case 1:
                         Advance_Pointer();
                         Statement();
-                        //stackTrace.remove("While_Statement");
+                        stackTrace.remove("While_Statement");
                         break;
 
                     default:
@@ -1074,7 +1074,7 @@ public class parser {
                             case 1:
                                 Advance_Pointer();
                                 Statement();
-                                //stackTrace.remove("For_Statement");
+                                stackTrace.remove("For_Statement");
                                 break;
                             default:
                                 sourceOfError = "For_Statement, Expected "
@@ -1104,7 +1104,7 @@ public class parser {
         stackTrace.add("Control_Var");
         // 62. Control_Var -> Var_Id
         Var_Id();
-        //stackTrace.remove("Control_Var");
+        stackTrace.remove("Control_Var");
     }
 // </editor-fold>
 
@@ -1113,7 +1113,7 @@ public class parser {
         stackTrace.add("Init_Val");
         // 63. Init_Val -> Ordinal_Expression
         Ordinal_Expression();
-        //stackTrace.remove("Init_Val");
+        stackTrace.remove("Init_Val");
     }
 // </editor-fold>
 
@@ -1126,7 +1126,7 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Advance_Pointer();
-                //stackTrace.remove("Step_Val");
+                stackTrace.remove("Step_Val");
                 break;
             default:
                 G_Check = Match("MP_DOWNTO");
@@ -1150,7 +1150,7 @@ public class parser {
         stackTrace.add("Final_Val");
         // 66. Final_Val -> Ordinal_Expression
         Ordinal_Expression();
-        //stackTrace.remove("Final_Val");
+        stackTrace.remove("Final_Val");
     }
 // </editor-fold>
 
@@ -1160,7 +1160,7 @@ public class parser {
         // 67. Proc_Statement -> Proc_Id Opt_Actual_Param_List
         Proc_Id();
         Opt_Actual_Param_List();
-        //stackTrace.remove("Proc_Statement");
+        stackTrace.remove("Proc_Statement");
     }
 // </editor-fold>
 
@@ -1179,7 +1179,7 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Opt_Actual_Param_List");
+                        stackTrace.remove("Opt_Actual_Param_List");
                         break;
 
                     default:
@@ -1191,7 +1191,7 @@ public class parser {
                 break;
             default:
                 potentialError = "Opt_Actual_Param_List, Treated as Empty";
-                //stackTrace.remove("Opt_Actual_Param_List");
+                stackTrace.remove("Opt_Actual_Param_List");
                 break;
         }
     }
@@ -1208,12 +1208,12 @@ public class parser {
                 Advance_Pointer();
                 Actual_Param();
                 Actual_Param_Tail();
-                //stackTrace.remove("Actual_Param_Tail");
+                stackTrace.remove("Actual_Param_Tail");
                 break;
 
             default:
                 potentialError = "Actual_Param_List, Treated as Empty";
-                //stackTrace.remove("Actual_Param_Tail");
+                stackTrace.remove("Actual_Param_Tail");
                 break;
         }
     }
@@ -1224,7 +1224,7 @@ public class parser {
         stackTrace.add("Actual_Param");
         // 72. Actual_Param -> Ordinal_Expression
         Ordinal_Expression();
-        //stackTrace.remove("Actual_Param");
+        stackTrace.remove("Actual_Param");
     }
 // </editor-fold>
 
@@ -1234,7 +1234,7 @@ public class parser {
         // 73. Expression -> Simple_Expression Opt_Relational_Part
         Simple_Expression();
         Opt_Relational_Part();
-        //stackTrace.remove("Expression");
+        stackTrace.remove("Expression");
     }
 // </editor-fold>
 
@@ -1246,10 +1246,10 @@ public class parser {
         int tempCheck = Relational_Op();
         if (tempCheck == -1) {
             potentialError = "Opt_Relational_Part treated as Empty";
-            //stackTrace.remove("Opt_Relational_Part");
+            stackTrace.remove("Opt_Relational_Part");
         } else {
             Simple_Expression();
-            //stackTrace.remove("Opt_Relational_Part");
+            stackTrace.remove("Opt_Relational_Part");
         }
         //how to deal with epsilon here?????????????????????????????????????????
     }
@@ -1281,9 +1281,10 @@ public class parser {
         } else if (lookAhead.equals("MP_NEQUAL")) {
             Advance_Pointer();
         } else {
+            stackTrace.remove("Relational_Op");
             return -1;
         }
-        //stackTrace.remove("Relational_Op");
+        stackTrace.remove("Relational_Op");
         return 0;
     }
 // </editor-fold>
@@ -1295,7 +1296,7 @@ public class parser {
         Optional_Sign();
         Term();
         Term_Tail();
-        //stackTrace.remove("Simple_Expression");
+        stackTrace.remove("Simple_Expression");
     }
 // </editor-fold>
 
@@ -1311,7 +1312,7 @@ public class parser {
             Term();
             Term_Tail();
         }
-        //stackTrace.remove("Term_Tail");
+        stackTrace.remove("Term_Tail");
     }
 // </editor-fold>
 
@@ -1325,7 +1326,7 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Advance_Pointer();
-                //stackTrace.remove("Optional_Sign");
+                stackTrace.remove("Optional_Sign");
                 break;
 
             default:
@@ -1333,11 +1334,11 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Optional_Sign");
+                        stackTrace.remove("Optional_Sign");
                         break;
                     default:
                         potentialError = "Optional_Sign treated as Empty";
-                    //stackTrace.remove("Optional_Sign");
+                    stackTrace.remove("Optional_Sign");
                 } //end case Minus
                 break;
         } //end case Plus
@@ -1355,24 +1356,24 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Advance_Pointer();
-                //stackTrace.remove("Add_Op");
+                stackTrace.remove("Add_Op");
                 return 0;
             default:
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Add_Op");
+                        stackTrace.remove("Add_Op");
                         return 0;
                     default:
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
-                                //stackTrace.remove("Add_Op");
+                                stackTrace.remove("Add_Op");
                                 return 0;
                             default:
-                                //stackTrace.remove("Add_Op");
+                                stackTrace.remove("Add_Op");
                                 return -1;
                         } //end case OR
                 } //end case Minus
@@ -1386,7 +1387,7 @@ public class parser {
         // 91. Term -> Factor Factor_Tail
         Factor();
         Factor_Tail();
-        //stackTrace.remove("Term");
+        stackTrace.remove("Term");
     }
 // </editor-fold>
 
@@ -1402,7 +1403,7 @@ public class parser {
             Factor();
             Factor_Tail();
         }
-        //stackTrace.remove("Factor_Tail");
+        stackTrace.remove("Factor_Tail");
     }
 // </editor-fold>
 
@@ -1418,38 +1419,38 @@ public class parser {
         switch (G_Check) {
             case 1:
                 Advance_Pointer();
-                //stackTrace.remove("Multiply_Op");
+                stackTrace.remove("Multiply_Op");
                 return 0;
             default:
                 G_Check = Match("MP_FORWARD_SLASH");
                 switch (G_Check) {
                     case 1:
                         Advance_Pointer();
-                        //stackTrace.remove("Multiply_Op");
+                        stackTrace.remove("Multiply_Op");
                         return 0;
                     default:
                         G_Check = Match("MP_DIV");
                         switch (G_Check) {
                             case 1:
                                 Advance_Pointer();
-                                //stackTrace.remove("Multiply_Op");
+                                stackTrace.remove("Multiply_Op");
                                 return 0;
                             default:
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
                                     case 1:
                                         Advance_Pointer();
-                                        //stackTrace.remove("Multiply_Op");
+                                        stackTrace.remove("Multiply_Op");
                                         return 0;
                                     default:
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
                                             case 1:
                                                 Advance_Pointer();
-                                                //stackTrace.remove("Multiply_Op");
+                                                stackTrace.remove("Multiply_Op");
                                                 return 0;
                                             default:
-                                                //stackTrace.remove("Multiply_Op");
+                                                stackTrace.remove("Multiply_Op");
                                                 return -1;
                                         } //end case AND
                                 } //end case Mod
@@ -1490,7 +1491,7 @@ public class parser {
             switch (G_Check) {
                 case 1:
                     Advance_Pointer();
-                    //stackTrace.remove("Factor");
+                    stackTrace.remove("Factor");
                     break;
                 default:
                     sourceOfError = "Factor, expected MP_RPAREN found: " + lookAhead;
@@ -1500,8 +1501,9 @@ public class parser {
         } else {
             Function_Id();
             Opt_Actual_Param_List();
-            //stackTrace.remove("Factor");
+            stackTrace.remove("Factor");
         }
+        stackTrace.remove("Factor");
     }
 // </editor-fold>
 
@@ -1512,7 +1514,7 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             Advance_Pointer();
-            //stackTrace.remove("Prog_Id");
+            stackTrace.remove("Prog_Id");
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
@@ -1527,7 +1529,7 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             Advance_Pointer();
-            //stackTrace.remove("Var_Id");
+            stackTrace.remove("Var_Id");
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
@@ -1542,7 +1544,7 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             Advance_Pointer();
-            //stackTrace.remove("Proc_Id");
+            stackTrace.remove("Proc_Id");
         } else {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
@@ -1557,7 +1559,7 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             Advance_Pointer();
-            //stackTrace.remove("Function_Id");
+            stackTrace.remove("Function_Id");
         } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             Error();
@@ -1570,7 +1572,7 @@ public class parser {
         stackTrace.add("Boolean_Expression");
         // 111. Boolean_Expression -> Expression
         Expression();
-        //stackTrace.remove("Boolean_Expression");
+        stackTrace.remove("Boolean_Expression");
     }
 // </editor-fold>
 
@@ -1579,7 +1581,7 @@ public class parser {
         stackTrace.add("Ordinal_Expression");
         // 112. Ordinal_Expression -> Expression
         Expression();
-        //stackTrace.remove("Ordinal_Expression");
+        stackTrace.remove("Ordinal_Expression");
     }
 // </editor-fold>
 
@@ -1593,7 +1595,7 @@ public class parser {
             case 1:
                 Advance_Pointer();
                 Id_Tail();
-                //stackTrace.remove("Id_List");
+                stackTrace.remove("Id_List");
                 break;
             default:
                 sourceOfError = "Id_List, Expected "
@@ -1619,7 +1621,7 @@ public class parser {
                     case 1:
                         Advance_Pointer();
                         Id_Tail();
-                        //stackTrace.remove("Id_Tail");
+                        stackTrace.remove("Id_Tail");
                         break;
 
                     default:
@@ -1631,7 +1633,7 @@ public class parser {
                 break;
             default:
                 potentialError = "Id_Tail, Treated as empty";
-            //stackTrace.remove("Id_Tail");
+            stackTrace.remove("Id_Tail");
         } //end case Comma
     }
 // </editor-fold>
