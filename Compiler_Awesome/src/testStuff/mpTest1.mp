@@ -1,12 +1,14 @@
-{ a sample program 1 }
+program Tester;
 
-program sample1;
-  var a = "hello"
-  var i, j: integer;
-begin
-  readln(i); { get i }
-  j := 9 + i * 8; { evaluate j }
-  write( 'Result is ' );
-  write( j ); { print j }
-  writeln
-end.
+ var I: Integer;
+
+{procedure this (VAR example:integer x)}
+
+  begin {tester}
+    Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
+    Write('Please enter an integer value for I: ');
+    Read(I);
+    I := I + 1;
+    Writeln('The current value of I is ', I=0);
+    Writeln(''); Writeln('');
+  end. {tester}
