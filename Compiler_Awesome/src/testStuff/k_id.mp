@@ -38,11 +38,12 @@ program Tester;
 
     FOR I:=5 downto 12 do
         If I <= -6 then
-            Write ( 'this stuff')
+            Write ( 'this stuff') {just in case}
         else
             Write ( 'that stuff');
         I := I + 1;
-
+        If I <= -6 then
+            Write ( 'this stuff');
 
     While (I <> 20) do
         I := I + 1;

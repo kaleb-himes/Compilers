@@ -168,6 +168,7 @@ MP_WRITE       41   13   Write
 MP_LPAREN      41   19   (
 MP_STRING_LIT  41   21   this stuff
 MP_RPAREN      41   31   )
+MP_COMMENT     41   33   {just in case}
 MP_ELSE        42   9   else
 MP_WRITE       43   13   Write
 MP_LPAREN      43   19   (
@@ -180,49 +181,60 @@ MP_IDENTIFIER  44   15   I
 MP_PLUS        44   17   +
 MP_INTEGER_LIT 44   19   1
 MP_SCOLON      44   20   ;
-MP_WHILE       47   5   While
-MP_LPAREN      47   11   (
-MP_IDENTIFIER  47   12   I
-MP_NEQUAL      47   14   <>
-MP_INTEGER_LIT 47   18   20
-MP_RPAREN      47   20   )
-MP_DO          47   22   do
-MP_IDENTIFIER  48   9   I
-MP_ASSIGN      48   11   :=
-MP_IDENTIFIER  48   15   I
-MP_PLUS        48   17   +
-MP_INTEGER_LIT 48   19   1
-MP_SCOLON      48   20   ;
-MP_REPEAT      50   5   Repeat
-MP_IDENTIFIER  51   9   I
-MP_ASSIGN      51   11   :=
-MP_INTEGER_LIT 51   15   5
-MP_UNTIL       52   9   until
-MP_LPAREN      52   15   (
-MP_IDENTIFIER  52   16   I
-MP_NEQUAL      52   18   <>
-MP_INTEGER_LIT 52   22   5
-MP_RPAREN      52   23   )
-MP_SCOLON      52   24   ;
-MP_WRITELN     54   5   Writeln
-MP_LPAREN      54   12   (
-MP_STRING_LIT  54   13   The current value of I is 
-MP_COMMA       54   39   ,
-MP_IDENTIFIER  54   41   I
-MP_EQUAL       54   43   =
-MP_INTEGER_LIT 54   45   0
-MP_RPAREN      54   46   )
-MP_SCOLON      54   47   ;
+MP_IF          45   9   If
+MP_IDENTIFIER  45   12   I
+MP_LEQUAL      45   14   <=
+MP_MINUS       45   18   -
+MP_INTEGER_LIT 45   19   6
+MP_THEN        45   21   then
+MP_WRITE       46   13   Write
+MP_LPAREN      46   19   (
+MP_STRING_LIT  46   21   this stuff
+MP_RPAREN      46   31   )
+MP_SCOLON      46   32   ;
+MP_WHILE       48   5   While
+MP_LPAREN      48   11   (
+MP_IDENTIFIER  48   12   I
+MP_NEQUAL      48   14   <>
+MP_INTEGER_LIT 48   18   20
+MP_RPAREN      48   20   )
+MP_DO          48   22   do
+MP_IDENTIFIER  49   9   I
+MP_ASSIGN      49   11   :=
+MP_IDENTIFIER  49   15   I
+MP_PLUS        49   17   +
+MP_INTEGER_LIT 49   19   1
+MP_SCOLON      49   20   ;
+MP_REPEAT      51   5   Repeat
+MP_IDENTIFIER  52   9   I
+MP_ASSIGN      52   11   :=
+MP_INTEGER_LIT 52   15   5
+MP_UNTIL       53   9   until
+MP_LPAREN      53   15   (
+MP_IDENTIFIER  53   16   I
+MP_NEQUAL      53   18   <>
+MP_INTEGER_LIT 53   22   5
+MP_RPAREN      53   23   )
+MP_SCOLON      53   24   ;
 MP_WRITELN     55   5   Writeln
 MP_LPAREN      55   12   (
-MP_STRING_LIT  55   13   
-MP_RPAREN      55   13   )
-MP_SCOLON      55   14   ;
+MP_STRING_LIT  55   13   The current value of I is 
+MP_COMMA       55   39   ,
+MP_IDENTIFIER  55   41   I
+MP_EQUAL       55   43   =
+MP_INTEGER_LIT 55   45   0
+MP_RPAREN      55   46   )
+MP_SCOLON      55   47   ;
 MP_WRITELN     56   5   Writeln
 MP_LPAREN      56   12   (
 MP_STRING_LIT  56   13   
 MP_RPAREN      56   13   )
 MP_SCOLON      56   14   ;
-MP_END         57   1   END
-MP_PERIOD      57   4   .
-MP_EOF         57   6   -1
+MP_WRITELN     57   5   Writeln
+MP_LPAREN      57   12   (
+MP_STRING_LIT  57   13   
+MP_RPAREN      57   13   )
+MP_SCOLON      57   14   ;
+MP_END         58   1   END
+MP_PERIOD      58   4   .
+MP_EOF         58   6   -1
