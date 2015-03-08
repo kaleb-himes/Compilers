@@ -124,7 +124,7 @@ public class parser {
         if (lookAhead.equals("MP_COMMENT")) {
             index += 3;
             lookAhead = parseTokens.get(index);
-            while (!lookAhead.contains("MP_")) {
+            while (!lookAhead.contains("}")) {
                 System.out.println("skipping: " + lookAhead);
                 index++;
                 if (index > parseTokens.size()) {
@@ -132,6 +132,10 @@ public class parser {
                     Error();
                     break;
                 }
+                Get_Lookahead();
+            }
+            if (lookAhead.contains("}")) {
+                index++;
                 Get_Lookahead();
             }
         }

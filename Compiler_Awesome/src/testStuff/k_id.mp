@@ -22,7 +22,9 @@ program Tester;
         read(somestuff)
     end; {tester}
 
-{procedure this (VAR example:integer x, Var garbage:FLOAT y)}
+{procedure this (VAR example:integer x, Var garbage:FLOAT y)
+commented with MP_INTEGER this line out from a previous test file}
+
   begin {tester}
     Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
     Write('Please enter an integer value for I: ');
