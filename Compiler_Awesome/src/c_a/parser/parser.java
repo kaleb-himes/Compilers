@@ -1142,7 +1142,7 @@ public class parser {
                     break;
 
                 default:
-                    parserWriter.println("rule #57: --E--");
+                    parserWriter.println("rule #58: --E--");
                     potentialError = "Opt_Else_Part, Treated as Empty";
                     break;
             } //end case for else
@@ -1158,13 +1158,17 @@ public class parser {
         G_Check = Match("MP_REPEAT");
         switch (G_Check) {
             case 1:
+                parserWriter.println("rule #59: TERMINAL");
                 Advance_Pointer();
+                parserWriter.println("rule #59: expanding");
                 Statement_Seq();
                 G_Check = Match("MP_UNTIL");
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
+                        parserWriter.println("rule #59: TERMINAL");
                         Advance_Pointer();
+                        parserWriter.println("rule #59: expanding");
                         Boolean_Expression();
                         stackTrace.remove("Repeat_Statement");
                         break;
