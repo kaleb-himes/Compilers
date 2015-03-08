@@ -133,6 +133,14 @@ public class identifier_FSA extends mp {
         if (state != State.IDACCEPT) {
             if (state != State.S0) {
                 token = "MP_ERROR";
+            } else {
+            if (state == State.S0) {
+                //In the  case that we have reached EOF before setting the token
+                //(should only happen in case where you have end without a period
+                //because you never visit state SO due to EOF
+                if (token == "")
+                    token = "MP_IDENTIFIER";
+                }
             }
         }
 
