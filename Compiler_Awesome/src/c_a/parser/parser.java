@@ -34,7 +34,6 @@
 package c_a.parser;
 
 import static c_a.fileReader.file_reader.reader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -61,7 +60,12 @@ public class parser {
     static PrintWriter parserWriter;
 
     public void runParse() throws FileNotFoundException, IOException {
+        //initialize the symbol table
+        symbol_tables.s_table.Init_Table();
+        
+        //initialize the parserWriter for parse tree generation
         parserWriter = new PrintWriter("src/parser_resources/parser.out", "UTF-8");
+        
         /* 
          * Re-initialize the file reader to read from our scanner output file
          * instead of reading the program input file
@@ -1975,6 +1979,7 @@ public class parser {
 //        }
 //        System.out.println();
         String message = "Error in state: " + sourceOfError;
+//        System.out.println("lexeme is: "+ parseTokens.get(index+3));
         //System.out.println(message);
         Terminate(message);
     }
