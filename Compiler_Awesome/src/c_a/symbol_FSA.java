@@ -128,7 +128,7 @@ public class symbol_FSA extends mp {
                             //and set the reader back
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                mp.colNumber++;
+                                //mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.GEQACCEPT;
                             } else {
@@ -140,7 +140,7 @@ public class symbol_FSA extends mp {
                         } else if (Character.compare(character, ':') == 0) {
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                mp.colNumber++;
+                                //mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.ASSIGNACCEPT;
                             } else {
@@ -152,11 +152,11 @@ public class symbol_FSA extends mp {
                         } else if (Character.compare(character, '<') == 0) {
                             character = (char) MPscanner.pbr.read();
                             if (Character.compare(character, '=') == 0) {
-                                mp.colNumber++;
+                                //mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.LEQACCEPT;
                             } else if (Character.compare(character, '>') == 0) {
-                                mp.colNumber++;
+                                //mp.colNumber++;
                                 lexeme = lexeme.concat(Character.toString(character));
                                 state = State.NEQACCEPT;
                             } else {
