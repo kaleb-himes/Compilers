@@ -125,7 +125,7 @@ public class parser {
             index += 3;
             lookAhead = parseTokens.get(index);
             while (!lookAhead.contains("}")) {
-                System.out.println("skipping: " + lookAhead);
+//                System.out.println("skipping: " + lookAhead);
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Get_Lookahead ran over EOF";
@@ -139,9 +139,9 @@ public class parser {
                 Get_Lookahead();
             }
         }
-        System.out.println("Lookahead ------------------------------------------->" + lookAhead);
+//        System.out.println("Lookahead ------------------------------------------->" + lookAhead);
         if (!potentialError.equals("")) {
-            System.out.println("Potential Error ------------------------------------->" + potentialError);
+//            System.out.println("Potential Error ------------------------------------->" + potentialError);
             potentialError = "";
         }
     }
@@ -153,7 +153,7 @@ public class parser {
             index += 3;
             String peek = parseTokens.get(index);
             while (!peek.contains("MP_")) {
-                System.out.println("skipping: " + peek);
+//                System.out.println("skipping: " + peek);
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Advance_Pointer ran over EOF";
