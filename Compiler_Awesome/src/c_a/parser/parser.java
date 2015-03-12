@@ -54,6 +54,8 @@ public class parser {
             expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
     static List<String> stackTrace;
+    //keep track of all errors found while parsing program
+    static List<String> errorsFound;
     static String sourceOfError = "";
     static String potentialError = "";
     static int blockState;
@@ -62,10 +64,10 @@ public class parser {
     public void runParse() throws FileNotFoundException, IOException {
         //initialize the symbol table
         symbol_tables.s_table.Init_Table();
-        
+
         //initialize the parserWriter for parse tree generation
         parserWriter = new PrintWriter("src/parser_resources/parser.out", "UTF-8");
-        
+
         /* 
          * Re-initialize the file reader to read from our scanner output file
          * instead of reading the program input file
@@ -74,6 +76,7 @@ public class parser {
                 c_a.fileReader.file_reader.outLocation);
         parseTokens = new ArrayList<>();
         stackTrace = new ArrayList<>();
+        errorsFound = new ArrayList<>();
         String line;
         lookAhead = "";
         previous = "";
@@ -108,11 +111,10 @@ public class parser {
 
         /* kick off our parse with a lookahead set then call Sys_Goal */
         Get_Lookahead();
-       
-        
-        
+
         Sys_Goal();
-        
+
+        //Error();
     }
 
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
@@ -133,7 +135,8 @@ public class parser {
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Get_Lookahead ran over EOF";
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
                 }
                 Get_Lookahead();
@@ -161,7 +164,8 @@ public class parser {
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Advance_Pointer ran over EOF";
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
                 }
                 peek = parseTokens.get(index);
@@ -172,7 +176,7 @@ public class parser {
         Get_Lookahead();
     }
 // </editor-fold>
-    
+
 // rule 1
 // <editor-fold defaultstate="collapsed" desc="Sys_Goal"> 
     public static void Sys_Goal() {
@@ -185,17 +189,24 @@ public class parser {
             case 1:
                 parserWriter.println("rule #1  : TERMINAL");
                 stackTrace.remove("Sys_Goal");
-                Terminate("Program parsed successfully, found MP_EOF");
+
+                if (errorsFound.size() > 0) {
+                    Error();
+                } else {
+                    Terminate("Program parsed successfully, found MP_EOF");
+                }
                 break;
 
             default:
+                errorsFound.add(sourceOfError);
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
                 stackTrace.remove("Sys_Goal");
+                Error();
                 break;
         }
     }
 // </editor-fold>
-    
+
 // rule 2
 // <editor-fold defaultstate="collapsed" desc="Program"> 
     public static void Program() {
@@ -220,19 +231,20 @@ public class parser {
                     break;
                 } else {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
                 }
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: " + lookAhead;
-
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
 
     }
 // </editor-fold>
-    
+
 // rule 3
 // <editor-fold defaultstate="collapsed" desc="Prog_Head"> 
     public static void Prog_Head() {
@@ -252,12 +264,14 @@ public class parser {
             default:
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
                         + " " + lookAhead;
-                Error();
+                errorsFound.add(sourceOfError);
+                //Error();
                 break;
         }
+
     }
 // </editor-fold>
-    
+
 // rule 4
 // <editor-fold defaultstate="collapsed" desc="Block"> 
     public static void Block() {
@@ -273,7 +287,7 @@ public class parser {
         stackTrace.remove("Block");
     }
 // </editor-fold>
-    
+
 // rules 5 and 6
 // <editor-fold defaultstate="collapsed" desc="Var_Dec_Part"> 
     public static void Var_Dec_Part() {
@@ -298,7 +312,8 @@ public class parser {
                 } else {
                     sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
                             + "found:  " + lookAhead;
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
                 }
             default:
@@ -309,7 +324,7 @@ public class parser {
         }
     }
 // </editor-fold>
-    
+
 // rules 7 and 8
 // <editor-fold defaultstate="collapsed" desc="Var_Dec_Tail"> 
     public static void Var_Dec_Tail() {
@@ -338,7 +353,7 @@ public class parser {
         }
     }
 // </editor-fold>
-    
+
 // rule 9
 // <editor-fold defaultstate="collapsed" desc="Var_Dec"> 
     public static void Var_Dec() {
@@ -358,12 +373,13 @@ public class parser {
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
 // </editor-fold>
-    
+
 // rules 10, 11, 12, and 13
 // <editor-fold defaultstate="collapsed" desc="Type"> 
     public static void Type() {
@@ -399,13 +415,14 @@ public class parser {
             default:
                 sourceOfError = "Type, Expected MP_INTEGER, MP_FLOAT, MP_STRING, or"
                         + " MP_BOOLEAN instead found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
         stackTrace.remove("Type");
     }
 // </editor-fold>
-    
+
 // rules 14, 15, and 16
 // <editor-fold defaultstate="collapsed" desc="Proc_Func_Dec_Part"> 
     public static void Proc_Func_Dec_Part() {
@@ -465,14 +482,16 @@ public class parser {
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -502,14 +521,16 @@ public class parser {
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -534,7 +555,8 @@ public class parser {
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
                         + " " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -565,13 +587,15 @@ public class parser {
                 } else {
                     sourceOfError = "Func_Head, Expected MP_COLON found: "
                             + "" + lookAhead;
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
                 }
             default:
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -604,7 +628,8 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Formal_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 }
                 break;
@@ -681,6 +706,7 @@ public class parser {
             default:
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
                         + "" + lookAhead;
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -710,14 +736,16 @@ public class parser {
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
                                 + ": " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -757,14 +785,16 @@ public class parser {
                     default:
                         sourceOfError = "Compound_Statement, Expected MP_END "
                                 + "found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -901,21 +931,24 @@ public class parser {
                             default:
                                 sourceOfError = "Read_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                Error();
+                                //Error();
+                                errorsFound.add(sourceOfError);
                                 break;
                         } //end case for R_PAREN
                         break;
                     default:
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for LPAREN
                 break;
             default:
                 sourceOfError = "Read_Statement, Expected "
                         + "MP_READ found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for READ
     }
@@ -990,8 +1023,7 @@ public class parser {
                             Write_Param();
                             parserWriter.println("rule #49 : expanding");
                             Write_Param_Tail();
-                        }
-                        else {
+                        } else {
                             parserWriter.println("rule #50 : TERMINAL");
                             Advance_Pointer();
                             parserWriter.println("rule #50 : expanding");
@@ -999,14 +1031,13 @@ public class parser {
                             parserWriter.println("rule #50 : expanding");
                             Write_Param_Tail();
                         }
-                        
+
                         G_Check = Match("MP_RPAREN");
                         switch (G_Check) {
                             case 1:
                                 if (whichWrite == 1) {
                                     parserWriter.println("rule #49 : TERMINAL");
-                                }
-                                else {
+                                } else {
                                     parserWriter.println("rule #50 : TERMINAL");
                                 }
                                 Advance_Pointer();
@@ -1015,21 +1046,24 @@ public class parser {
                             default:
                                 sourceOfError = "Write_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                Error();
+                                //Error();
+                                errorsFound.add(sourceOfError);
                                 break;
                         } //end case for RParen
                         break;
                     default:
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for LParen
                 break;
             default:
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for MP_WRITE
     }
@@ -1079,7 +1113,7 @@ public class parser {
         stackTrace.add("Assign_Statement");
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
-        
+
         //!!!!!!!!!!!!!!!!!!!!
         // THIS CAN LEAD EITHER TO A VAR OR FUNC_ID, WILL NEED TO SEP LATER?????
         // -Monica
@@ -1104,7 +1138,8 @@ public class parser {
             default:
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for Assign
     }
@@ -1138,14 +1173,16 @@ public class parser {
                     default:
                         sourceOfError = "If_Statement, Expected "
                                 + "MP_THEN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for Then
                 break;
             default:
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for If
     }
@@ -1157,18 +1194,19 @@ public class parser {
         stackTrace.add("Opt_Else_Part");
         // 57. Opt_Else_Part -> MP_ELSE_WORD Statement
         // 58. Opt_Else_Part -> MP_EMPTY
-        
+
         // A fancy bit of error handling, store lookAhead and index, Advance the
         // pointer. If after advancing we see an ELSE while currently at a semi
         // colon we know there is a mistake.
         if (lookAhead.equals("MP_SCOLON")) {
-                int bak_Index = index;
-                String bak_lookAhead = lookAhead;
-                Advance_Pointer();
+            int bak_Index = index;
+            String bak_lookAhead = lookAhead;
+            Advance_Pointer();
             if (lookAhead.equals("MP_ELSE")) {
                 sourceOfError = "Opt_Else_Part: Semi-colon in if part, terminates the if statement"
-                    + " before else part can be evaluated.";
-                Error();
+                        + " before else part can be evaluated.";
+                //Error();
+                errorsFound.add(sourceOfError);
             } else {
                 index = bak_Index;
                 lookAhead = bak_lookAhead;
@@ -1218,14 +1256,16 @@ public class parser {
                     default:
                         sourceOfError = "Repeat_Statement, Expected "
                                 + "MP_UNTIL found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for Until
                 break;
             default:
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for Repeat
     }
@@ -1256,14 +1296,16 @@ public class parser {
                     default:
                         sourceOfError = "While_Statement, Expected "
                                 + "MP_DO found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for Do
                 break;
             default:
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         } //end case for While
     }
@@ -1306,21 +1348,24 @@ public class parser {
                             default:
                                 sourceOfError = "For_Statement, Expected "
                                         + "MP_DO found: " + lookAhead;
-                                Error();
+                                //Error();
+                                errorsFound.add(sourceOfError);
                                 break;
                         } //end case for Do
                         break;
                     default:
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case for Assign
                 break;
             default:
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
-                Error();
+                errorsFound.add(sourceOfError);
+                //Error();
                 break;
         } //end case for For
     }
@@ -1373,7 +1418,8 @@ public class parser {
                     default:
                         sourceOfError = "Step_Val, Expected "
                                 + "MP_TO or MP_DOWNTO found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case DownTo
         }
@@ -1430,7 +1476,8 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Actual_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case RParen
                 break;
@@ -1617,7 +1664,7 @@ public class parser {
                     default:
                         parserWriter.println("rule #87: --E--");
                         potentialError = "Optional_Sign treated as Empty";
-                    stackTrace.remove("Optional_Sign");
+                        stackTrace.remove("Optional_Sign");
                 } //end case Minus
                 break;
         } //end case Plus
@@ -1757,8 +1804,8 @@ public class parser {
     }
 // </editor-fold>
 
-// rules 99, 100, 101, 102, 103, 104, 105, and 106
-// <editor-fold defaultstate="collapsed" desc="Factor">
+// rules 99, 100, 101, 102, 103, 104, 105, 106 and 116
+// <editor-fold defaFactorultstate="collapsed" desc="Factor">
     public static void Factor() {
         stackTrace.add("Factor");
         // 99.  Factor -> MP_INTEGER_LIT (unsigned int)
@@ -1769,6 +1816,7 @@ public class parser {
         // 104. Factor -> MP_NOT_WORD Factor
         // 105. Factor -> MP_LPAREN Expression MP_RPAREN
         // 106. Factor -> Function_Id Opt_Actual_Param_List
+        // 116. Factor -> Variable_Id
         G_Check = Match("MP_INTEGER_LIT");
         if (lookAhead.equals("MP_INTEGER_LIT")) {
             parserWriter.println("rule #99: TERMINAL");
@@ -1802,15 +1850,21 @@ public class parser {
                     break;
                 default:
                     sourceOfError = "Factor, expected MP_RPAREN found: " + lookAhead;
-                    Error();
+                    //Error();
+                    errorsFound.add(sourceOfError);
                     break;
             }
         } else {
+            //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //use a flag of some sort?
+            //    if (lookAhead.equals() ) {
             parserWriter.println("rule #106: expanding");
             Function_Id();
             parserWriter.println("rule #106: expanding");
             Opt_Actual_Param_List();
             stackTrace.remove("Factor");
+
+            // }
         }
         stackTrace.remove("Factor");
     }
@@ -1828,7 +1882,8 @@ public class parser {
             stackTrace.remove("Prog_Id");
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
-            Error();
+            errorsFound.add(sourceOfError);
+            //Error();
         }
     }
 // </editor-fold>
@@ -1845,7 +1900,8 @@ public class parser {
             stackTrace.remove("Var_Id");
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
-            Error();
+            errorsFound.add(sourceOfError);
+            //Error();
         }
     }
 // </editor-fold>
@@ -1862,7 +1918,8 @@ public class parser {
             stackTrace.remove("Proc_Id");
         } else {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
-            Error();
+            //Error();
+            errorsFound.add(sourceOfError);
         }
     }
 // </editor-fold>
@@ -1879,7 +1936,8 @@ public class parser {
             stackTrace.remove("Function_Id");
         } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
-            Error();
+            errorsFound.add(sourceOfError);
+            //Error();
         }
     }
 // </editor-fold>
@@ -1924,7 +1982,8 @@ public class parser {
             default:
                 sourceOfError = "Id_List, Expected "
                         + "MP_IDENTIFIER found: " + lookAhead;
-                Error();
+                //Error();
+                errorsFound.add(sourceOfError);
                 break;
         }
     }
@@ -1955,7 +2014,8 @@ public class parser {
                     default:
                         sourceOfError = "Id_Tail, Expected "
                                 + "MP_IDENTIFIER found: " + lookAhead;
-                        Error();
+                        //Error();
+                        errorsFound.add(sourceOfError);
                         break;
                 } //end case Identifier
                 break;
@@ -1964,26 +2024,43 @@ public class parser {
                 potentialError = "Id_Tail, Treated as empty";
                 stackTrace.remove("Id_Tail");
         } //end case Comma
+
     }
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Error">
     public static void Error() {
-        // if found error enter this case
-        /* MONICA!!!!!!! Make red and get formatted correctly!!!!!!!!!!!!!!!!!!!*/
-        /* TODO LOGIC HERE FOR ERROR */
-        //Don't think we will want to terminate, in case multiple error messages
-//        System.out.println("\nSTACKTRACE: ");
-//        for (int i = 0; i < stackTrace.size(); i++) {
-//            System.out.println(i + ": " + stackTrace.get(i));
-//        }
-//        System.out.println();
-        String message = "Error in state: " + sourceOfError;
-//        System.out.println("lexeme is: "+ parseTokens.get(index+3));
-        //System.out.println(message);
-        Terminate(message);
+        // Move through stored list of errors, printing source of error to the
+        //user so they can be corrected. Allow up to 20 errors to be printed, 
+        //if more than 20 errors, print first 20 and exit. 
+        
+        if (errorsFound.size() <= 20) {
+            for (int i = 0; i < errorsFound.size() - 1; i++) {
+                String message = "\033[31mERROR at line #place col #place in "
+                        + "state: " + errorsFound.get(i) + ".\n\033[0m";
+                //while the reader is still open
+                System.out.println();
+                System.out.println(message);
+            }
+        } else {
+            //print only first 20 errors, then print message to user
+            for (int i = 0; i <= 20; i++) {
+                String message = "\033[31mERROR at line #place col #place "
+                        + "in state: " + errorsFound.get(i) + ".\n\033[0m";
+                System.out.println();
+                System.out.println(message);
+            }
+            System.out.println("\033[31m***************************************"
+                    + "**************");
+            System.out.print("\033[31m MORE THAN 20 ERRORS WERE FOUND, PLEASE "
+                    + "CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
+            System.out.println("***********************************************"
+                    + "******\033[0m");
+            System.exit(0);
+        }
+        Terminate("");
     }
-// </editor-fold>
+    // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Terminate">
     public static void Terminate(String message) {
@@ -1991,15 +2068,22 @@ public class parser {
          * Print anything we want to before exiting parser then 
          * exit program 
          */
-        System.out.println("\nSTACKTRACE: ");
-        for (int i = 0; i < stackTrace.size(); i++) {
-            System.out.println(i + ": " + stackTrace.get(i));
+        //System.out.println("\nSTACKTRACE: ");
+        //for (int i = 0; i < stackTrace.size(); i++) {
+        //    System.out.println(i + ": " + stackTrace.get(i));
+        // }
+        if (errorsFound.size() > 0) {
+            System.out.println("\033[31m*****************************************************");
+            System.out.print("\033[31m" + (errorsFound.size() - 1) + " ERRORS "
+                    + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
+            //think this is always printing error message - check into this
+            //System.out.println(message);
+            System.out.println("*****************************************************\033[0m");
+        } else {
+            System.out.println(message);
         }
-        System.out.println();
-        done = true;
-        //think this is always printing error message - check into this
-        System.out.println(message);
         parserWriter.close();
+
         System.exit(0);
     }
 // </editor-fold>
