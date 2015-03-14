@@ -27,7 +27,7 @@ public class s_table {
         //create string array that will hold only one value
         Rows.add(NestingLevel);
         //set the value to the label currently in use
-        Rows.add(Label);
+        Rows.add(Label + "\n");
         //put the key (nesting level) and array (label) in for Table name key
         tables.put(TableName, Rows);
     }
@@ -56,11 +56,17 @@ public class s_table {
         //add the Mode
         tables.get(TableName).add(Mode);
         //add the Size
+        if (Size.equals("0")) {
+            Size = null;
+        }
         tables.get(TableName).add(Size);
         //add Parameters
         //need to remember how many were added as we iterate over this later
         for (int i = 0; i < Parameters.length; i++) {
-            tables.get(TableName).add(Parameters[i]);
+            if (i < Parameters.length-1)
+                tables.get(TableName).add(Parameters[i]);
+            else
+                tables.get(TableName).add(Parameters[i]+"\n");
         }
     }
     
@@ -90,7 +96,7 @@ public class s_table {
     
     public static void Print_Tables() {
         for (String name: tables.keySet()){
-            String value = tables.get(name).toString();  
+            String value = tables.get(name).toString(); 
             System.out.println(name + " " + value);
         } 
     }

@@ -70,6 +70,7 @@ public class parser {
     static String CurrLexeme, Type, Kind, Mode, CurrToken;                  //##
     static String[] Parameters;                                             //##
     static int Size;                                                        //##
+    static ArrayList<String> dynamicParams = new ArrayList<>();             //##
 //##############################################################################
     
 
@@ -328,8 +329,10 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
+                    Convert_To_String_Array(dynamicParams);
                     s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, 
                                 Kind, Mode, Integer.toString(Size), Parameters);
+                    dynamicParams.clear();
 //##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
@@ -509,6 +512,14 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            Convert_To_String_Array(dynamicParams);
+            s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                    Mode, Integer.toString(Size), Parameters);
+            dynamicParams.clear();
+//##############################################################################
                 parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #17 : expanding");
@@ -586,6 +597,14 @@ public class parser {
         G_Check = Match("MP_PROCEDURE");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Size = 0;                                                   //##
+                CurrToken = lookAhead;                                      //##
+                Type = null;                                                //##
+                Kind = parseTokens.get(index+3);                            //##
+//##############################################################################
                 parserWriter.println("rule #19 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #19 : expanding");
@@ -1846,8 +1865,8 @@ public class parser {
     }
 // </editor-fold>
 
-// rules 99, 100, 101, 102, 103, 104, 105, 106 and 116
-// <editor-fold defaFactorultstate="collapsed" desc="Factor">
+// rules 99, 100, 101, 102, 103, 104, 105, 106 and 116   
+// <editor-fold defaultstate="collapsed" desc="Factor">
     public static void Factor() {
         stackTrace.add("Factor");
         // 99.  Factor -> MP_INTEGER_LIT (unsigned int)
@@ -1897,16 +1916,16 @@ public class parser {
                     break;
             }
         } else {
-            //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
-            //    if (lookAhead.equals() ) {
+            //if (lookAhead.equals() ) {
             parserWriter.println("rule #106: expanding");
             Function_Id();
             parserWriter.println("rule #106: expanding");
             Opt_Actual_Param_List();
             stackTrace.remove("Factor");
 
-            // }
+            //}
         }
         stackTrace.remove("Factor");
     }
@@ -1974,6 +1993,11 @@ public class parser {
         // 109. Proc_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            CurrLexeme = parseTokens.get(index+3);                          //##
+//##############################################################################
             parserWriter.println("rule #109: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Proc_Id");
@@ -2037,7 +2061,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                CurrLexeme = parseTokens.get(index+3);                            //##
+                dynamicParams.add(parseTokens.get(index+3));
 //##############################################################################
                 parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
@@ -2070,6 +2094,11 @@ public class parser {
                 G_Check = Match("MP_IDENTIFIER");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                        dynamicParams.add(parseTokens.get(index+3));
+//##############################################################################
                         parserWriter.println("rule #114: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #114: expanding");
@@ -2086,6 +2115,11 @@ public class parser {
                 } //end case Identifier
                 break;
             default:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                dynamicParams.add("END_ARGS");
+//##############################################################################
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
                 stackTrace.remove("Id_Tail");
@@ -2169,4 +2203,12 @@ public class parser {
         }
     }
 // </editor-fold>
+    
+    static void Convert_To_String_Array(ArrayList<String> M) {
+        String[] temp = new String[M.size()];
+        Parameters = temp;
+        for (int i = 0; i < M.size(); i++) {
+            Parameters[i] = M.get(i);
+        }
+    }
 }

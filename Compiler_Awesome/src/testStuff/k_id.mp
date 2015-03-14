@@ -2,7 +2,7 @@ program Tester;
 
  var I: Integer;
 
-    procedure junk (VAR test:Float; VAR garbage,junk,plop:Boolean);
+    procedure junk (VAR test:Float; VAR garbage,blob,plop:Boolean);
     begin
         read(somestuff)
     end; {tester}
