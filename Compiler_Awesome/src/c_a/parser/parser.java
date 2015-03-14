@@ -62,12 +62,15 @@ public class parser {
     static String potentialError = "";
     static int blockState;
     static PrintWriter parserWriter;
-    /* BEGIN Symbol table resources */
-    static String TableName, Label_1 = "L";
-    static int NestingLevel, Label_2;
-    static String CurrLexeme, Type, Kind, Mode, Parameters;
-    static int Size;
-    /* END Symbol table resources*/
+//##############################################################################
+//######### BEGIN Symbol table resources #######################################
+//##############################################################################
+    static String TableName, Label_1 = "L";                                 //##
+    static int NestingLevel, Label_2;                                       //##
+    static String CurrLexeme, Type, Kind, Mode;                             //##
+    static String[] Parameters;                                             //##
+    static int Size;                                                        //##
+//##############################################################################
     
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -100,6 +103,9 @@ public class parser {
         frmlParamState  = 0;
         NestingLevel    = 0;
         Label_2         = 0;
+        //initialize Parameters to empty set, update as needed
+        String[] init   = new String[0];
+        Parameters = init;
         
 
         //read in one line at a time from the output file
@@ -307,12 +313,23 @@ public class parser {
         G_Check = Match("MP_VAR");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Type = parseTokens.get(index+3);                            //##
+//##############################################################################
                 parserWriter.println("rule #5  : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #5  : expanding");
                 Var_Dec();
                 G_Check = Match("MP_SCOLON");
                 if (G_Check == 1) {
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                    s_table.Insert_Row(TableName, CurrLexeme, Type, Kind, Mode, 
+                                            Integer.toString(Size), Parameters);
+//##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
                     parserWriter.println("rule #5  : expanding");
@@ -349,11 +366,18 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("rule #7  : TERMINAL");
-                Advance_Pointer();
-                parserWriter.println("rule #7  : expanding");
-                Var_Dec_Tail();
-                stackTrace.remove("Var_Dec_Tail");
+                if (!previous.equals("MP_SCOLON")
+                        && !parseTokens.get(index+4).equals("MP_SCOLON")) {
+                    parserWriter.println("rule #7  : TERMINAL");
+                    Advance_Pointer();
+                    parserWriter.println("rule #7  : expanding");
+                    Var_Dec_Tail();
+                    stackTrace.remove("Var_Dec_Tail");
+                }
+                else {
+                    sourceOfError = "Too many Semi-Colons.";
+                    errorsFound.add(sourceOfError);
+                }
                 break;
             default:
                 parserWriter.println("rule #8  : TERMINAL");
@@ -1887,25 +1911,27 @@ public class parser {
         // 107. Prog_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
-            //Set the TableName
-            TableName = parseTokens.get(index+3);
-            //put tablename in as key1 for tables
-            //update the Label
-            String Label = Label_1.concat(Integer.toString(Label_2));
-            Label_2++;
-            //update the nesting level
-            int Nlvl = NestingLevel;
-            NestingLevel++;
-            //insert Table info using s_table API
-            s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-            
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+            //Set the TableName                                             //##
+            TableName = parseTokens.get(index+3);                           //##
+            //put tablename in as key1 for tables                           //##
+            //update the Label                                              //##
+            String Label = Label_1.concat(Integer.toString(Label_2));       //##
+            Label_2++;                                                      //##
+            //update the nesting level                                      //##
+            int Nlvl = NestingLevel;                                        //##
+            NestingLevel++;                                                 //##
+            //insert Table info using s_table API name, nesting, label      //##
+            s_table.New_Table(TableName, Integer.toString(Nlvl), Label);    //##
+//##############################################################################
             parserWriter.println("rule #107: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Prog_Id");
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
-            //Error();
         }
     }
 // </editor-fold>
@@ -1918,6 +1944,11 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             parserWriter.println("rule #108: TERMINAL");
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            CurrLexeme = parseTokens.get(index+3);                          //##
+//##############################################################################
             Advance_Pointer();
             stackTrace.remove("Var_Id");
         } else {

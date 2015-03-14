@@ -42,7 +42,7 @@ public class s_table {
      * Example of values: (lexeme)  int, var, null, 4, null
      * Example of values: (lexeme)  null, function, null, null, (a, b, c, mary)
      */
-    public void Insert_Row(String TableName, String Lexeme, String Type, 
+    public static void Insert_Row(String TableName, String Lexeme, String Type, 
                            String Kind, String Mode, String Size, 
                                                           String[] Parameters) {
         //add the lexeme
@@ -61,9 +61,9 @@ public class s_table {
         }
 
         //for testing purposes print what we just inserted
-        for (int i = 0; i < Rows.size(); i++) {
-            System.out.println(Rows.get(i));
-        }
+//        for (int i = 0; i < Rows.size(); i++) {
+//            System.out.println(Rows.get(i));
+//        }
     }
     
     //returns the 
