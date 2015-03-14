@@ -40,6 +40,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import symbol_tables.s_table;
+import static symbol_tables.s_table.tables;
 
 /**
  *
@@ -60,8 +62,16 @@ public class parser {
     static String potentialError = "";
     static int blockState;
     static PrintWriter parserWriter;
+    /* BEGIN Symbol table resources */
+    static String TableName, Label_1 = "L";
+    static int NestingLevel, Label_2;
+    static String CurrLexeme, Type, Kind, Mode, Parameters;
+    static int Size;
+    /* END Symbol table resources*/
+    
 
     public void runParse() throws FileNotFoundException, IOException {
+        
         //initialize the symbol table
         symbol_tables.s_table.Init_Table();
 
@@ -74,20 +84,23 @@ public class parser {
          */
         c_a.fileReader.file_reader.fileReaderInit(
                 c_a.fileReader.file_reader.outLocation);
-        parseTokens = new ArrayList<>();
-        stackTrace = new ArrayList<>();
-        errorsFound = new ArrayList<>();
+        parseTokens     = new ArrayList<>();
+        stackTrace      = new ArrayList<>();
+        errorsFound     = new ArrayList<>();
         String line;
-        lookAhead = "";
-        previous = "";
-        index = 0;
-        blockState = 1;
-        sColonMark = 0;
-        stmntSeqMark = 0;
-        expMark = 0;
-        simpExpMark = 0;
-        procIdFound = 0;
-        frmlParamState = 0;
+        lookAhead       = "";
+        previous        = "";
+        index           = 0;
+        blockState      = 1;
+        sColonMark      = 0;
+        stmntSeqMark    = 0;
+        expMark         = 0;
+        simpExpMark     = 0;
+        procIdFound     = 0;
+        frmlParamState  = 0;
+        NestingLevel    = 0;
+        Label_2         = 0;
+        
 
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
@@ -1874,6 +1887,18 @@ public class parser {
         // 107. Prog_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
+            //Set the TableName
+            TableName = parseTokens.get(index+3);
+            //put tablename in as key1 for tables
+            //update the Label
+            String Label = Label_1.concat(Integer.toString(Label_2));
+            Label_2++;
+            //update the nesting level
+            int Nlvl = NestingLevel;
+            NestingLevel++;
+            //insert Table info using s_table API
+            s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+            
             parserWriter.println("rule #107: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Prog_Id");
@@ -2078,6 +2103,7 @@ public class parser {
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
+            s_table.Print_Tables();
         }
         parserWriter.close();
 
