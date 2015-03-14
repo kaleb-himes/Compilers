@@ -111,10 +111,7 @@ public class parser {
 
         /* kick off our parse with a lookahead set then call Sys_Goal */
         Get_Lookahead();
-
         Sys_Goal();
-
-        //Error();
     }
 
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 

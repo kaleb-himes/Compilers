@@ -1,0 +1,36 @@
+################################################################################
+Item 1:
+
+Our parser will allow for infinite semi-colons on a single line and doesn't complain.
+Program will parse successfully if when there should be a semi-colon there is instead 
+a whole lot of them.
+
+Example:  var I: Integer;;;;;;;;;;;;;;;;;;;;; is acceptable.
+ 
+Find out why and fix it.
+
+Kaleb notes:
+
+I have looked at the grammar and this is actually allowed. Rule
+#7 (Var_Dec_Tail)'s recursive behavior allows for Var_Dec MP_SCOLON Var_Dec_Tail
+Which allows us to enter infinite MP_SCOLON's without error. Bring this to
+Rockies attention?
+
+################################################################################
+Item 2:
+
+################################################################################
+Item 3:
+
+################################################################################
+Item 4:
+
+################################################################################
+Item 5:
+
+################################################################################
+Item 6:
+
+################################################################################
+
+... etc.

@@ -104,11 +104,7 @@ public class bak_parser {
 
         /* kick off our parse with a lookahead set then call Sys_Goal */
         Get_Lookahead();
-       
-        
-        
         Sys_Goal();
-        
     }
 
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
