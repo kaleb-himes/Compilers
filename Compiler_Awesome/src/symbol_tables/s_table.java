@@ -42,11 +42,13 @@ public class s_table {
      * Example of values: (lexeme)  int, var, null, 4, null
      * Example of values: (lexeme)  null, function, null, null, (a, b, c, mary)
      */
-    public static void Insert_Row(String TableName, String Lexeme, String Type, 
-                           String Kind, String Mode, String Size, 
+    public static void Insert_Row(String TableName, String Lexeme, String Token, 
+                             String Type, String Kind, String Mode, String Size, 
                                                           String[] Parameters) {
         //add the lexeme
         tables.get(TableName).add(Lexeme);
+        //add the token
+        tables.get(TableName).add(Token);
         //add the Type
         tables.get(TableName).add(Type);
         //add the Kind
@@ -56,14 +58,10 @@ public class s_table {
         //add the Size
         tables.get(TableName).add(Size);
         //add Parameters
+        //need to remember how many were added as we iterate over this later
         for (int i = 0; i < Parameters.length; i++) {
             tables.get(TableName).add(Parameters[i]);
         }
-
-        //for testing purposes print what we just inserted
-//        for (int i = 0; i < Rows.size(); i++) {
-//            System.out.println(Rows.get(i));
-//        }
     }
     
     //returns the 

@@ -67,7 +67,7 @@ public class parser {
 //##############################################################################
     static String TableName, Label_1 = "L";                                 //##
     static int NestingLevel, Label_2;                                       //##
-    static String CurrLexeme, Type, Kind, Mode;                             //##
+    static String CurrLexeme, Type, Kind, Mode, CurrToken;                  //##
     static String[] Parameters;                                             //##
     static int Size;                                                        //##
 //##############################################################################
@@ -104,7 +104,8 @@ public class parser {
         NestingLevel    = 0;
         Label_2         = 0;
         //initialize Parameters to empty set, update as needed
-        String[] init   = new String[0];
+        String[] init   = new String[1];
+        init[0] = null;
         Parameters = init;
         
 
@@ -316,7 +317,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);                            //##
+                Kind = parseTokens.get(index+3);                            //##
 //##############################################################################
                 parserWriter.println("rule #5  : TERMINAL");
                 Advance_Pointer();
@@ -327,8 +328,8 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                    s_table.Insert_Row(TableName, CurrLexeme, Type, Kind, Mode, 
-                                            Integer.toString(Size), Parameters);
+                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, 
+                                Kind, Mode, Integer.toString(Size), Parameters);
 //##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
@@ -427,6 +428,13 @@ public class parser {
         G_Check = Match("MP_INTEGER");
         switch (lookAhead) {
             case "MP_INTEGER":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Type = parseTokens.get(index+3);                            //##
+                CurrToken = lookAhead;                                      //##
+                Size = 4;                                                   //##
+//##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
                 //write rule #10 to file
@@ -2026,6 +2034,11 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                CurrLexeme = parseTokens.get(index+3);                            //##
+//##############################################################################
                 parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #113: expanding");
