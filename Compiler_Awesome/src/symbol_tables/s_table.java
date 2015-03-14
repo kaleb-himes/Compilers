@@ -14,7 +14,7 @@ import java.util.HashMap;
  */
 public class s_table {
     public static HashMap<String, ArrayList<String>> tables;
-    static ArrayList<String> Rows = new ArrayList<>();
+    static ArrayList<String> Rows;
     
     public static void Init_Table() {
         tables = new HashMap<>();
@@ -22,9 +22,7 @@ public class s_table {
     //create a new table to take on values.
     public static void New_Table(String TableName, 
                                             String NestingLevel, String Label) {
-        //reset Rows
-        Rows.clear();
-        //create string array that will hold only one value
+        Rows = new ArrayList<>();
         Rows.add(NestingLevel);
         //set the value to the label currently in use
         Rows.add(Label + "\n");

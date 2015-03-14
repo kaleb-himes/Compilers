@@ -65,7 +65,7 @@ public class parser {
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
-    static String TableName, Label_1 = "L";                                 //##
+    static String TableName, ProcName, FuncName, Label_1 = "L";             //##
     static int NestingLevel, Label_2;                                       //##
     static String CurrLexeme, Type, Kind, Mode, CurrToken;                  //##
     static String[] Parameters;                                             //##
@@ -104,6 +104,8 @@ public class parser {
         frmlParamState  = 0;
         NestingLevel    = 0;
         Label_2         = 0;
+        ProcName        = "";
+        FuncName        = "";
         //initialize Parameters to empty set, update as needed
         String[] init   = new String[1];
         init[0] = "NO_PARAMS";
@@ -831,6 +833,28 @@ public class parser {
         G_Check = Match("MP_BEGIN");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+            //update the Label                                              //##
+            String Label = Label_1.concat(Integer.toString(Label_2));       //##
+            Label_2++;                                                      //##
+            //update the nesting level                                      //##
+            int Nlvl = NestingLevel;                                        //##
+            NestingLevel++;                                                 //##
+            //insert Table info using s_table API name, nesting, label      //##
+            if (!ProcName.equals("")) {                                     //##
+                TableName = ProcName;                                       //##
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);//##
+            }                                                               //##
+            else if (!FuncName.equals("")) {                                //##
+                TableName = FuncName;                                       //##
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);//##
+            }                                                               //##
+            else                                                            //##
+                System.err.println("ProcName or FuncName not set");         //##
+//##############################################################################
+            
                 parserWriter.println("rule #30 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #30 : expanding");
@@ -838,6 +862,12 @@ public class parser {
                 G_Check = Match("MP_END");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+                        ProcName = "";
+                        FuncName = "";
+//##############################################################################
                         parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Compound_Statement");
@@ -1997,6 +2027,7 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
+            ProcName = CurrLexeme;                                          //##
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
             Advance_Pointer();
@@ -2016,6 +2047,12 @@ public class parser {
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            CurrLexeme = parseTokens.get(index+3);                          //##
+            FuncName = CurrLexeme;                                          //##
+//##############################################################################
             parserWriter.println("rule #110: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Function_Id");
@@ -2176,8 +2213,8 @@ public class parser {
             System.out.println("\033[31m*****************************************************");
             System.out.print("\033[31m" + (errorsFound.size() - 1) + " ERRORS "
                     + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
-            //think this is always printing error message - check into this
-            //System.out.println(message);
+//            think this is always printing error message - check into this
+//            System.out.println(message);
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
