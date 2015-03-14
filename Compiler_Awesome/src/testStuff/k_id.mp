@@ -29,32 +29,32 @@ commented with MP_INTEGER this line out from a previous test file}
     Writeln('hi'); Writeln('THis is a crazy string for testing purposes.');
     Write('Please enter an integer value for I: ');
     Read(I);
-    A := A + 1;
+    I := I + 1;
 
-    FOR B:=5 to 12 do
-        If B >= 6 then
+    FOR I:=5 to 12 do
+        If I >= 6 then
             Write ( 'this stuff')
         else
             Write ( 'that stuff');
-        B := B + 1;
+        I := I + 1;
 
-    FOR C:=5 downto 12 do
-        If C <= -6 then
+    FOR I:=5 downto 12 do
+        If I <= -6 then
             Write ( 'this stuff') {just in case}
         else
             Write ( 'that stuff');
-        C := C + 1;
-        If C <= -6 then
+        I := I + 1;
+        If I <= -6 then
             Write ( 'this stuff');
 
-    While (D <> 20) do
-        D := D + 1;
+    While (I <> 20) do
+        I := I + 1;
 
     Repeat
-        E := 5
-        until (E <> 5);
+        I := 5
+        until (I <> 5);
 
-    Writeln('The current value of F is ', F = 0);
+    Writeln('The current value of I is ', I = 0);
     Writeln(''); 
     Writeln('');
 END.
