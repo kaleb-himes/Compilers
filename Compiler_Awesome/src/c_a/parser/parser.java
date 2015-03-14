@@ -206,12 +206,12 @@ public class parser {
     public static void Sys_Goal() {
         stackTrace.add("Sys_Goal");
         // 1. SystemGoal -> Program MP_EOF
-        parserWriter.println("1");
+        parserWriter.println("rule #1  : expanding");
         Program();
         G_Check = Match("MP_EOF");
         switch (G_Check) {
             case 1:
-                parserWriter.println("1");
+                parserWriter.println("rule #1  : TERMINAL");
                 stackTrace.remove("Sys_Goal");
 
                 if (errorsFound.size() > 0) {
@@ -237,19 +237,19 @@ public class parser {
         stackTrace.add("Program");
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
-        parserWriter.println("2");
+        parserWriter.println("rule #2  : expanding");
         Prog_Head();
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("2");
+                parserWriter.println("rule #2  : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("2");
+                parserWriter.println("rule #2  : expanding");
                 Block();
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
-                    parserWriter.println("2");
+                    parserWriter.println("rule #2  : TERMINAL");
                     Advance_Pointer();
                     stackTrace.remove("Program");
                     break;
@@ -278,9 +278,9 @@ public class parser {
         G_Check = Match("MP_PROGRAM");
         switch (G_Check) {
             case 1:
-                parserWriter.println("3");
+                parserWriter.println("rule #3  : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("3");
+                parserWriter.println("rule #3  : expanding");
                 Prog_Id();
                 stackTrace.remove("Prog_Head");
                 break;
@@ -302,11 +302,11 @@ public class parser {
         stackTrace.add("Block");
         //track which lookaheads we have used so far;
         //4. Block -> Var_Dec_Part Proc_Func_Dec_Part Statement_Part
-        parserWriter.println("4");
+        parserWriter.println("rule #4  : expanding");
         Var_Dec_Part();
-        parserWriter.println("4");
+        parserWriter.println("rule #4  : expanding");
         Proc_Func_Dec_Part();
-        parserWriter.println("4");
+        parserWriter.println("rule #4  : expanding");
         Statement_Part();
         stackTrace.remove("Block");
     }
@@ -326,9 +326,9 @@ public class parser {
 //##############################################################################
                 Kind = parseTokens.get(index+3);                            //##
 //##############################################################################
-                parserWriter.println("5");
+                parserWriter.println("rule #5  : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("5");
+                parserWriter.println("rule #5  : expanding");
                 Var_Dec();
                 G_Check = Match("MP_SCOLON");
                 if (G_Check == 1) {
@@ -340,9 +340,9 @@ public class parser {
                                 Kind, Mode, Integer.toString(Size), Parameters);
                     dynamicParams.clear();
 //##############################################################################
-                    parserWriter.println("5");
+                    parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
-                    parserWriter.println("5");
+                    parserWriter.println("rule #5  : expanding");
                     Var_Dec_Tail();
                     stackTrace.remove("Var_Dec_Part");
                     break;
@@ -356,7 +356,7 @@ public class parser {
             default:
                 stackTrace.remove("Var_Dec_Part");
                 potentialError = "Var_Dec_Part, treated as empty";
-                parserWriter.println("6");
+                parserWriter.println("rule #6  : TERMINAL");
                 break;
         }
     }
@@ -370,7 +370,7 @@ public class parser {
         // 8. Var_Dec_Tail -> MP_EMPTY
         //precondition
         if (lookAhead.equals("MP_IDENTIFIER")) {
-            parserWriter.println("7");
+            parserWriter.println("rule #7  : expanding");
             Var_Dec();
         }
         G_Check = Match("MP_SCOLON");
@@ -378,9 +378,9 @@ public class parser {
             case 1:
                 if (!previous.equals("MP_SCOLON")
                         && !parseTokens.get(index+4).equals("MP_SCOLON")) {
-                    parserWriter.println("7");
+                    parserWriter.println("rule #7  : TERMINAL");
                     Advance_Pointer();
-                    parserWriter.println("7");
+                    parserWriter.println("rule #7  : expanding");
                     Var_Dec_Tail();
                     stackTrace.remove("Var_Dec_Tail");
                 }
@@ -390,7 +390,7 @@ public class parser {
                 }
                 break;
             default:
-                parserWriter.println("8");
+                parserWriter.println("rule #8  : TERMINAL");
                 potentialError = "Var_Dec_Tail, treated as empty";
                 stackTrace.remove("Var_Dec_Tail");
                 break;
@@ -403,14 +403,14 @@ public class parser {
     public static void Var_Dec() {
         stackTrace.add("Var_Dec");
         // 9. Var_Dec -> Id_List MP_COLON Type
-        parserWriter.println("9");
+        parserWriter.println("rule #9  : expanding");
         Id_List();
         G_Check = Match("MP_COLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("9");
+                parserWriter.println("rule #9  : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("9");
+                parserWriter.println("rule #9  : expanding");
                 Type();
                 stackTrace.remove("Var_Dec");
                 break;
@@ -444,24 +444,24 @@ public class parser {
                 CurrToken = lookAhead;                                      //##
                 Size = 4;                                                   //##
 //##############################################################################
-                parserWriter.println("10");
+                parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
-                //write 10 to file
+                //write rule #10 to file
                 break;
             case "MP_FLOAT":
-                parserWriter.println("11");
+                parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
-                //write 11 to file
+                //write rule #11 to file
                 break;
             case "MP_STRING":
-                parserWriter.println("12");
+                parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
-                //write 12 to file
+                //write rule #12 to file
                 break;
             case "MP_BOOLEAN":
-                parserWriter.println("13");
+                parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
-                //write 13 to file
+                //write rule #13 to file
                 break;
             default:
                 sourceOfError = "Type, Expected MP_INTEGER, MP_FLOAT, MP_STRING, or"
@@ -484,23 +484,23 @@ public class parser {
         //precondition
         switch (lookAhead) {
             case "MP_PROCEDURE":
-                parserWriter.println("14");
+                parserWriter.println("rule #14 : expanding");
                 Proc_Dec();
-                parserWriter.println("14");
+                parserWriter.println("rule #14 : expanding");
                 Proc_Func_Dec_Part();
                 stackTrace.remove("Proc_Func_Dec_Part");
                 break;
 
             case "MP_FUNCTION":
-                parserWriter.println("15");
+                parserWriter.println("rule #15 : expanding");
                 Func_Dec();
-                parserWriter.println("15");
+                parserWriter.println("rule #15 : expanding");
                 Proc_Func_Dec_Part();
                 stackTrace.remove("Proc_Func_Dec_Part");
                 break;
 
             default:
-                parserWriter.println("16 : --E--");
+                parserWriter.println("rule #16 : --E--");
                 potentialError = "Proc_Func_Dec_Part treated as Empty.";
                 stackTrace.remove("Proc_Func_Dec_Part");
                 break;
@@ -513,7 +513,7 @@ public class parser {
     public static void Proc_Dec() {
         stackTrace.add("Proc_Dec");
         // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
-        parserWriter.println("17");
+        parserWriter.println("rule #17 : expanding");
         Proc_Head();
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
@@ -526,9 +526,9 @@ public class parser {
                     Mode, Integer.toString(Size), Parameters);
             dynamicParams.clear();
 //##############################################################################
-                parserWriter.println("17");
+                parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("17");
+                parserWriter.println("rule #17 : expanding");
                 Block();
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
@@ -539,7 +539,7 @@ public class parser {
 //                        s_table.Destroy(TableName);
                         ProcName = "";
 //##############################################################################
-                        parserWriter.println("17");
+                        parserWriter.println("rule #17 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Proc_Dec");
                         break;
@@ -567,14 +567,14 @@ public class parser {
     public static void Func_Dec() {
         stackTrace.add("Func_Dec");
         // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON
-        parserWriter.println("18");
+        parserWriter.println("rule #18 : expanding");
         Func_Head();
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("18");
+                parserWriter.println("rule #18 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("18");
+                parserWriter.println("rule #18 : expanding");
                 Block();
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
@@ -585,7 +585,7 @@ public class parser {
 //                        s_table.Destroy(TableName);
 //                        FuncName = "";
 //##############################################################################
-                        parserWriter.println("18");
+                        parserWriter.println("rule #18 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Func_Dec");
                         break;
@@ -623,11 +623,11 @@ public class parser {
                 Type = null;                                                //##
                 Kind = parseTokens.get(index+3);                            //##
 //##############################################################################
-                parserWriter.println("19");
+                parserWriter.println("rule #19 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("19");
+                parserWriter.println("rule #19 : expanding");
                 Proc_Id();
-                parserWriter.println("19");
+                parserWriter.println("rule #19 : expanding");
                 Opt_Formal_Param_List();
                 stackTrace.remove("Proc_Head");
                 break;
@@ -649,17 +649,17 @@ public class parser {
         G_Check = Match("MP_FUNCTION");
         switch (G_Check) {
             case 1:
-                parserWriter.println("20");
+                parserWriter.println("rule #20 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("20");
+                parserWriter.println("rule #20 : expanding");
                 Function_Id();
-                parserWriter.println("20");
+                parserWriter.println("rule #20 : expanding");
                 Opt_Formal_Param_List();
                 G_Check = Match("MP_COLON");
                 if (G_Check == 1) {
-                    parserWriter.println("20");
+                    parserWriter.println("rule #20 : TERMINAL");
                     Advance_Pointer();
-                    parserWriter.println("20");
+                    parserWriter.println("rule #20 : expanding");
                     Type();
                     stackTrace.remove("Func_Head");
                     break;
@@ -690,16 +690,16 @@ public class parser {
         G_Check = Match("MP_LPAREN");
         switch (G_Check) {
             case 1:
-                parserWriter.println("21");
+                parserWriter.println("rule #21 : expanding");
                 Advance_Pointer();
-                parserWriter.println("21");
+                parserWriter.println("rule #21 : expanding");
                 Formal_Param_Sec();
-                parserWriter.println("21");
+                parserWriter.println("rule #21 : expanding");
                 Formal_Param_Sec_Tail();
                 G_Check = Match("MP_RPAREN");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("21");
+                        parserWriter.println("rule #21 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Opt_Formal_Param_List");
                         break;
@@ -713,7 +713,7 @@ public class parser {
                 }
                 break;
             default:
-                parserWriter.println("22 : --E--");
+                parserWriter.println("rule #22 : --E--");
                 potentialError = "Opt_Formal_Param_List treated as Empty";
                 stackTrace.remove("Opt_Formal_Param_List");
                 break;
@@ -731,16 +731,16 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("23");
+                parserWriter.println("rule #23 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("23");
+                parserWriter.println("rule #23 : expanding");
                 Formal_Param_Sec();
-                parserWriter.println("23");
+                parserWriter.println("rule #23 : expanding");
                 Formal_Param_Sec_Tail();
                 stackTrace.remove("Formal_Param_Sec_Tail");
                 break;
             default:
-                parserWriter.println("24 : --E--");
+                parserWriter.println("rule #24 : --E--");
                 potentialError = "Formal_Param_Sec_Tail, Treated as Empty";
                 stackTrace.remove("Formal_Param_Sec_Tail");
                 break;
@@ -755,11 +755,11 @@ public class parser {
         // 25. Formal_Param_Sec -> Val_Param_Sec
         // 26. Formal_Param_Sec -> Var_Param_Sec
         if (lookAhead.equals("MP_VAR")) {
-            parserWriter.println("25");
+            parserWriter.println("rule #25 : expanding");
             Var_Param_Sec();
             stackTrace.remove("Formal_Param_Sec");
         } else {
-            parserWriter.println("26");
+            parserWriter.println("rule #26 : expanding");
             Val_Param_Sec();
             stackTrace.remove("Formal_Param_Sec");
         }
@@ -771,14 +771,14 @@ public class parser {
     public static void Val_Param_Sec() {
         stackTrace.add("Val_Param_Sec");
         // 27. Val_Param_Sec -> Id_List MP_COLON Type
-        parserWriter.println("27");
+        parserWriter.println("rule #27 : expanding");
         Id_List();
         G_Check = Match("MP_COLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("27");
+                parserWriter.println("rule #27 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("22");
+                parserWriter.println("rule #22 : expanding");
                 Type();
                 stackTrace.remove("Val_Param_Sec");
                 break;
@@ -799,16 +799,16 @@ public class parser {
         G_Check = Match("MP_VAR");
         switch (G_Check) {
             case 1:
-                parserWriter.println("28");
+                parserWriter.println("rule #28 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("28");
+                parserWriter.println("rule #28 : expanding");
                 Id_List();
                 G_Check = Match("MP_COLON");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("28");
+                        parserWriter.println("rule #28 : TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("28");
+                        parserWriter.println("rule #28 : expanding");
                         Type();
                         stackTrace.remove("Var_Param_Sec");
                         break;
@@ -835,7 +835,7 @@ public class parser {
     public static void Statement_Part() {
         stackTrace.add("Statement_Part");
         // 29. Statement_Part -> Compound_Statement
-        parserWriter.println("29");
+        parserWriter.println("rule #29 : expanding");
         Compound_Statement();
         stackTrace.remove("Statement_Part");
     }
@@ -871,14 +871,14 @@ public class parser {
                 System.err.println("ProcName or FuncName not set");         //##
 //##############################################################################
             
-                parserWriter.println("30");
+                parserWriter.println("rule #30 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("30");
+                parserWriter.println("rule #30 : expanding");
                 Statement_Seq();
                 G_Check = Match("MP_END");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("30");
+                        parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Compound_Statement");
                         break;
@@ -906,9 +906,9 @@ public class parser {
     public static void Statement_Seq() {
         stackTrace.add("Statement_Seq");
         // 31. Statement_Seq -> Statement Statement_Tail
-        parserWriter.println("31");
+        parserWriter.println("rule #31 : expanding");
         Statement();
-        parserWriter.println("31");
+        parserWriter.println("rule #31 : expanding");
         Statement_Tail();
         stackTrace.remove("Statement_Seq");
     }
@@ -923,17 +923,17 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                parserWriter.println("32");
+                parserWriter.println("rule #32 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("32");
+                parserWriter.println("rule #32 : expanding");
                 Statement();
-                parserWriter.println("32");
+                parserWriter.println("rule #32 : expanding");
                 Statement_Tail();
                 stackTrace.remove("Statement_Tail");
                 break;
 
             default:
-                parserWriter.println("33 : --E--");
+                parserWriter.println("rule #33 : --E--");
                 potentialError = "Statement_Tail, Treated as Empty";
                 stackTrace.remove("Statement_Tail");
                 break;
@@ -947,43 +947,43 @@ public class parser {
         stackTrace.add("Statement");
         // 35. Statement -> Compound_Statement
         if (lookAhead.equals("MP_BEGIN")) {
-            parserWriter.println("35");
+            parserWriter.println("rule #35 : expanding");
             Compound_Statement();
         } // 36. Statement -> Read_Statement
         else if (lookAhead.equals("MP_READ")) {
-            parserWriter.println("36");
+            parserWriter.println("rule #36 : expanding");
             Read_Statement();
         } // 37. Statement -> Write_Statement
         else if (lookAhead.equals("MP_WRITE") || lookAhead.equals("MP_WRITELN")) {
-            parserWriter.println("37");
+            parserWriter.println("rule #37 : expanding");
             Write_Statement();
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
-            parserWriter.println("38");
+            parserWriter.println("rule #38 : expanding");
             Assign_Statement();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
-            parserWriter.println("39");
+            parserWriter.println("rule #39 : expanding");
             If_Statement();
         } // 40. Statement -> While_Statement
         else if (lookAhead.equals("MP_WHILE")) {
-            parserWriter.println("40");
+            parserWriter.println("rule #40 : expanding");
             While_Statement();
         } // 41. Statement -> Repeat_Statement
         else if (lookAhead.equals("MP_REPEAT")) {
-            parserWriter.println("41");
+            parserWriter.println("rule #41 : expanding");
             Repeat_Statement();
         } // 42. Statement -> For_Statement
         else if (lookAhead.equals("MP_FOR")) {
-            parserWriter.println("42");
+            parserWriter.println("rule #42 : expanding");
             For_Statement();
         } // 43. Statement -> Procedure_Statement
         else if (lookAhead.equals("MP_PROCEDURE")) {
-            parserWriter.println("43");
+            parserWriter.println("rule #43 : expanding");
             Proc_Statement();
         } // 34. Statement -> Empty_Statement (post condition)
         else {
-            parserWriter.println("34");
+            parserWriter.println("rule #34 : expanding");
             Empty_Statement();
         }
         stackTrace.remove("Statement");
@@ -996,7 +996,7 @@ public class parser {
     public static void Empty_Statement() {
         stackTrace.add("Empty_Statement");
         // 44. Empty_Statement -> MP_EMPTY
-        parserWriter.println("44 : --E--");
+        parserWriter.println("rule #44 : --E--");
         potentialError = "Statement, Treated as Empty";
         stackTrace.remove("Empty_Statement");
     }
@@ -1010,21 +1010,21 @@ public class parser {
         G_Check = Match("MP_READ");
         switch (G_Check) {
             case 1:
-                parserWriter.println("45");
+                parserWriter.println("rule #45 : TERMINAL");
                 Advance_Pointer();
                 G_Check = Match("MP_LPAREN");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("45");
+                        parserWriter.println("rule #45 : TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("45");
+                        parserWriter.println("rule #45 : expanding");
                         Read_Param();
-                        parserWriter.println("45");
+                        parserWriter.println("rule #45 : expanding");
                         Read_Param_Tail();
                         G_Check = Match("MP_RPAREN");
                         switch (G_Check) {
                             case 1:
-                                parserWriter.println("45");
+                                parserWriter.println("rule #45 : TERMINAL");
                                 Advance_Pointer();
                                 stackTrace.remove("Read_Statement");
                                 break;
@@ -1064,17 +1064,17 @@ public class parser {
         G_Check = Match("MP_COMMA");
         switch (G_Check) {
             case 1:
-                parserWriter.println("46");
+                parserWriter.println("rule #46 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("46");
+                parserWriter.println("rule #46 : expanding");
                 Read_Param();
-                parserWriter.println("46");
+                parserWriter.println("rule #46 : expanding");
                 Read_Param_Tail();
                 stackTrace.remove("Read_Param_Tail");
                 break;
 
             default:
-                parserWriter.println("47 : --E--");
+                parserWriter.println("rule #47 : --E--");
                 potentialError = "Read_Param_Tail, Treated as Empty";
                 stackTrace.remove("Read_Param_Tail");
                 break;
@@ -1087,7 +1087,7 @@ public class parser {
     public static void Read_Param() {
         stackTrace.add("Read_Param");
         // 48. Read_Param -> Var_Id
-        parserWriter.println("48");
+        parserWriter.println("rule #48 : expanding");
         Var_Id();
         stackTrace.remove("Read_Param");
     }
@@ -1105,11 +1105,11 @@ public class parser {
             G_Check = Match("MP_WRITELN");
             if (G_Check == 1) {
                 whichWrite = 2;
-                parserWriter.println("50");
+                parserWriter.println("rule #50 : TERMINAL");
             }
         } else {
             whichWrite = 1;
-            parserWriter.println("49");
+            parserWriter.println("rule #49 : TERMINAL");
         }
         switch (G_Check) {
             case 1:
@@ -1118,18 +1118,18 @@ public class parser {
                 switch (G_Check) {
                     case 1:
                         if (whichWrite == 1) {
-                            parserWriter.println("49");
+                            parserWriter.println("rule #49 : TERMINAL");
                             Advance_Pointer();
-                            parserWriter.println("49");
+                            parserWriter.println("rule #49 : expanding");
                             Write_Param();
-                            parserWriter.println("49");
+                            parserWriter.println("rule #49 : expanding");
                             Write_Param_Tail();
                         } else {
-                            parserWriter.println("50");
+                            parserWriter.println("rule #50 : TERMINAL");
                             Advance_Pointer();
-                            parserWriter.println("50");
+                            parserWriter.println("rule #50 : expanding");
                             Write_Param();
-                            parserWriter.println("50");
+                            parserWriter.println("rule #50 : expanding");
                             Write_Param_Tail();
                         }
 
@@ -1137,9 +1137,9 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 if (whichWrite == 1) {
-                                    parserWriter.println("49");
+                                    parserWriter.println("rule #49 : TERMINAL");
                                 } else {
-                                    parserWriter.println("50");
+                                    parserWriter.println("rule #50 : TERMINAL");
                                 }
                                 Advance_Pointer();
                                 stackTrace.remove("Write_Statement");
@@ -1179,17 +1179,17 @@ public class parser {
         G_Check = Match("MP_COMMA");
         switch (G_Check) {
             case 1:
-                parserWriter.println("51");
+                parserWriter.println("rule #51 : TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("51");
+                parserWriter.println("rule #51 : expanding");
                 Write_Param();
-                parserWriter.println("51");
+                parserWriter.println("rule #51 : expanding");
                 Write_Param_Tail();
                 stackTrace.remove("Write_Param_Tail");
                 break;
 
             default:
-                parserWriter.println("52 : --E--");
+                parserWriter.println("rule #52 : --E--");
                 potentialError = "Write_Param_Tail, Treated as Empty";
                 stackTrace.remove("Write_Param_Tail");
                 break;
@@ -1202,7 +1202,7 @@ public class parser {
     public static void Write_Param() {
         stackTrace.add("Write_Param");
         // 53. Write_Param -> Ordinal_Expression
-        parserWriter.println("53");
+        parserWriter.println("rule #53 : expanding");
         Ordinal_Expression();
         stackTrace.remove("Write_Param");
     }
@@ -1224,14 +1224,14 @@ public class parser {
         // DISCUSSION 
         // -Kaleb
         //!!!!!!!!!!!!!!!!!!!!
-        parserWriter.println("!!!!  !!! !! ! 54 or maybe 55");
+        parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
         Var_Id();
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
-                parserWriter.println("!!!!  !!! !! ! 54 or maybe 55");
+                parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("!!!!  !!! !! ! 54 or maybe 55");
+                parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
                 Expression();
                 stackTrace.remove("Assign_Statement");
                 break;
@@ -1254,19 +1254,19 @@ public class parser {
         G_Check = Match("MP_IF");
         switch (G_Check) {
             case 1:
-                parserWriter.println("56");
+                parserWriter.println("rule #56: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("56");
+                parserWriter.println("rule #56: expanding");
                 Boolean_Expression();
                 G_Check = Match("MP_THEN");
                 //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("56");
+                        parserWriter.println("rule #56: TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("56");
+                        parserWriter.println("rule #56: expanding");
                         Statement();
-                        parserWriter.println("56");
+                        parserWriter.println("rule #56: expanding");
                         Opt_Else_Part();
                         stackTrace.remove("If_Statement");
                         break;
@@ -1317,12 +1317,12 @@ public class parser {
             switch (G_Check) {
                 case 1:
                     Advance_Pointer();
-                    parserWriter.println("57");
+                    parserWriter.println("rule #57: expanding");
                     Statement();
                     break;
 
                 default:
-                    parserWriter.println("58: --E--");
+                    parserWriter.println("rule #58: --E--");
                     potentialError = "Opt_Else_Part, Treated as Empty";
                     break;
             } //end case for else
@@ -1339,17 +1339,17 @@ public class parser {
         G_Check = Match("MP_REPEAT");
         switch (G_Check) {
             case 1:
-                parserWriter.println("59");
+                parserWriter.println("rule #59: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("59");
+                parserWriter.println("rule #59: expanding");
                 Statement_Seq();
                 G_Check = Match("MP_UNTIL");
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("59");
+                        parserWriter.println("rule #59: TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("59");
+                        parserWriter.println("rule #59: expanding");
                         Boolean_Expression();
                         stackTrace.remove("Repeat_Statement");
                         break;
@@ -1380,16 +1380,16 @@ public class parser {
         G_Check = Match("MP_WHILE");
         switch (G_Check) {
             case 1:
-                parserWriter.println("60");
+                parserWriter.println("rule #60: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("60");
+                parserWriter.println("rule #60: expanding");
                 Boolean_Expression();
                 G_Check = Match("MP_DO");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("60");
+                        parserWriter.println("rule #60: TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("60");
+                        parserWriter.println("rule #60: expanding");
                         Statement();
                         stackTrace.remove("While_Statement");
                         break;
@@ -1420,29 +1420,29 @@ public class parser {
         G_Check = Match("MP_FOR");
         switch (G_Check) {
             case 1:
-                parserWriter.println("61");
+                parserWriter.println("rule #61: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("61");
+                parserWriter.println("rule #61: expanding");
                 Control_Var();
                 G_Check = Match("MP_ASSIGN");
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("61");
+                        parserWriter.println("rule #61: TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("61");
+                        parserWriter.println("rule #61: expanding");
                         Init_Val();
-                        parserWriter.println("61");
+                        parserWriter.println("rule #61: expanding");
                         Step_Val();
-                        parserWriter.println("61");
+                        parserWriter.println("rule #61: expanding");
                         Final_Val();
                         G_Check = Match("MP_DO");
                         //we do want to fall through here, to evaluate third G_Check
                         switch (G_Check) {
                             case 1:
-                                parserWriter.println("61");
+                                parserWriter.println("rule #61: TERMINAL");
                                 Advance_Pointer();
-                                parserWriter.println("61");
+                                parserWriter.println("rule #61: expanding");
                                 Statement();
                                 stackTrace.remove("For_Statement");
                                 break;
@@ -1477,7 +1477,7 @@ public class parser {
     public static void Control_Var() {
         stackTrace.add("Control_Var");
         // 62. Control_Var -> Var_Id
-        parserWriter.println("62");
+        parserWriter.println("rule #62: expanding");
         Var_Id();
         stackTrace.remove("Control_Var");
     }
@@ -1488,7 +1488,7 @@ public class parser {
     public static void Init_Val() {
         stackTrace.add("Init_Val");
         // 63. Init_Val -> Ordinal_Expression
-        parserWriter.println("63");
+        parserWriter.println("rule #63: expanding");
         Ordinal_Expression();
         stackTrace.remove("Init_Val");
     }
@@ -1503,7 +1503,7 @@ public class parser {
         G_Check = Match("MP_TO");
         switch (G_Check) {
             case 1:
-                parserWriter.println("64");
+                parserWriter.println("rule #64: TERMINAL");
                 Advance_Pointer();
                 stackTrace.remove("Step_Val");
                 break;
@@ -1511,7 +1511,7 @@ public class parser {
                 G_Check = Match("MP_DOWNTO");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("65");
+                        parserWriter.println("rule #65: TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Step_Val");
                         break;
@@ -1532,7 +1532,7 @@ public class parser {
     public static void Final_Val() {
         stackTrace.add("Final_Val");
         // 66. Final_Val -> Ordinal_Expression
-        parserWriter.println("66");
+        parserWriter.println("rule #66: expanding");
         Ordinal_Expression();
         stackTrace.remove("Final_Val");
     }
@@ -1543,9 +1543,9 @@ public class parser {
     public static void Proc_Statement() {
         stackTrace.add("Proc_Statement");
         // 67. Proc_Statement -> Proc_Id Opt_Actual_Param_List
-        parserWriter.println("67");
+        parserWriter.println("rule #67: expanding");
         Proc_Id();
-        parserWriter.println("67");
+        parserWriter.println("rule #67: expanding");
         Opt_Actual_Param_List();
         stackTrace.remove("Proc_Statement");
     }
@@ -1560,16 +1560,16 @@ public class parser {
         G_Check = Match("MP_LPAREN");
         switch (G_Check) {
             case 1:
-                parserWriter.println("68");
+                parserWriter.println("rule #68: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("68");
+                parserWriter.println("rule #68: expanding");
                 Actual_Param();
-                parserWriter.println("68");
+                parserWriter.println("rule #68: expanding");
                 Actual_Param_Tail();
                 G_Check = Match("MP_RPAREN");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("68");
+                        parserWriter.println("rule #68: TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Opt_Actual_Param_List");
                         break;
@@ -1583,7 +1583,7 @@ public class parser {
                 } //end case RParen
                 break;
             default:
-                parserWriter.println("69: --E--");
+                parserWriter.println("rule #69: --E--");
                 potentialError = "Opt_Actual_Param_List, Treated as Empty";
                 stackTrace.remove("Opt_Actual_Param_List");
                 break;
@@ -1600,17 +1600,17 @@ public class parser {
         G_Check = Match("MP_COMMA");
         switch (G_Check) {
             case 1:
-                parserWriter.println("70");
+                parserWriter.println("rule #70: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("70");
+                parserWriter.println("rule #70: expanding");
                 Actual_Param();
-                parserWriter.println("70");
+                parserWriter.println("rule #70: expanding");
                 Actual_Param_Tail();
                 stackTrace.remove("Actual_Param_Tail");
                 break;
 
             default:
-                parserWriter.println("71: --E--");
+                parserWriter.println("rule #71: --E--");
                 potentialError = "Actual_Param_List, Treated as Empty";
                 stackTrace.remove("Actual_Param_Tail");
                 break;
@@ -1623,7 +1623,7 @@ public class parser {
     public static void Actual_Param() {
         stackTrace.add("Actual_Param");
         // 72. Actual_Param -> Ordinal_Expression
-        parserWriter.println("72");
+        parserWriter.println("rule #72: expanding");
         Ordinal_Expression();
         stackTrace.remove("Actual_Param");
     }
@@ -1634,9 +1634,9 @@ public class parser {
     public static void Expression() {
         stackTrace.add("Expression");
         // 73. Expression -> Simple_Expression Opt_Relational_Part
-        parserWriter.println("73");
+        parserWriter.println("rule #73: expanding");
         Simple_Expression();
-        parserWriter.println("73");
+        parserWriter.println("rule #73: expanding");
         Opt_Relational_Part();
         stackTrace.remove("Expression");
     }
@@ -1648,14 +1648,14 @@ public class parser {
         stackTrace.add("Opt_Relational_Part");
         // 74. Opt_Relational_Part -> Relational_Op Simple_Expression
         // 75. Opt_Relational_Part -> MP_EMPTY
-        parserWriter.println("74");
+        parserWriter.println("rule #74: expanding");
         int tempCheck = Relational_Op();
         if (tempCheck == -1) {
-            parserWriter.println("75: --E--");
+            parserWriter.println("rule #75: --E--");
             potentialError = "Opt_Relational_Part treated as Empty";
             stackTrace.remove("Opt_Relational_Part");
         } else {
-            parserWriter.println("74");
+            parserWriter.println("rule #74: expanding");
             Simple_Expression();
             stackTrace.remove("Opt_Relational_Part");
         }
@@ -1677,22 +1677,22 @@ public class parser {
         //made for ugly code, and logic was difficult to trace.
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
-            parserWriter.println("76");
+            parserWriter.println("rule #76: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
-            parserWriter.println("77");
+            parserWriter.println("rule #77: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
-            parserWriter.println("78");
+            parserWriter.println("rule #78: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
-            parserWriter.println("79");
+            parserWriter.println("rule #79: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
-            parserWriter.println("80");
+            parserWriter.println("rule #80: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
-            parserWriter.println("81");
+            parserWriter.println("rule #81: TERMINAL");
             Advance_Pointer();
         } else {
             stackTrace.remove("Relational_Op");
@@ -1708,11 +1708,11 @@ public class parser {
     public static void Simple_Expression() {
         stackTrace.add("Simple_Expression");
         // 82. Simple_Expression -> Optional_Sign Term Term_Tail
-        parserWriter.println("82");
+        parserWriter.println("rule #82: expanding");
         Optional_Sign();
-        parserWriter.println("82");
+        parserWriter.println("rule #82: expanding");
         Term();
-        parserWriter.println("82");
+        parserWriter.println("rule #82: expanding");
         Term_Tail();
         stackTrace.remove("Simple_Expression");
     }
@@ -1724,15 +1724,15 @@ public class parser {
         stackTrace.add("Term_Tail");
         // 83. Term_Tail -> Add_Op Term Term_Tail
         // 84. Term_Tail -> MP_EMPTY
-        parserWriter.println("83");
+        parserWriter.println("rule #83: expanding");
         int tempCheck = Add_Op();
         if (tempCheck != 0) {
-            parserWriter.println("84: --E--");
+            parserWriter.println("rule #84: --E--");
             potentialError = "Term_Tail treated as Empty";
         } else {
-            parserWriter.println("83");
+            parserWriter.println("rule #83: expanding");
             Term();
-            parserWriter.println("83");
+            parserWriter.println("rule #83: expanding");
             Term_Tail();
         }
         stackTrace.remove("Term_Tail");
@@ -1749,7 +1749,7 @@ public class parser {
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
-                parserWriter.println("85");
+                parserWriter.println("rule #85: TERMINAL");
                 Advance_Pointer();
                 stackTrace.remove("Optional_Sign");
                 break;
@@ -1758,12 +1758,12 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("86");
+                        parserWriter.println("rule #86: TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Optional_Sign");
                         break;
                     default:
-                        parserWriter.println("87: --E--");
+                        parserWriter.println("rule #87: --E--");
                         potentialError = "Optional_Sign treated as Empty";
                         stackTrace.remove("Optional_Sign");
                 } //end case Minus
@@ -1783,7 +1783,7 @@ public class parser {
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
-                parserWriter.println("88");
+                parserWriter.println("rule #88: TERMINAL");
                 Advance_Pointer();
                 stackTrace.remove("Add_Op");
                 return 0;
@@ -1791,7 +1791,7 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("89");
+                        parserWriter.println("rule #89: TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Add_Op");
                         return 0;
@@ -1799,7 +1799,7 @@ public class parser {
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
                             case 1:
-                                parserWriter.println("90");
+                                parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
                                 stackTrace.remove("Add_Op");
                                 return 0;
@@ -1817,9 +1817,9 @@ public class parser {
     public static void Term() {
         stackTrace.add("Term");
         // 91. Term -> Factor Factor_Tail
-        parserWriter.println("91");
+        parserWriter.println("rule #91: expanding");
         Factor();
-        parserWriter.println("91");
+        parserWriter.println("rule #91: expanding");
         Factor_Tail();
         stackTrace.remove("Term");
     }
@@ -1831,15 +1831,15 @@ public class parser {
         stackTrace.add("Factor_Tail");
         // 92. Factor_Tail -> Multiply_Op Factor Factor_Tail
         // 93. Factor_Tail -> MP_EMPTY
-        parserWriter.println("92");
+        parserWriter.println("rule #92: expanding");
         int tempCheck = Multiply_Op();
         if (tempCheck == -1) {
-            parserWriter.println("93: --E--");
+            parserWriter.println("rule #93: --E--");
             potentialError = "Factor_Tail got Empty from Multiply_Op";
         } else {
-            parserWriter.println("92");
+            parserWriter.println("rule #92: expanding");
             Factor();
-            parserWriter.println("92");
+            parserWriter.println("rule #92: expanding");
             Factor_Tail();
         }
         stackTrace.remove("Factor_Tail");
@@ -1858,7 +1858,7 @@ public class parser {
         G_Check = Match("MP_TIMES");
         switch (G_Check) {
             case 1:
-                parserWriter.println("94");
+                parserWriter.println("rule #94: TERMINAL");
                 Advance_Pointer();
                 stackTrace.remove("Multiply_Op");
                 return 0;
@@ -1866,7 +1866,7 @@ public class parser {
                 G_Check = Match("MP_FORWARD_SLASH");
                 switch (G_Check) {
                     case 1:
-                        parserWriter.println("95");
+                        parserWriter.println("rule #95: TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Multiply_Op");
                         return 0;
@@ -1874,7 +1874,7 @@ public class parser {
                         G_Check = Match("MP_DIV");
                         switch (G_Check) {
                             case 1:
-                                parserWriter.println("96");
+                                parserWriter.println("rule #96: TERMINAL");
                                 Advance_Pointer();
                                 stackTrace.remove("Multiply_Op");
                                 return 0;
@@ -1882,7 +1882,7 @@ public class parser {
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
                                     case 1:
-                                        parserWriter.println("97");
+                                        parserWriter.println("rule #97: TERMINAL");
                                         Advance_Pointer();
                                         stackTrace.remove("Multiply_Op");
                                         return 0;
@@ -1890,7 +1890,7 @@ public class parser {
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
                                             case 1:
-                                                parserWriter.println("98");
+                                                parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
                                                 stackTrace.remove("Multiply_Op");
                                                 return 0;
@@ -1920,32 +1920,32 @@ public class parser {
         // 116. Factor -> Variable_Id
         G_Check = Match("MP_INTEGER_LIT");
         if (lookAhead.equals("MP_INTEGER_LIT")) {
-            parserWriter.println("99");
+            parserWriter.println("rule #99: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FLOAT")) {
-            parserWriter.println("100");
+            parserWriter.println("rule #100: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_STRING_LIT")) {
-            parserWriter.println("101");
+            parserWriter.println("rule #101: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_TRUE")) {
-            parserWriter.println("102");
+            parserWriter.println("rule #102: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FALSE")) {
-            parserWriter.println("103");
+            parserWriter.println("rule #103: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NOT")) {
-            parserWriter.println("104");
+            parserWriter.println("rule #104: TERMINAL");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LPAREN")) {
-            parserWriter.println("105");
+            parserWriter.println("rule #105: TERMINAL");
             Advance_Pointer();
-            parserWriter.println("105");
+            parserWriter.println("rule #105: expanding");
             Expression();
             G_Check = Match("MP_RPAREN");
             switch (G_Check) {
                 case 1:
-                    parserWriter.println("105");
+                    parserWriter.println("rule #105: TERMINAL");
                     Advance_Pointer();
                     stackTrace.remove("Factor");
                     break;
@@ -1959,9 +1959,9 @@ public class parser {
             //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
             //if (lookAhead.equals() ) {
-            parserWriter.println("106");
+            parserWriter.println("rule #106: expanding");
             Function_Id();
-            parserWriter.println("106");
+            parserWriter.println("rule #106: expanding");
             Opt_Actual_Param_List();
             stackTrace.remove("Factor");
 
@@ -1993,7 +1993,7 @@ public class parser {
             //insert Table info using s_table API name, nesting, label      //##
             s_table.New_Table(TableName, Integer.toString(Nlvl), Label);    //##
 //##############################################################################
-            parserWriter.println("107");
+            parserWriter.println("rule #107: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Prog_Id");
         } else {
@@ -2010,7 +2010,7 @@ public class parser {
         // 108. Var_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
-            parserWriter.println("108");
+            parserWriter.println("rule #108: TERMINAL");
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
@@ -2041,7 +2041,7 @@ public class parser {
             ProcName = CurrLexeme;                                          //##
             System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
-            parserWriter.println("109");
+            parserWriter.println("rule #109: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Proc_Id");
         } else {
@@ -2066,7 +2066,7 @@ public class parser {
             FuncName = CurrLexeme;                                          //##
             System.out.println("Set FuncName: " + FuncName);
 //##############################################################################
-            parserWriter.println("110");
+            parserWriter.println("rule #110: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Function_Id");
         } else {
@@ -2082,7 +2082,7 @@ public class parser {
     public static void Boolean_Expression() {
         stackTrace.add("Boolean_Expression");
         // 111. Boolean_Expression -> Expression
-        parserWriter.println("111");
+        parserWriter.println("rule #111: expanding");
         Expression();
         stackTrace.remove("Boolean_Expression");
     }
@@ -2093,7 +2093,7 @@ public class parser {
     public static void Ordinal_Expression() {
         stackTrace.add("Ordinal_Expression");
         // 112. Ordinal_Expression -> Expression
-        parserWriter.println("112");
+        parserWriter.println("rule #112: expanding");
         Expression();
         stackTrace.remove("Ordinal_Expression");
     }
@@ -2113,9 +2113,9 @@ public class parser {
 //##############################################################################
                 dynamicParams.add(parseTokens.get(index+3));
 //##############################################################################
-                parserWriter.println("113");
+                parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("113");
+                parserWriter.println("rule #113: expanding");
                 Id_Tail();
                 stackTrace.remove("Id_List");
                 break;
@@ -2139,7 +2139,7 @@ public class parser {
         G_Check = Match("MP_COMMA");
         switch (G_Check) {
             case 1:
-                parserWriter.println("114");
+                parserWriter.println("rule #114: TERMINAL");
                 Advance_Pointer();
                 G_Check = Match("MP_IDENTIFIER");
                 switch (G_Check) {
@@ -2149,9 +2149,9 @@ public class parser {
 //##############################################################################
                         dynamicParams.add(parseTokens.get(index+3));
 //##############################################################################
-                        parserWriter.println("114");
+                        parserWriter.println("rule #114: TERMINAL");
                         Advance_Pointer();
-                        parserWriter.println("114");
+                        parserWriter.println("rule #114: expanding");
                         Id_Tail();
                         stackTrace.remove("Id_Tail");
                         break;
@@ -2170,7 +2170,7 @@ public class parser {
 //##############################################################################
                 dynamicParams.add("END_ARGS");
 //##############################################################################
-                parserWriter.println("115: --E--");
+                parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
                 stackTrace.remove("Id_Tail");
         } //end case Comma
