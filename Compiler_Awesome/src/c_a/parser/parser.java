@@ -390,7 +390,7 @@ public class parser {
                 }
                 break;
             default:
-                parserWriter.println("rule #8  : TERMINAL");
+                parserWriter.println("rule #8  : --E--");
                 potentialError = "Var_Dec_Tail, treated as empty";
                 stackTrace.remove("Var_Dec_Tail");
                 break;

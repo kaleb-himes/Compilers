@@ -1,1 +1,4 @@
-
+program Tester;
+  begin {tester}
+    I := I + 1;
+END.
