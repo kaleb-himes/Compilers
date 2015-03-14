@@ -529,6 +529,12 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+//                        s_table.Destroy(TableName);
+                        ProcName = "";
+//##############################################################################
                         parserWriter.println("rule #17 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Proc_Dec");
@@ -569,6 +575,12 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+//                        s_table.Destroy(TableName);
+//                        FuncName = "";
+//##############################################################################
                         parserWriter.println("rule #18 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Func_Dec");
@@ -862,12 +874,6 @@ public class parser {
                 G_Check = Match("MP_END");
                 switch (G_Check) {
                     case 1:
-//##############################################################################
-//############ SYMBOL TABLE STUFF ##############################################
-//##############################################################################
-                        ProcName = "";
-                        FuncName = "";
-//##############################################################################
                         parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Compound_Statement");
@@ -2028,6 +2034,7 @@ public class parser {
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
             ProcName = CurrLexeme;                                          //##
+            System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
             Advance_Pointer();
@@ -2052,6 +2059,7 @@ public class parser {
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
             FuncName = CurrLexeme;                                          //##
+            System.out.println("Set FuncName: " + FuncName);
 //##############################################################################
             parserWriter.println("rule #110: TERMINAL");
             Advance_Pointer();
@@ -2218,7 +2226,7 @@ public class parser {
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
-            s_table.Print_Tables();
+//            s_table.Print_Tables();
         }
         parserWriter.close();
 
