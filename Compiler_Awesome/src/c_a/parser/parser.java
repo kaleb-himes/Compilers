@@ -105,7 +105,7 @@ public class parser {
         Label_2         = 0;
         //initialize Parameters to empty set, update as needed
         String[] init   = new String[1];
-        init[0] = null;
+        init[0] = "NO_PARAMS";
         Parameters = init;
         
 
