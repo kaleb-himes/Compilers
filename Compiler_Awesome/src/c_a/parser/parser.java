@@ -356,7 +356,7 @@ public class parser {
             default:
                 stackTrace.remove("Var_Dec_Part");
                 potentialError = "Var_Dec_Part, treated as empty";
-                parserWriter.println("rule #6  : TERMINAL");
+                parserWriter.println("rule #6  : --E--");
                 break;
         }
     }
@@ -533,12 +533,6 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
-//##############################################################################
-//############ SYMBOL TABLE STUFF ##############################################
-//##############################################################################
-//                        s_table.Destroy(TableName);
-                        ProcName = "";
-//##############################################################################
                         parserWriter.println("rule #17 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Proc_Dec");
@@ -579,12 +573,6 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
-//##############################################################################
-//############ SYMBOL TABLE STUFF ##############################################
-//##############################################################################
-//                        s_table.Destroy(TableName);
-//                        FuncName = "";
-//##############################################################################
                         parserWriter.println("rule #18 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Func_Dec");
@@ -878,6 +866,13 @@ public class parser {
                 G_Check = Match("MP_END");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+//                        s_table.Destroy(TableName);
+                        FuncName = "";
+                        ProcName = "";
+//##############################################################################
                         parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
                         stackTrace.remove("Compound_Statement");
@@ -1960,9 +1955,9 @@ public class parser {
             //use a flag of some sort?
             //if (lookAhead.equals() ) {
             parserWriter.println("rule #106: expanding");
-            Function_Id();
-            parserWriter.println("rule #106: expanding");
-            Opt_Actual_Param_List();
+             Function_Id();
+             parserWriter.println("rule #106: expanding");
+             Opt_Actual_Param_List();
             stackTrace.remove("Factor");
 
             //}
@@ -2011,12 +2006,15 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             parserWriter.println("rule #108: TERMINAL");
+            if (!Functions.contains(parseTokens.get(index+3))) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
             Variables.add(CurrLexeme);
+//            System.out.println("Set VarID: " + CurrLexeme);
 //##############################################################################
+            }
             Advance_Pointer();
             stackTrace.remove("Var_Id");
         } else {
@@ -2059,13 +2057,16 @@ public class parser {
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
+            if (!Variables.contains(parseTokens.get(index+3))) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
             FuncName = CurrLexeme;                                          //##
-            System.out.println("Set FuncName: " + FuncName);
+            Functions.add(parseTokens.get(index+3));
+//            System.out.println("Set FuncName: " + FuncName);
 //##############################################################################
+            }
             parserWriter.println("rule #110: TERMINAL");
             Advance_Pointer();
             stackTrace.remove("Function_Id");
@@ -2231,7 +2232,7 @@ public class parser {
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
-//            s_table.Print_Tables();
+            s_table.Print_Tables();
         }
         parserWriter.close();
 

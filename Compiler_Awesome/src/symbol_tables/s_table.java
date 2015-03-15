@@ -6,18 +6,18 @@
 package symbol_tables;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  *
  * @author khimes
  */
 public class s_table {
-    public static HashMap<String, ArrayList<String>> tables;
+    public static LinkedHashMap<String, ArrayList<String>> tables;
     static ArrayList<String> Rows;
     
     public static void Init_Table() {
-        tables = new HashMap<>();
+        tables = new LinkedHashMap<>();
     }
     //create a new table to take on values.
     public static void New_Table(String TableName, 
