@@ -1,6 +1,6 @@
 program Tester;
 
- var I: Integer;
+ var I: Integer;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
     begin

@@ -376,18 +376,19 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                if (!previous.equals("MP_SCOLON")
-                        && !parseTokens.get(index+4).equals("MP_SCOLON")) {
+//uncomment for semi-colon errors
+//                if (!previous.equals("MP_SCOLON")
+//                        && !parseTokens.get(index+4).equals("MP_SCOLON")) {
                     parserWriter.println("rule #7  : TERMINAL");
                     Advance_Pointer();
                     parserWriter.println("rule #7  : expanding");
                     Var_Dec_Tail();
                     stackTrace.remove("Var_Dec_Tail");
-                }
-                else {
-                    sourceOfError = "Too many Semi-Colons.";
-                    errorsFound.add(sourceOfError);
-                }
+//                }
+//                else {
+//                    sourceOfError = "Too many Semi-Colons.";
+//                    errorsFound.add(sourceOfError);
+//                }
                 break;
             default:
                 parserWriter.println("rule #8  : --E--");
@@ -856,7 +857,7 @@ public class parser {
                 s_table.New_Table(TableName, Integer.toString(Nlvl), Label);//##
             }                                                               //##
             else                                                            //##
-                System.err.println("ProcName or FuncName not set");         //##
+                potentialError = "ProcName or FuncName May not be set";     //##
 //##############################################################################
             
                 parserWriter.println("rule #30 : TERMINAL");
@@ -1217,6 +1218,11 @@ public class parser {
         // I HAVE NO CLUE HOW TO TELL IF THIS IS GOING TO BE A FUNCTION NAME
         // OR WHICH RULE TO EXPAND I AM AT A LOSS AS TO HOW TO DO THIS NEEDS
         // DISCUSSION 
+        // -Kaleb
+        
+        // Solution: Every time we encounter a function declaration, stuff the 
+        // resulting function ID in an array. If the current lookAhead is in 
+        // the function array expand rule 55 else expand the other. 
         // -Kaleb
         //!!!!!!!!!!!!!!!!!!!!
         parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
@@ -2037,7 +2043,7 @@ public class parser {
 //##############################################################################
             CurrLexeme = parseTokens.get(index+3);                          //##
             ProcName = CurrLexeme;                                          //##
-            System.out.println("Set ProcName: " + ProcName);
+//            System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
             Advance_Pointer();
