@@ -10,7 +10,8 @@ x, y, balloon, legcramp: String;
 
     function junk2 (VAR test:Float; VAR garbage:Boolean) : Boolean;
     begin
-        read(somestuff)
+        read(somestuff);
+        junk2 := 5;
     end; {tester}
 
     function junk3 (VAR test:Float) : STRING;

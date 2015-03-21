@@ -62,8 +62,9 @@ public class parser {
     static int blockState;
     static PrintWriter parserWriter;
 // Lexicallity
-    static ArrayList Variables = new ArrayList<>();
-    static ArrayList Functions = new ArrayList<>();
+    static ArrayList Variables  = new ArrayList<>();
+    static ArrayList Functions  = new ArrayList<>();
+    static ArrayList Procedures = new ArrayList<>();
     
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
@@ -660,7 +661,7 @@ public class parser {
                 parserWriter.println("rule #20 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #20 : expanding");
-                Function_Id();
+                Func_Id();
                 parserWriter.println("rule #20 : expanding");
                 Opt_Formal_Param_List();
                 G_Check = Match("MP_COLON");
@@ -1244,14 +1245,28 @@ public class parser {
         // the function array expand rule 55 else expand the other. 
         // -Kaleb
         //!!!!!!!!!!!!!!!!!!!!
-        parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
-        Var_Id();
+//        parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
+        String whichRule = "rule # NOT_A_RULE"; //default
+        String peekID = parseTokens.get(index+3);
+        if (Functions.contains(peekID)) {
+            whichRule = "rule #55";
+            parserWriter.println(whichRule + ": expanding");
+            Func_Id();
+        } else if (Variables.contains(peekID)) {
+            whichRule = "rule #54";
+            parserWriter.println(whichRule + ": expanding");
+            Var_Id();
+        } else {
+            errorsFound.add("Variable or Function undeclared");
+            parserWriter.println(whichRule + ": expanding");
+        }
+            
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
-                parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: TERMINAL");
+                parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
-                parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
+                parserWriter.println(whichRule + ": expanding");
                 Expression();
                 stackTrace.remove("Assign_Statement");
                 break;
@@ -1980,7 +1995,7 @@ public class parser {
             //use a flag of some sort?
             //if (lookAhead.equals() ) {
             parserWriter.println("rule #106: expanding");
-             Function_Id();
+             Func_Id();
              parserWriter.println("rule #106: expanding");
              Opt_Actual_Param_List();
             stackTrace.remove("Factor");
@@ -2035,7 +2050,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index+3);                          //##
+            CurrLexeme = parseTokens.get(index+3);
             Variables.add(CurrLexeme);
 //            System.out.println("Set VarID: " + CurrLexeme);
 //##############################################################################
@@ -2060,8 +2075,9 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index+3);                          //##
-            ProcName = CurrLexeme;                                          //##
+            CurrLexeme = parseTokens.get(index+3);
+            ProcName = CurrLexeme;
+            Procedures.add(CurrLexeme);
 //            System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
@@ -2077,7 +2093,7 @@ public class parser {
 
 // rule 110
 // <editor-fold defaultstate="collapsed" desc="Function_Id">
-    public static void Function_Id() {
+    public static void Func_Id() {
         stackTrace.add("Function_Id");
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
