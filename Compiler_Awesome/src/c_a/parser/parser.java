@@ -1224,28 +1224,12 @@ public class parser {
     }
 // </editor-fold>
 
-// rules 54 and 55 >>>>>>>>>>>??????????????????????????????????????????????????
+// rules 54 and 55
 // <editor-fold defaultstate="collapsed" desc="Assign_Statement">
     public static void Assign_Statement() {
         stackTrace.add("Assign_Statement");
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
-
-        //!!!!!!!!!!!!!!!!!!!!
-        // THIS CAN LEAD EITHER TO A VAR OR FUNC_ID, WILL NEED TO SEP LATER?????
-        // -Monica
-        //
-        // I HAVE NO CLUE HOW TO TELL IF THIS IS GOING TO BE A FUNCTION NAME
-        // OR WHICH RULE TO EXPAND I AM AT A LOSS AS TO HOW TO DO THIS NEEDS
-        // DISCUSSION 
-        // -Kaleb
-        
-        // Solution: Every time we encounter a function declaration, stuff the 
-        // resulting function ID in an array. If the current lookAhead is in 
-        // the function array expand rule 55 else expand the other. 
-        // -Kaleb
-        //!!!!!!!!!!!!!!!!!!!!
-//        parserWriter.println("!!!!  !!! !! ! rule #54 or maybe rule #55: expanding");
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index+3);
         if (Functions.contains(peekID)) {
