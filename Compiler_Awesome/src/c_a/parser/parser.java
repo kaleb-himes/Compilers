@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import symbol_tables.s_table;
-import static symbol_tables.s_table.tables;
 
 /**
  *
@@ -69,12 +68,13 @@ public class parser {
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
-    static String TableName, ProcName, FuncName, Label_1 = "L";             //##
-    static int NestingLevel, Label_2;                                       //##
-    static String CurrLexeme, Type, Kind, Mode, CurrToken;                  //##
-    static String[] Parameters;                                             //##
-    static int Size;                                                        //##
-    static ArrayList<String> dynamicParams = new ArrayList<>();             //##
+    static String TableName, ProcName, FuncName, Label_1 = "L";
+    static int NestingLevel, Label_2;
+    static String CurrLexeme, Type, Kind, Mode, CurrToken;
+    static String[] Parameters;
+    static int Size;
+    static ArrayList<String> dynamicParams = new ArrayList<>();
+    static int In_Proc_Func_Flag = 0;
 //##############################################################################
     
 
@@ -110,6 +110,7 @@ public class parser {
         Label_2         = 0;
         ProcName        = "";
         FuncName        = "";
+        dynamicParams.add("");
         //initialize Parameters to empty set, update as needed
         String[] init   = new String[1];
         init[0] = "NO_PARAMS";
@@ -441,9 +442,9 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);                            //##
-                CurrToken = lookAhead;                                      //##
-                Size = 4;                                                   //##
+                Type = parseTokens.get(index+3);
+                CurrToken = lookAhead;
+                Size = 4;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
@@ -485,6 +486,14 @@ public class parser {
         //precondition
         switch (lookAhead) {
             case "MP_PROCEDURE":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                // a flag for symantic analysis lets us know if we are
+                // building up variables in the current scope or in the next
+                // table.
+                In_Proc_Func_Flag = 1;
+//##############################################################################
                 parserWriter.println("rule #14 : expanding");
                 Proc_Dec();
                 parserWriter.println("rule #14 : expanding");
@@ -493,6 +502,14 @@ public class parser {
                 break;
 
             case "MP_FUNCTION":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                // a flag for symantic analysis lets us know if we are
+                // building up variables in the current scope or in the next
+                // table.
+                In_Proc_Func_Flag = 1;
+//##############################################################################
                 parserWriter.println("rule #15 : expanding");
                 Func_Dec();
                 parserWriter.println("rule #15 : expanding");
@@ -501,11 +518,13 @@ public class parser {
                 break;
 
             default:
+                In_Proc_Func_Flag = 0;
                 parserWriter.println("rule #16 : --E--");
                 potentialError = "Proc_Func_Dec_Part treated as Empty.";
                 stackTrace.remove("Proc_Func_Dec_Part");
                 break;
         }
+        In_Proc_Func_Flag = 0;
     }
 // </editor-fold>
 
@@ -2115,11 +2134,13 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         switch (G_Check) {
             case 1:
+                if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                dynamicParams.add(parseTokens.get(index+3));
+                    dynamicParams.add(parseTokens.get(index+3));
 //##############################################################################
+                }
                 parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #113: expanding");
@@ -2151,11 +2172,13 @@ public class parser {
                 G_Check = Match("MP_IDENTIFIER");
                 switch (G_Check) {
                     case 1:
+                        if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                        dynamicParams.add(parseTokens.get(index+3));
+                            dynamicParams.add(parseTokens.get(index+3));
 //##############################################################################
+                        }
                         parserWriter.println("rule #114: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #114: expanding");
@@ -2172,11 +2195,14 @@ public class parser {
                 } //end case Identifier
                 break;
             default:
+                if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                dynamicParams.add("END_ARGS");
+                    dynamicParams.add("END_ARGS");
 //##############################################################################
+                }
+                
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
                 stackTrace.remove("Id_Tail");
