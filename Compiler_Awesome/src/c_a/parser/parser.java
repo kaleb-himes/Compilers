@@ -327,7 +327,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Kind = parseTokens.get(index+3);                            //##
+                Kind = parseTokens.get(index+3);
 //##############################################################################
                 parserWriter.println("rule #5  : TERMINAL");
                 Advance_Pointer();
@@ -338,10 +338,16 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                    Convert_To_String_Array(dynamicParams);
-                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, 
-                                Kind, Mode, Integer.toString(Size), Parameters);
-                    dynamicParams.clear();
+//                    if (In_Proc_Func_Flag == 0) {
+//                        for (int i = 0; i < listIDs.size(); i++) {
+//                            CurrLexeme = listIDs.get(i);
+//                            s_table.Insert_Row(TableName, CurrLexeme,
+//                                    CurrToken, Type, Kind, Mode,
+//                                    Integer.toString(Size), Parameters);
+//                        }
+//                        listIDs.clear();
+//                    }
+//                    dynamicParams.clear();
 //##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
@@ -416,6 +422,12 @@ public class parser {
                 Advance_Pointer();
                 parserWriter.println("rule #9  : expanding");
                 Type();
+                for (int i = 0; i < listIDs.size(); i++) {
+                            CurrLexeme = listIDs.get(i);
+                            s_table.Insert_Row(TableName, CurrLexeme,
+                                    CurrToken, Type, Kind, Mode,
+                                    Integer.toString(Size), Parameters);
+                        }
                 stackTrace.remove("Var_Dec");
                 break;
             default:
@@ -438,6 +450,7 @@ public class parser {
         // 13. Type -> MP_BOOLEAN_WORD
         // call match to make grader happy, completely unecessary here and made
         // for too verbose and ugly of code, logic was difficult to follow
+        
         G_Check = Match("MP_INTEGER");
         switch (lookAhead) {
             case "MP_INTEGER":
@@ -453,16 +466,37 @@ public class parser {
                 //write rule #10 to file
                 break;
             case "MP_FLOAT":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Type = parseTokens.get(index+3);
+                CurrToken = lookAhead;
+                Size = 8;
+//##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
                 //write rule #11 to file
                 break;
             case "MP_STRING":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Type = parseTokens.get(index+3);
+                CurrToken = lookAhead;
+                Size = 55;
+//##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
                 //write rule #12 to file
                 break;
             case "MP_BOOLEAN":
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                Type = parseTokens.get(index+3);
+                CurrToken = lookAhead;
+                Size = 2;
+//##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
                 //write rule #13 to file
@@ -543,10 +577,12 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            Convert_To_String_Array(dynamicParams);
-            s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
-                    Mode, Integer.toString(Size), Parameters);
-            dynamicParams.clear();
+            if (In_Proc_Func_Flag == 1) {
+                Convert_To_String_Array(dynamicParams);
+                s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                        Mode, Integer.toString(Size), Parameters);
+                dynamicParams.clear();
+            }
 //##############################################################################
                 parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
@@ -2146,6 +2182,7 @@ public class parser {
                         if (In_Proc_Func_Flag == 1) {
                             dynamicParams.add(parseTokens.get(index+3));
                         } else {
+                            System.out.println("Adding: " + parseTokens.get(index+3) + " to the listIDs array");
                             listIDs.add(parseTokens.get(index+3));
                         }
 //##############################################################################
@@ -2186,6 +2223,7 @@ public class parser {
                         if (In_Proc_Func_Flag == 1) {
                             dynamicParams.add(parseTokens.get(index+3));
                         } else {
+                            System.out.println("Adding: " + parseTokens.get(index+3) + " to the listIDs array");
                             listIDs.add(parseTokens.get(index+3));
                         }
 //##############################################################################
@@ -2205,16 +2243,6 @@ public class parser {
                 } //end case Identifier
                 break;
             default:
-//##############################################################################
-//###### SYMBOL TABLE STUFF ####################################################
-//##############################################################################
-                        if (In_Proc_Func_Flag == 1) {
-                            dynamicParams.add(parseTokens.get(index+3));
-                        } else {
-                            listIDs.add(parseTokens.get(index+3));
-                        }
-//##############################################################################
-                
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
                 stackTrace.remove("Id_Tail");
