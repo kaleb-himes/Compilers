@@ -75,6 +75,7 @@ public class parser {
     static String[] Parameters;
     static int Size;
     static ArrayList<String> dynamicParams = new ArrayList<>();
+    static ArrayList<String> listIDs = new ArrayList<>();
     static int In_Proc_Func_Flag = 0;
 //##############################################################################
     
@@ -861,25 +862,24 @@ public class parser {
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
-            //update the Label                                              //##
-            String Label = Label_1.concat(Integer.toString(Label_2));       //##
-            Label_2++;                                                      //##
-            //update the nesting level                                      //##
-            int Nlvl = NestingLevel;                                        //##
-            NestingLevel++;                                                 //##
-            //insert Table info using s_table API name, nesting, label      //##
-            if (!ProcName.equals("")) {                                     //##
-                TableName = ProcName;                                       //##
-                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);//##
-            }                                                               //##
-            else if (!FuncName.equals("")) {                                //##
-                TableName = FuncName;                                       //##
-                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);//##
-            }                                                               //##
-            else                                                            //##
-                potentialError = "ProcName or FuncName May not be set";     //##
+            //update the Label
+            String Label = Label_1.concat(Integer.toString(Label_2));
+            Label_2++;
+            //update the nesting level
+            int Nlvl = NestingLevel;
+            NestingLevel++;
+            //insert Table info using s_table API name, nesting, label
+            if (!ProcName.equals("")) {
+                TableName = ProcName;
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+            }
+            else if (!FuncName.equals("")) {
+                TableName = FuncName;
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+            }
+            else
+                potentialError = "ProcName or FuncName May not be set";
 //##############################################################################
-            
                 parserWriter.println("rule #30 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #30 : expanding");
@@ -1977,14 +1977,20 @@ public class parser {
         } else {
             //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
-            //if (lookAhead.equals() ) {
-            parserWriter.println("rule #106: expanding");
-             Func_Id();
-             parserWriter.println("rule #106: expanding");
-             Opt_Actual_Param_List();
-            stackTrace.remove("Factor");
-
-            //}
+            String peekID = parseTokens.get(index+3);
+            if (Functions.contains(peekID) ) {
+                parserWriter.println("rule #106: expanding");
+                Func_Id();
+                parserWriter.println("rule #106: expanding");
+                Opt_Actual_Param_List();
+                stackTrace.remove("Factor");
+            } else if (Variables.contains(peekID)){
+                parserWriter.println("rule #116: expanding");
+                Var_Id();
+            } else {
+                errorsFound.add("Expected Variable or Function call found:"
+                        + " " + peekID);
+            }
         }
         stackTrace.remove("Factor");
     }
@@ -2134,13 +2140,15 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         switch (G_Check) {
             case 1:
-                if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                    dynamicParams.add(parseTokens.get(index+3));
+                        if (In_Proc_Func_Flag == 1) {
+                            dynamicParams.add(parseTokens.get(index+3));
+                        } else {
+                            listIDs.add(parseTokens.get(index+3));
+                        }
 //##############################################################################
-                }
                 parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #113: expanding");
@@ -2172,13 +2180,15 @@ public class parser {
                 G_Check = Match("MP_IDENTIFIER");
                 switch (G_Check) {
                     case 1:
-                        if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
+                        if (In_Proc_Func_Flag == 1) {
                             dynamicParams.add(parseTokens.get(index+3));
-//##############################################################################
+                        } else {
+                            listIDs.add(parseTokens.get(index+3));
                         }
+//##############################################################################
                         parserWriter.println("rule #114: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #114: expanding");
@@ -2195,13 +2205,15 @@ public class parser {
                 } //end case Identifier
                 break;
             default:
-                if (In_Proc_Func_Flag == 1) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                    dynamicParams.add("END_ARGS");
+                        if (In_Proc_Func_Flag == 1) {
+                            dynamicParams.add(parseTokens.get(index+3));
+                        } else {
+                            listIDs.add(parseTokens.get(index+3));
+                        }
 //##############################################################################
-                }
                 
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
