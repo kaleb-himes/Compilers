@@ -422,12 +422,17 @@ public class parser {
                 Advance_Pointer();
                 parserWriter.println("rule #9  : expanding");
                 Type();
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
                 for (int i = 0; i < listIDs.size(); i++) {
                             CurrLexeme = listIDs.get(i);
                             s_table.Insert_Row(TableName, CurrLexeme,
                                     CurrToken, Type, Kind, Mode,
                                     Integer.toString(Size), Parameters);
                         }
+                listIDs.clear();
+//##############################################################################
                 stackTrace.remove("Var_Dec");
                 break;
             default:
