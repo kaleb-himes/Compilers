@@ -35,7 +35,7 @@ PROGRAM Sort;
                     tmp := arr[j];
                     arr[j] := arr[j + 1];
                     arr[j + 1] := tmp;
-                END;
+                END;ound
 
         { Print. }
         FOR i := 1 TO size DO

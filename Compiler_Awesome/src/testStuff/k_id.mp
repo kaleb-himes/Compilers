@@ -12,10 +12,10 @@ x, y, balloon, legcramp: String;
     begin
         read(somestuff);
         junk2 := 5;
-    end; {tester}
+{COMMENTED OUT TO INDUCE ERRORS    end;} {tester}
 
     function junk3 (VAR test:Float) : STRING;
-    begin
+{COMMENTED OUT TO INDUCE ERRORS    begin}
         read(somestuff)
     end; {tester}
 
@@ -33,7 +33,7 @@ commented with MP_INTEGER this line out from a previous test file}
     Read(I);
     I := I + 1;
 
-    FOR I:=5 to 12 do
+{COMMENTED OUT TO INDUCE ERRORS    FOR I:=5 to 12} do
         If I >= 6 then
             Write ( 'this stuff')
         else
