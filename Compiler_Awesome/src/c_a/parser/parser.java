@@ -55,17 +55,25 @@ public class parser {
             expMark, simpExpMark, G_Check;
     static List<String> parseTokens;
     static List<String> stackTrace;
+
     //keep track of all errors found while parsing program
     static List<String> errorsFound;
     static String sourceOfError = "";
+    static List<String> errorLocation;
+
+    //variables to keep track of error reporting info
+    static int lookAheadIndex;
+    static String lineNo;
+    static String colNo;
+
     static String potentialError = "";
     static int blockState;
     static PrintWriter parserWriter;
 // Lexicallity
-    static ArrayList Variables  = new ArrayList<>();
-    static ArrayList Functions  = new ArrayList<>();
+    static ArrayList Variables = new ArrayList<>();
+    static ArrayList Functions = new ArrayList<>();
     static ArrayList Procedures = new ArrayList<>();
-    
+
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
@@ -78,10 +86,9 @@ public class parser {
     static ArrayList<String> listIDs = new ArrayList<>();
     static int In_Proc_Func_Flag = 0;
 //##############################################################################
-    
 
     public void runParse() throws FileNotFoundException, IOException {
-        
+
         //initialize the symbol table
         symbol_tables.s_table.Init_Table();
 
@@ -94,30 +101,30 @@ public class parser {
          */
         c_a.fileReader.file_reader.fileReaderInit(
                 c_a.fileReader.file_reader.outLocation);
-        parseTokens     = new ArrayList<>();
-        stackTrace      = new ArrayList<>();
-        errorsFound     = new ArrayList<>();
+        parseTokens = new ArrayList<>();
+        stackTrace = new ArrayList<>();
+        errorsFound = new ArrayList<>();
+        errorLocation = new ArrayList<>();
         String line;
-        lookAhead       = "";
-        previous        = "";
-        index           = 0;
-        blockState      = 1;
-        sColonMark      = 0;
-        stmntSeqMark    = 0;
-        expMark         = 0;
-        simpExpMark     = 0;
-        procIdFound     = 0;
-        frmlParamState  = 0;
-        NestingLevel    = 0;
-        Label_2         = 0;
-        ProcName        = "";
-        FuncName        = "";
+        lookAhead = "";
+        previous = "";
+        index = 0;
+        blockState = 1;
+        sColonMark = 0;
+        stmntSeqMark = 0;
+        expMark = 0;
+        simpExpMark = 0;
+        procIdFound = 0;
+        frmlParamState = 0;
+        NestingLevel = 0;
+        Label_2 = 0;
+        ProcName = "";
+        FuncName = "";
         dynamicParams.add("");
         //initialize Parameters to empty set, update as needed
-        String[] init   = new String[1];
+        String[] init = new String[1];
         init[0] = "NO_PARAMS";
         Parameters = init;
-        
 
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
@@ -227,6 +234,15 @@ public class parser {
             default:
                 errorsFound.add(sourceOfError);
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 stackTrace.remove("Sys_Goal");
                 Error();
                 break;
@@ -237,6 +253,7 @@ public class parser {
 // rule 2
 // <editor-fold defaultstate="collapsed" desc="Program"> 
     public static void Program() {
+
         stackTrace.add("Program");
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
@@ -258,14 +275,31 @@ public class parser {
                     break;
                 } else {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
-                    //Error();
                     errorsFound.add(sourceOfError);
+
+                    //establish index number of lookahead           
+                    lookAheadIndex = parseTokens.indexOf(lookAhead);
+                    //add line no corresponding to error
+                    lineNo = parseTokens.get(index + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(index + 2);
+                    errorLocation.add(colNo);
                     break;
                 }
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
 
@@ -292,7 +326,15 @@ public class parser {
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
                         + " " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //Error();
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
 
@@ -327,7 +369,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Kind = parseTokens.get(index+3);
+                Kind = parseTokens.get(index + 3);
 //##############################################################################
                 parserWriter.println("rule #5  : TERMINAL");
                 Advance_Pointer();
@@ -358,8 +400,16 @@ public class parser {
                 } else {
                     sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
                             + "found:  " + lookAhead;
-                    //Error();
                     errorsFound.add(sourceOfError);
+                    //establish index number of lookahead           
+                    lookAheadIndex = parseTokens.indexOf(lookAhead);
+                    //add line no corresponding to error
+                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    errorLocation.add(colNo);
                     break;
                 }
             default:
@@ -388,15 +438,24 @@ public class parser {
 //uncomment for semi-colon errors
 //                if (!previous.equals("MP_SCOLON")
 //                        && !parseTokens.get(index+4).equals("MP_SCOLON")) {
-                    parserWriter.println("rule #7  : TERMINAL");
-                    Advance_Pointer();
-                    parserWriter.println("rule #7  : expanding");
-                    Var_Dec_Tail();
-                    stackTrace.remove("Var_Dec_Tail");
+                parserWriter.println("rule #7  : TERMINAL");
+                Advance_Pointer();
+                parserWriter.println("rule #7  : expanding");
+                Var_Dec_Tail();
+                stackTrace.remove("Var_Dec_Tail");
 //                }
 //                else {
 //                    sourceOfError = "Too many Semi-Colons.";
 //                    errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
+//                    //add line no corresponding to error
+//                    lineNo = parseTokens.get(lookAheadIndex + 1);
+//                    errorLocation.add(lineNo);
+//
+//                    //add col no corresponding to error
+//                    colNo = parseTokens.get(lookAheadIndex + 2);
+//                    errorLocation.add(colNo);
 //                }
                 break;
             default:
@@ -426,11 +485,11 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                 for (int i = 0; i < listIDs.size(); i++) {
-                            CurrLexeme = listIDs.get(i);
-                            s_table.Insert_Row(TableName, CurrLexeme,
-                                    CurrToken, Type, Kind, Mode,
-                                    Integer.toString(Size), Parameters);
-                        }
+                    CurrLexeme = listIDs.get(i);
+                    s_table.Insert_Row(TableName, CurrLexeme,
+                            CurrToken, Type, Kind, Mode,
+                            Integer.toString(Size), Parameters);
+                }
                 listIDs.clear();
 //##############################################################################
                 stackTrace.remove("Var_Dec");
@@ -438,8 +497,16 @@ public class parser {
             default:
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -455,14 +522,14 @@ public class parser {
         // 13. Type -> MP_BOOLEAN_WORD
         // call match to make grader happy, completely unecessary here and made
         // for too verbose and ugly of code, logic was difficult to follow
-        
+
         G_Check = Match("MP_INTEGER");
         switch (lookAhead) {
             case "MP_INTEGER":
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);
+                Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
                 Size = 4;
 //##############################################################################
@@ -474,7 +541,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);
+                Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
                 Size = 8;
 //##############################################################################
@@ -486,7 +553,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);
+                Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
                 Size = 55;
 //##############################################################################
@@ -498,7 +565,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Type = parseTokens.get(index+3);
+                Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
                 Size = 2;
 //##############################################################################
@@ -509,8 +576,16 @@ public class parser {
             default:
                 sourceOfError = "Type, Expected MP_INTEGER, MP_FLOAT, MP_STRING, or"
                         + " MP_BOOLEAN instead found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
         stackTrace.remove("Type");
@@ -582,12 +657,12 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            if (In_Proc_Func_Flag == 1) {
-                Convert_To_String_Array(dynamicParams);
-                s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
-                        Mode, Integer.toString(Size), Parameters);
-                dynamicParams.clear();
-            }
+                if (In_Proc_Func_Flag == 1) {
+                    Convert_To_String_Array(dynamicParams);
+                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                            Mode, Integer.toString(Size), Parameters);
+                    dynamicParams.clear();
+                }
 //##############################################################################
                 parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
@@ -604,16 +679,32 @@ public class parser {
                     default:
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -643,16 +734,32 @@ public class parser {
                     default:
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -672,7 +779,7 @@ public class parser {
                 Size = 0;                                                   //##
                 CurrToken = lookAhead;                                      //##
                 Type = null;                                                //##
-                Kind = parseTokens.get(index+3);                            //##
+                Kind = parseTokens.get(index + 3);                            //##
 //##############################################################################
                 parserWriter.println("rule #19 : TERMINAL");
                 Advance_Pointer();
@@ -685,8 +792,16 @@ public class parser {
             default:
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
                         + " " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -717,15 +832,31 @@ public class parser {
                 } else {
                     sourceOfError = "Func_Head, Expected MP_COLON found: "
                             + "" + lookAhead;
-                    //Error();
                     errorsFound.add(sourceOfError);
+                    //establish index number of lookahead           
+                    lookAheadIndex = parseTokens.indexOf(lookAhead);
+                    //add line no corresponding to error
+                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    errorLocation.add(colNo);
                     break;
                 }
             default:
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -758,8 +889,16 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Formal_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 }
                 break;
@@ -837,6 +976,15 @@ public class parser {
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -866,16 +1014,32 @@ public class parser {
                     default:
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
                                 + ": " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -903,23 +1067,22 @@ public class parser {
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
-            //update the Label
-            String Label = Label_1.concat(Integer.toString(Label_2));
-            Label_2++;
-            //update the nesting level
-            int Nlvl = NestingLevel;
-            NestingLevel++;
-            //insert Table info using s_table API name, nesting, label
-            if (!ProcName.equals("")) {
-                TableName = ProcName;
-                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-            }
-            else if (!FuncName.equals("")) {
-                TableName = FuncName;
-                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-            }
-            else
-                potentialError = "ProcName or FuncName May not be set";
+                //update the Label
+                String Label = Label_1.concat(Integer.toString(Label_2));
+                Label_2++;
+                //update the nesting level
+                int Nlvl = NestingLevel;
+                NestingLevel++;
+                //insert Table info using s_table API name, nesting, label
+                if (!ProcName.equals("")) {
+                    TableName = ProcName;
+                    s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                } else if (!FuncName.equals("")) {
+                    TableName = FuncName;
+                    s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                } else {
+                    potentialError = "ProcName or FuncName May not be set";
+                }
 //##############################################################################
                 parserWriter.println("rule #30 : TERMINAL");
                 Advance_Pointer();
@@ -943,16 +1106,32 @@ public class parser {
                     default:
                         sourceOfError = "Compound_Statement, Expected MP_END "
                                 + "found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 }
                 break;
             default:
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -1089,24 +1268,48 @@ public class parser {
                             default:
                                 sourceOfError = "Read_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                //Error();
                                 errorsFound.add(sourceOfError);
+                                //establish index number of lookahead           
+                                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                                //add line no corresponding to error
+                                lineNo = parseTokens.get(lookAheadIndex + 1);
+                                errorLocation.add(lineNo);
+
+                                //add col no corresponding to error
+                                colNo = parseTokens.get(lookAheadIndex + 2);
+                                errorLocation.add(colNo);
                                 break;
                         } //end case for R_PAREN
                         break;
                     default:
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for LPAREN
                 break;
             default:
                 sourceOfError = "Read_Statement, Expected "
                         + "MP_READ found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for READ
     }
@@ -1204,24 +1407,48 @@ public class parser {
                             default:
                                 sourceOfError = "Write_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
-                                //Error();
                                 errorsFound.add(sourceOfError);
+                                //establish index number of lookahead           
+                                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                                //add line no corresponding to error
+                                lineNo = parseTokens.get(lookAheadIndex + 1);
+                                errorLocation.add(lineNo);
+
+                                //add col no corresponding to error
+                                colNo = parseTokens.get(lookAheadIndex + 2);
+                                errorLocation.add(colNo);
                                 break;
                         } //end case for RParen
                         break;
                     default:
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for LParen
                 break;
             default:
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for MP_WRITE
     }
@@ -1272,7 +1499,7 @@ public class parser {
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
         String whichRule = "rule # NOT_A_RULE"; //default
-        String peekID = parseTokens.get(index+3);
+        String peekID = parseTokens.get(index + 3);
         if (Functions.contains(peekID)) {
             whichRule = "rule #55";
             parserWriter.println(whichRule + ": expanding");
@@ -1283,9 +1510,18 @@ public class parser {
             Var_Id();
         } else {
             errorsFound.add("Variable or Function undeclared");
+            //establish index number of lookahead           
+            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            //add line no corresponding to error
+            lineNo = parseTokens.get(lookAheadIndex + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(lookAheadIndex + 2);
+            errorLocation.add(colNo);
             parserWriter.println(whichRule + ": expanding");
         }
-            
+
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
@@ -1299,8 +1535,16 @@ public class parser {
             default:
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for Assign
     }
@@ -1334,16 +1578,32 @@ public class parser {
                     default:
                         sourceOfError = "If_Statement, Expected "
                                 + "MP_THEN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for Then
                 break;
             default:
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for If
     }
@@ -1366,8 +1626,16 @@ public class parser {
             if (lookAhead.equals("MP_ELSE")) {
                 sourceOfError = "Opt_Else_Part: Semi-colon in if part, terminates the if statement"
                         + " before else part can be evaluated.";
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
             } else {
                 index = bak_Index;
                 lookAhead = bak_lookAhead;
@@ -1417,16 +1685,32 @@ public class parser {
                     default:
                         sourceOfError = "Repeat_Statement, Expected "
                                 + "MP_UNTIL found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for Until
                 break;
             default:
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for Repeat
     }
@@ -1457,16 +1741,32 @@ public class parser {
                     default:
                         sourceOfError = "While_Statement, Expected "
                                 + "MP_DO found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for Do
                 break;
             default:
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for While
     }
@@ -1487,7 +1787,7 @@ public class parser {
                 G_Check = Match("MP_ASSIGN");
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
-                    case 1:
+                    case 1:                //Error();
                         parserWriter.println("rule #61: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #61: expanding");
@@ -1509,16 +1809,32 @@ public class parser {
                             default:
                                 sourceOfError = "For_Statement, Expected "
                                         + "MP_DO found: " + lookAhead;
-                                //Error();
                                 errorsFound.add(sourceOfError);
+                                //establish index number of lookahead           
+                                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                                //add line no corresponding to error
+                                lineNo = parseTokens.get(lookAheadIndex + 1);
+                                errorLocation.add(lineNo);
+
+                                //add col no corresponding to error
+                                colNo = parseTokens.get(lookAheadIndex + 2);
+                                errorLocation.add(colNo);
                                 break;
                         } //end case for Do
                         break;
                     default:
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case for Assign
                 break;
@@ -1526,7 +1842,15 @@ public class parser {
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //Error();
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         } //end case for For
     }
@@ -1579,8 +1903,16 @@ public class parser {
                     default:
                         sourceOfError = "Step_Val, Expected "
                                 + "MP_TO or MP_DOWNTO found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case DownTo
         }
@@ -1637,8 +1969,16 @@ public class parser {
                     default:
                         sourceOfError = "Opt_Actual_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case RParen
                 break;
@@ -2011,26 +2351,43 @@ public class parser {
                     break;
                 default:
                     sourceOfError = "Factor, expected MP_RPAREN found: " + lookAhead;
-                    //Error();
                     errorsFound.add(sourceOfError);
+                    //establish index number of lookahead           
+                    lookAheadIndex = parseTokens.indexOf(lookAhead);
+                    //add line no corresponding to error
+                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    errorLocation.add(colNo);
                     break;
             }
         } else {
             //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
-            String peekID = parseTokens.get(index+3);
-            if (Functions.contains(peekID) ) {
+            String peekID = parseTokens.get(index + 3);
+            if (Functions.contains(peekID)) {
                 parserWriter.println("rule #106: expanding");
                 Func_Id();
                 parserWriter.println("rule #106: expanding");
                 Opt_Actual_Param_List();
                 stackTrace.remove("Factor");
-            } else if (Variables.contains(peekID)){
+            } else if (Variables.contains(peekID)) {
                 parserWriter.println("rule #116: expanding");
                 Var_Id();
             } else {
                 errorsFound.add("Expected Variable or Function call found:"
                         + " " + peekID);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
             }
         }
         stackTrace.remove("Factor");
@@ -2048,7 +2405,7 @@ public class parser {
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
             //Set the TableName                                             //##
-            TableName = parseTokens.get(index+3);                           //##
+            TableName = parseTokens.get(index + 3);                           //##
             //put tablename in as key1 for tables                           //##
             //update the Label                                              //##
             String Label = Label_1.concat(Integer.toString(Label_2));       //##
@@ -2065,6 +2422,15 @@ public class parser {
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
+            //establish index number of lookahead           
+            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            //add line no corresponding to error
+            lineNo = parseTokens.get(lookAheadIndex + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(lookAheadIndex + 2);
+            errorLocation.add(colNo);
         }
     }
 // </editor-fold>
@@ -2077,12 +2443,12 @@ public class parser {
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
             parserWriter.println("rule #108: TERMINAL");
-            if (!Functions.contains(parseTokens.get(index+3))) {
+            if (!Functions.contains(parseTokens.get(index + 3))) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index+3);
-            Variables.add(CurrLexeme);
+                CurrLexeme = parseTokens.get(index + 3);
+                Variables.add(CurrLexeme);
 //            System.out.println("Set VarID: " + CurrLexeme);
 //##############################################################################
             }
@@ -2091,7 +2457,15 @@ public class parser {
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
-            //Error();
+            //establish index number of lookahead           
+            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            //add line no corresponding to error
+            lineNo = parseTokens.get(lookAheadIndex + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(lookAheadIndex + 2);
+            errorLocation.add(colNo);
         }
     }
 // </editor-fold>
@@ -2106,7 +2480,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index+3);
+            CurrLexeme = parseTokens.get(index + 3);
             ProcName = CurrLexeme;
             Procedures.add(CurrLexeme);
 //            System.out.println("Set ProcName: " + ProcName);
@@ -2118,6 +2492,15 @@ public class parser {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             //Error();
             errorsFound.add(sourceOfError);
+            //establish index number of lookahead           
+            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            //add line no corresponding to error
+            lineNo = parseTokens.get(lookAheadIndex + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(lookAheadIndex + 2);
+            errorLocation.add(colNo);
         }
     }
 // </editor-fold>
@@ -2129,13 +2512,13 @@ public class parser {
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
-            if (!Variables.contains(parseTokens.get(index+3))) {
+            if (!Variables.contains(parseTokens.get(index + 3))) {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index+3);                          //##
-            FuncName = CurrLexeme;                                          //##
-            Functions.add(parseTokens.get(index+3));
+                CurrLexeme = parseTokens.get(index + 3);                          //##
+                FuncName = CurrLexeme;                                          //##
+                Functions.add(parseTokens.get(index + 3));
 //            System.out.println("Set FuncName: " + FuncName);
 //##############################################################################
             }
@@ -2145,7 +2528,15 @@ public class parser {
         } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
-            //Error();
+            //establish index number of lookahead           
+            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            //add line no corresponding to error
+            lineNo = parseTokens.get(lookAheadIndex + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(lookAheadIndex + 2);
+            errorLocation.add(colNo);
         }
     }
 // </editor-fold>
@@ -2184,12 +2575,12 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                        if (In_Proc_Func_Flag == 1) {
-                            dynamicParams.add(parseTokens.get(index+3));
-                        } else {
-                            System.out.println("Adding: " + parseTokens.get(index+3) + " to the listIDs array");
-                            listIDs.add(parseTokens.get(index+3));
-                        }
+                if (In_Proc_Func_Flag == 1) {
+                    dynamicParams.add(parseTokens.get(index + 3));
+                } else {
+                    System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
+                    listIDs.add(parseTokens.get(index + 3));
+                }
 //##############################################################################
                 parserWriter.println("rule #113: TERMINAL");
                 Advance_Pointer();
@@ -2200,8 +2591,16 @@ public class parser {
             default:
                 sourceOfError = "Id_List, Expected "
                         + "MP_IDENTIFIER found: " + lookAhead;
-                //Error();
                 errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
                 break;
         }
     }
@@ -2226,10 +2625,10 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                         if (In_Proc_Func_Flag == 1) {
-                            dynamicParams.add(parseTokens.get(index+3));
+                            dynamicParams.add(parseTokens.get(index + 3));
                         } else {
-                            System.out.println("Adding: " + parseTokens.get(index+3) + " to the listIDs array");
-                            listIDs.add(parseTokens.get(index+3));
+                            System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
+                            listIDs.add(parseTokens.get(index + 3));
                         }
 //##############################################################################
                         parserWriter.println("rule #114: TERMINAL");
@@ -2242,8 +2641,16 @@ public class parser {
                     default:
                         sourceOfError = "Id_Tail, Expected "
                                 + "MP_IDENTIFIER found: " + lookAhead;
-                        //Error();
                         errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
                         break;
                 } //end case Identifier
                 break;
@@ -2261,14 +2668,17 @@ public class parser {
         // Move through stored list of errors, printing source of error to the
         //user so they can be corrected. Allow up to 20 errors to be printed, 
         //if more than 20 errors, print first 20 and exit. 
-        
+
         if (errorsFound.size() <= 20) {
+            int errorPlace = 0;
             for (int i = 0; i < errorsFound.size() - 1; i++) {
-                String message = "\033[31mERROR at line #place col #place in "
-                        + "state: " + errorsFound.get(i) + ".\n\033[0m";
+                String message = "\033[31mERROR at line " + errorLocation.get(errorPlace)
+                        + " column " + errorLocation.get(errorPlace + 1) + " in state: "
+                        + errorsFound.get(i) + ".\n\033[0m";
                 //while the reader is still open
                 System.out.println();
                 System.out.println(message);
+                errorPlace += 2;
             }
         } else {
             //print only first 20 errors, then print message to user
@@ -2286,6 +2696,7 @@ public class parser {
                     + "******\033[0m");
             System.exit(0);
         }
+
         Terminate("");
     }
     // </editor-fold>
@@ -2293,19 +2704,12 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Terminate">
     public static void Terminate(String message) {
         /* 
-         * Print anything we want to before exiting parser then 
-         * exit program 
+         * Prints a message before exiting the program 
          */
-        //System.out.println("\nSTACKTRACE: ");
-        //for (int i = 0; i < stackTrace.size(); i++) {
-        //    System.out.println(i + ": " + stackTrace.get(i));
-        // }
         if (errorsFound.size() > 0) {
             System.out.println("\033[31m*****************************************************");
             System.out.print("\033[31m" + (errorsFound.size() - 1) + " ERRORS "
                     + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
-//            think this is always printing error message - check into this
-//            System.out.println(message);
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
@@ -2331,7 +2735,7 @@ public class parser {
         }
     }
 // </editor-fold>
-    
+
     static void Convert_To_String_Array(ArrayList<String> M) {
         String[] temp = new String[M.size()];
         Parameters = temp;
