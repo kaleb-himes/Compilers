@@ -188,7 +188,7 @@ public class parser {
         }
     }
 // </editor-fold>
-
+// HEY DUMMIES DON"T FORGET ABOUT THIS (MP_ IN STRING WILL BREAK YOUR SHIT)
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
     public static void Advance_Pointer() {
         if (lookAhead.equals("MP_STRING_LIT")) {
