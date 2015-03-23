@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import symbol_tables.s_table;
+import static symbol_tables.s_table.tables;
 
 /**
  *
@@ -380,16 +381,16 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-//                    if (In_Proc_Func_Flag == 0) {
-//                        for (int i = 0; i < listIDs.size(); i++) {
-//                            CurrLexeme = listIDs.get(i);
-//                            s_table.Insert_Row(TableName, CurrLexeme,
-//                                    CurrToken, Type, Kind, Mode,
-//                                    Integer.toString(Size), Parameters);
-//                        }
-//                        listIDs.clear();
-//                    }
-//                    dynamicParams.clear();
+                    if (In_Proc_Func_Flag == 0) {
+                        for (int i = 0; i < listIDs.size(); i++) {
+                            CurrLexeme = listIDs.get(i);
+                            s_table.Insert_Row(TableName, CurrLexeme,
+                                    CurrToken, Type, Kind, Mode,
+                                    Integer.toString(Size), Parameters);
+                        }
+                        listIDs.clear();
+                    }
+                    dynamicParams.clear();
 //##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
@@ -531,6 +532,9 @@ public class parser {
 //##############################################################################
                 Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
+                if (In_Proc_Func_Flag == 1) {
+                    dynamicParams.add(CurrToken);
+                }
                 Size = 4;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
@@ -543,6 +547,9 @@ public class parser {
 //##############################################################################
                 Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
+                if (In_Proc_Func_Flag == 1) {
+                    dynamicParams.add(CurrToken);
+                }
                 Size = 8;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
@@ -555,6 +562,9 @@ public class parser {
 //##############################################################################
                 Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
+                if (In_Proc_Func_Flag == 1) {
+                    dynamicParams.add(CurrToken);
+                }
                 Size = 55;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
@@ -567,6 +577,9 @@ public class parser {
 //##############################################################################
                 Type = parseTokens.get(index + 3);
                 CurrToken = lookAhead;
+                if (In_Proc_Func_Flag == 1) {
+                    dynamicParams.add(CurrToken);
+                }
                 Size = 2;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
@@ -776,10 +789,10 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                Size = 0;                                                   //##
-                CurrToken = lookAhead;                                      //##
-                Type = null;                                                //##
-                Kind = parseTokens.get(index + 3);                            //##
+                Size = 0;
+                CurrToken = lookAhead;
+                Type = null;
+                Kind = parseTokens.get(index + 3);
 //##############################################################################
                 parserWriter.println("rule #19 : TERMINAL");
                 Advance_Pointer();
@@ -1094,7 +1107,15 @@ public class parser {
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
+//                        System.out.println("TABLENAME: " + TableName);
+                        // uncomment DESTROY METHOD when done with testing and 
+                        // ready to clear 
+                        // out tables that are no longer in scope
+                        
 //                        s_table.Destroy(TableName);
+                        for (String name: tables.keySet()){ 
+                            TableName = name;
+                        }
                         FuncName = "";
                         ProcName = "";
 //##############################################################################
@@ -2404,17 +2425,17 @@ public class parser {
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
-            //Set the TableName                                             //##
-            TableName = parseTokens.get(index + 3);                           //##
-            //put tablename in as key1 for tables                           //##
-            //update the Label                                              //##
-            String Label = Label_1.concat(Integer.toString(Label_2));       //##
-            Label_2++;                                                      //##
-            //update the nesting level                                      //##
-            int Nlvl = NestingLevel;                                        //##
-            NestingLevel++;                                                 //##
-            //insert Table info using s_table API name, nesting, label      //##
-            s_table.New_Table(TableName, Integer.toString(Nlvl), Label);    //##
+            //Set the TableName
+            TableName = parseTokens.get(index + 3);
+            //put tablename in as key1 for tables
+            //update the Label
+            String Label = Label_1.concat(Integer.toString(Label_2));
+            Label_2++;
+            //update the nesting level
+            int Nlvl = NestingLevel;
+            NestingLevel++;
+            //insert Table info using s_table API name, nesting, label
+            s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
 //##############################################################################
             parserWriter.println("rule #107: TERMINAL");
             Advance_Pointer();
@@ -2663,6 +2684,7 @@ public class parser {
     }
 // </editor-fold>
 
+//format errors
 // <editor-fold defaultstate="collapsed" desc="Error">
     public static void Error() {
         // Move through stored list of errors, printing source of error to the
@@ -2701,6 +2723,7 @@ public class parser {
     }
     // </editor-fold>
 
+//terminate the parser
 // <editor-fold defaultstate="collapsed" desc="Terminate">
     public static void Terminate(String message) {
         /* 
@@ -2721,6 +2744,7 @@ public class parser {
     }
 // </editor-fold>
 
+//match a token
 // <editor-fold defaultstate="collapsed" desc="Match">    
     /*
      * @param in: the value of lookahead at the time it is called.
@@ -2736,6 +2760,8 @@ public class parser {
     }
 // </editor-fold>
 
+// convert an ArrayList to a String Array
+// <editor-fold defaultstate="collapsed" desc="Convert_To_String_Array">  
     static void Convert_To_String_Array(ArrayList<String> M) {
         String[] temp = new String[M.size()];
         Parameters = temp;
@@ -2743,4 +2769,5 @@ public class parser {
             Parameters[i] = M.get(i);
         }
     }
+// </editor-fold>
 }

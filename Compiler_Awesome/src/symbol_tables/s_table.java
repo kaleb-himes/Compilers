@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 public class s_table {
     public static LinkedHashMap<String, ArrayList<String>> tables;
     static ArrayList<String> Rows;
+    static String Previous;
     
     public static void Init_Table() {
         tables = new LinkedHashMap<>();
