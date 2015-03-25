@@ -550,7 +550,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 8;
+                Size = 1;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
@@ -565,7 +565,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 55;
+                Size = 1;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
@@ -580,7 +580,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 2;
+                Size = 1;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
@@ -671,6 +671,17 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                 if (In_Proc_Func_Flag == 1) {
+                    CurrToken = "MP_PROCEDURE";
+                    Type = "null";
+                    Kind = "null";
+                    Mode = "in";
+                    int tempSize = 0;
+                    for (int i = 0; i < dynamicParams.size(); i++) {
+                        if (!dynamicParams.get(i).contains("MP_")) {
+                           tempSize++; 
+                        }
+                    }
+                    Size = tempSize;
                     Convert_To_String_Array(dynamicParams);
                     s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
@@ -737,6 +748,23 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                 if (In_Proc_Func_Flag == 1) {
+//                    CurrToken = "MP_FUNCTION";
+                    Type = "null";
+                    Kind = "null";
+                    int checkLast = dynamicParams.size();
+                    if (dynamicParams.get(checkLast-1).contains("MP_")
+                            && dynamicParams.get(checkLast-2).contains("MP_")) {
+                        Mode = "in / out";
+                    } else {
+                        Mode = "in";
+                    }
+                    int tempSize = 0;
+                    for (int i = 0; i < dynamicParams.size(); i++) {
+                        if (!dynamicParams.get(i).contains("MP_")) {
+                           tempSize++; 
+                        }
+                    }
+                    Size = tempSize;
                     Convert_To_String_Array(dynamicParams);
                     s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
@@ -1124,7 +1152,7 @@ public class parser {
                         
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-                            s_table.Destroy(TableName);
+//                            s_table.Destroy(TableName);
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }
