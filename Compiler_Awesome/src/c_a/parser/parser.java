@@ -188,7 +188,7 @@ public class parser {
         }
     }
 // </editor-fold>
-// HEY DUMMIES DON"T FORGET ABOUT THIS (MP_ IN STRING WILL BREAK YOUR SHIT)
+// HEY DUMMIES DON"T FORGET ABOUT THIS (MP_ IN STRING WILL BREAK YOUR SHIT
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
     public static void Advance_Pointer() {
         if (lookAhead.equals("MP_STRING_LIT")) {
@@ -733,6 +733,16 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+                if (In_Proc_Func_Flag == 1) {
+                    Convert_To_String_Array(dynamicParams);
+                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                            Mode, Integer.toString(Size), Parameters);
+                    dynamicParams.clear();
+                }
+//##############################################################################
                 parserWriter.println("rule #18 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #18 : expanding");
@@ -1112,7 +1122,9 @@ public class parser {
                         // ready to clear 
                         // out tables that are no longer in scope
                         
-//                        s_table.Destroy(TableName);
+                        //uncomment this if statement to see main table at end
+//                        if (!TableName.equals("Tester"))
+                            s_table.Destroy(TableName);
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }

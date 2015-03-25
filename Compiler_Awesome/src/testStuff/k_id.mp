@@ -5,17 +5,17 @@ x, y, balloon, legcramp: String;
 
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
     begin
-        read(somestuff)
+        read(somestuff);
     end; {tester}
 
-    function junk2 (VAR test:Float; VAR garbage:Boolean) : Boolean;
+    function junk2 (test:Float; garbage:Boolean) : Boolean;
     begin
         read(somestuff);
         junk2 := 5;
-{COMMENTED OUT TO INDUCE ERRORS    end;} {tester}
+    end; {tester}
 
     function junk3 (VAR test:Float) : STRING;
-{COMMENTED OUT TO INDUCE ERRORS    begin}
+    begin
         read(somestuff)
     end; {tester}
 
@@ -33,7 +33,7 @@ commented with MP_INTEGER this line out from a previous test file}
     Read(I);
     I := I + 1;
 
-{COMMENTED OUT TO INDUCE ERRORS    FOR I:=5 to 12} do
+    FOR I:=5 to 12 do
         If I >= 6 then
             Write ( 'this stuff')
         else
