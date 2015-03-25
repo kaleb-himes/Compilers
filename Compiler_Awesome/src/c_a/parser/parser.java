@@ -676,6 +676,8 @@ public class parser {
                     Kind = "null";
                     Mode = "in";
                     int tempSize = 0;
+                    // procedures cannot return things so only offset by number
+                    // of incoming parameters
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
                            tempSize++; 
@@ -748,19 +750,21 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                 if (In_Proc_Func_Flag == 1) {
-//                    CurrToken = "MP_FUNCTION";
+                    int tempSize = 0;
                     Type = "null";
-                    Kind = "null";
+                    Kind = "null"; 
                     int checkLast = dynamicParams.size();
                     if (dynamicParams.get(checkLast-1).contains("MP_")
                             && dynamicParams.get(checkLast-2).contains("MP_")) {
                         Mode = "in / out";
+                        // offset for the return variable 
+                        tempSize++;
                     } else {
                         Mode = "in";
                     }
-                    int tempSize = 0;
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
+                            // offsets for the number of parameters
                            tempSize++; 
                         }
                     }
