@@ -86,6 +86,7 @@ public class parser {
     static ArrayList<String> dynamicParams = new ArrayList<>();
     static ArrayList<String> listIDs = new ArrayList<>();
     static int In_Proc_Func_Flag = 0;
+    static String[] init = new String[1];
 //##############################################################################
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -123,7 +124,6 @@ public class parser {
         FuncName = "";
         dynamicParams.add("");
         //initialize Parameters to empty set, update as needed
-        String[] init = new String[1];
         init[0] = "NO_PARAMS";
         Parameters = init;
 
@@ -390,7 +390,6 @@ public class parser {
                         }
                         listIDs.clear();
                     }
-                    dynamicParams.clear();
 //##############################################################################
                     parserWriter.println("rule #5  : TERMINAL");
                     Advance_Pointer();
@@ -687,7 +686,6 @@ public class parser {
                     Convert_To_String_Array(dynamicParams);
                     s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
-                    dynamicParams.clear();
                 }
 //##############################################################################
                 parserWriter.println("rule #17 : TERMINAL");
@@ -772,7 +770,6 @@ public class parser {
                     Convert_To_String_Array(dynamicParams);
                     s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
-                    dynamicParams.clear();
                 }
 //##############################################################################
                 parserWriter.println("rule #18 : TERMINAL");
@@ -1132,9 +1129,47 @@ public class parser {
                 if (!ProcName.equals("")) {
                     TableName = ProcName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    Parameters = init;
+                    for (int i = 0; i < dynamicParams.size(); i++) {
+                        // get the current lexeme for row creation
+                        String tempLexeme = dynamicParams.get(i);
+                        
+                        int tempi = i;
+                        while(!dynamicParams.get(tempi).contains("MP_")) {
+                            tempi++;
+                        }
+                        String tempToken = dynamicParams.get(tempi);
+                        //if tempLexeme is not the token then insert row
+                        if (!tempLexeme.contains("MP_")) {
+                            s_table.Insert_Row(TableName, tempLexeme, tempToken, 
+                                            Type, Kind, Mode, "1", Parameters);
+                        }
+                    }
+                    //reset procedure name to null
+                    ProcName = "";
+                    dynamicParams.clear();
                 } else if (!FuncName.equals("")) {
+                    System.out.println("tempi = "+ dynamicParams.size());
                     TableName = FuncName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    Parameters = init;
+                    for (int i = 0; i < dynamicParams.size(); i++) {
+                        // get the current lexeme for row creation
+                        String tempLexeme = dynamicParams.get(i);
+
+                        int tempi = i;
+                        while(!dynamicParams.get(tempi).contains("MP_")) {
+                            tempi++;
+                        }
+                        String tempToken = dynamicParams.get(tempi);
+                        if (!tempLexeme.contains("MP_")) {
+                            s_table.Insert_Row(TableName, tempLexeme, tempToken, 
+                                            Type, Kind, Mode, "1", Parameters);
+                        }
+                    }
+                    //reset function name to null
+                    FuncName = "";
+                    dynamicParams.clear();
                 } else {
                     potentialError = "ProcName or FuncName May not be set";
                 }
@@ -1160,8 +1195,7 @@ public class parser {
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }
-                        FuncName = "";
-                        ProcName = "";
+
 //##############################################################################
                         parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
@@ -2643,7 +2677,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(parseTokens.get(index + 3));
                 } else {
-                    System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
+//                    System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                     listIDs.add(parseTokens.get(index + 3));
                 }
 //##############################################################################
@@ -2692,7 +2726,7 @@ public class parser {
                         if (In_Proc_Func_Flag == 1) {
                             dynamicParams.add(parseTokens.get(index + 3));
                         } else {
-                            System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
+//                            System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                             listIDs.add(parseTokens.get(index + 3));
                         }
 //##############################################################################
