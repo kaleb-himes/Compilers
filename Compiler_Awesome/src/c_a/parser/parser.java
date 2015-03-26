@@ -1149,7 +1149,6 @@ public class parser {
                     ProcName = "";
                     dynamicParams.clear();
                 } else if (!FuncName.equals("")) {
-                    System.out.println("tempi = "+ dynamicParams.size());
                     TableName = FuncName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
                     Parameters = init;
@@ -1191,7 +1190,7 @@ public class parser {
                         
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-//                            s_table.Destroy(TableName);
+//                            s_table.Destroy(TableName); System.out.println("Destroyed table: " +TableName);
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }
