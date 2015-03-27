@@ -1140,7 +1140,7 @@ public class parser {
                         }
                         String tempToken = dynamicParams.get(tempi);
                         //if tempLexeme is not the token then insert row
-                        if (!tempLexeme.contains("MP_")) {
+                        if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
                             s_table.Insert_Row(TableName, tempLexeme, tempToken, 
                                             Type, Kind, Mode, "1", Parameters);
                         }
