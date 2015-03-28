@@ -1,6 +1,8 @@
 program Tester;
 
 var I: Boolean;
+someFloat: Float;
+someBool: Boolean;
 x, y, balloon, legcramp: String;
 
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
@@ -47,6 +49,8 @@ commented with MP_INTEGER this line out from a previous test file}
         I := I + 1;
         If I <= -6 then
             Write ( 'this stuff');
+
+        I := junk2(someFloat, someBool);
 
     While (I <> 20) do
         I := I + 1;
