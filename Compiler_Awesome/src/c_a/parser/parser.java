@@ -92,6 +92,8 @@ public class parser {
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     static ArrayList<String> lookUpArray = new ArrayList<>();
+    static String finalType; //should be integer, boolean, float, or string
+    static String assignee;
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1323,8 +1325,13 @@ public class parser {
             for (int i = lookUpArray.size() - 1; i >= 0; i --) {
                 tempList = s_table.Lookup(lookUpArray.get(i));
                 tempLexeme = parseTokens.get(index+3);
-                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
+//                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
                 if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
+                    System.out.println("Found it here:\n" + tempList);
+                    int getType = tempList.indexOf(tempLexeme) + 1;
+                    finalType = (String) tempList.get(getType);
+                    assignee = tempLexeme;
+                    System.out.println("finalType = " + finalType);
                     parserWriter.println("rule #38 : expanding");
                     Assign_Statement();
                     foundId = 1;
@@ -1333,7 +1340,8 @@ public class parser {
                 } 
             }
             if (foundId == 0) {
-                sourceOfError = "Use of undeclared variable " + tempLexeme;
+                sourceOfError = "Variable " + tempLexeme
+                        + " was never declared, or is out of scope";
                 errorsFound.add(sourceOfError);
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
@@ -2517,19 +2525,75 @@ public class parser {
         } else {
             //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
-            String peekID = parseTokens.get(index + 3);
-            if (Functions.contains(peekID)) {
-                parserWriter.println("rule #106: expanding");
-                Func_Id();
-                parserWriter.println("rule #106: expanding");
-                Opt_Actual_Param_List();
-                stackTrace.remove("Factor");
-            } else if (Variables.contains(peekID)) {
-                parserWriter.println("rule #116: expanding");
-                Var_Id();
-            } else {
-                errorsFound.add("Expected Variable or Function call found:"
-                        + " " + peekID);
+//            String peekID = parseTokens.get(index + 3);
+//            if (Functions.contains(peekID)) {
+//                parserWriter.println("rule #106: expanding");
+//                Func_Id();
+//                parserWriter.println("rule #106: expanding");
+//                Opt_Actual_Param_List();
+//                stackTrace.remove("Factor");
+//            } else if (Variables.contains(peekID)) {
+//                parserWriter.println("rule #116: expanding");
+//                Var_Id();
+//            } else {
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ArrayList tempList;
+            String tempLexeme = "";
+            String tempType = "";
+            int foundId = 0;
+            
+            //Check current table then up so go in reverse order
+            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
+                tempList = s_table.Lookup(lookUpArray.get(i));
+                tempLexeme = parseTokens.get(index+3);
+//                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
+                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
+//                    System.out.println("Found it here:\n" + tempList);
+                    int getType = tempList.indexOf(tempLexeme) + 1;
+                    tempType = (String) tempList.get(getType);
+//                    System.out.println("finalType = " + finalType);
+                    if (tempType.equals("MP_FUNCTION")) {
+                        parserWriter.println("rule #106 : expanding");
+                        Func_Id();
+                        parserWriter.println("rule #106: expanding");
+                        Opt_Actual_Param_List();
+                        stackTrace.remove("Factor");
+                        foundId = 1;
+                        break;
+                    } else if (tempType.equals(finalType)){
+                        parserWriter.println("rule #116: expanding");
+                        Var_Id();
+                        foundId = 1;
+                        break;
+                    } else {
+                        sourceOfError = "variable " + tempLexeme + " is of type "
+                                + tempType + " and " + assignee + " is of type "
+                                + finalType;
+                        errorsFound.add(sourceOfError);
+                        //establish index number of lookahead           
+                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        errorLocation.add(colNo);
+                        //set foundId 1 here cause we did find one, it just wasn't
+                        //the right type of one and continue the program
+                        parserWriter.println("ERROR ON RULE 116: CONTINUING");
+                        parserWriter.println("rule #116: expanding");
+                        Var_Id();
+                        foundId = 1;
+                    }
+                } 
+            }
+            if (foundId == 0) {
+                sourceOfError = "Variable or Function " + tempLexeme
+                        + " was never declared, or is out of scope";
+                errorsFound.add(sourceOfError);
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
@@ -2540,6 +2604,22 @@ public class parser {
                 colNo = parseTokens.get(lookAheadIndex + 2);
                 errorLocation.add(colNo);
             }
+                
+                
+                
+//                errorsFound.add("Undeclared variable:"
+//                        + " " + peekID);
+//                //establish index number of lookahead           
+//                lookAheadIndex = parseTokens.indexOf(lookAhead);
+//                //add line no corresponding to error
+//                lineNo = parseTokens.get(lookAheadIndex + 1);
+//                errorLocation.add(lineNo);
+//
+//                //add col no corresponding to error
+//                colNo = parseTokens.get(lookAheadIndex + 2);
+//                errorLocation.add(colNo);
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//            }
         }
         stackTrace.remove("Factor");
     }

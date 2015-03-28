@@ -1,6 +1,8 @@
 program Program1;
 var B : integer;
+X : String;
+A : Float;
 begin
-      B := 1;
+      B := X + A;
       Write('B = ', B)
 end.
