@@ -2387,63 +2387,18 @@ public class parser {
         } else {
             //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ArrayList tempList;
-            String tempLexeme = "";
-            String tempType = "";
-            int foundId = 0;
-            
-            //Check current table then up so go in reverse order
-            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
-                tempList = s_table.Lookup(lookUpArray.get(i));
-                tempLexeme = parseTokens.get(index+3);
-//                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
-                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
-//                    System.out.println("Found it here:\n" + tempList);
-                    int getType = tempList.indexOf(tempLexeme) + 1;
-                    tempType = (String) tempList.get(getType);
-//                    System.out.println("finalType = " + finalType);
-                    if (tempType.equals("MP_FUNCTION")) {
-                        parserWriter.println("rule #106 : expanding");
-                        Func_Id();
-                        parserWriter.println("rule #106: expanding");
-                        Opt_Actual_Param_List();
-                        foundId = 1;
-                        break;
-                    } else if (tempType.equals(finalType)){
-                        parserWriter.println("rule #116: expanding");
-                        Var_Id();
-                        foundId = 1;
-                        break;
-                    } else {
-                        sourceOfError = "variable " + tempLexeme + " is of type "
-                                + tempType + " and " + assignee + " is of type "
-                                + finalType;
-                        errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
-                        errorLocation.add(lineNo);
-
-                        //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
-                        errorLocation.add(colNo);
-                        //set foundId 1 here cause we did find one, it just wasn't
-                        //the right type of one and continue the program
-                        parserWriter.println("ERROR ON RULE 116: CONTINUING");
-                        parserWriter.println("rule #116: expanding");
-                        Var_Id();
-                        foundId = 1;
-                    }
-                } 
-            }
-            if (foundId == 0) {
-                sourceOfError = "Variable or Function " + tempLexeme
-                        + " was never declared, or is out of scope";
-                errorsFound.add(sourceOfError);
+            String peekID = parseTokens.get(index + 3);
+            if (Functions.contains(peekID)) {
+                parserWriter.println("rule #106: expanding");
+                Func_Id();
+                parserWriter.println("rule #106: expanding");
+                Opt_Actual_Param_List();
+            } else if (Variables.contains(peekID)) {
+                parserWriter.println("rule #116: expanding");
+                Var_Id();
+            } else {
+                errorsFound.add("Expected Variable or Function call found:"
+                        + " " + peekID);
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
@@ -2453,8 +2408,7 @@ public class parser {
                 //add col no corresponding to error
                 colNo = parseTokens.get(lookAheadIndex + 2);
                 errorLocation.add(colNo);
-            }
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        }
         }
     }
 // </editor-fold>
