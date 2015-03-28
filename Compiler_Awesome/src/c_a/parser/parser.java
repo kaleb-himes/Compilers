@@ -88,6 +88,11 @@ public class parser {
     static int In_Proc_Func_Flag = 0;
     static String[] init = new String[1];
 //##############################################################################
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    static ArrayList<String> lookUpArray = new ArrayList<>();
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
 
@@ -1129,6 +1134,10 @@ public class parser {
                 if (!ProcName.equals("")) {
                     TableName = ProcName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    //add the Tablename to lookuparray so we can iterate of the
+                    //tables later in symantic analysis and see if any of the
+                    //existing tables contain our variable
+                    lookUpArray.add(TableName);
                     Parameters = init;
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         // get the current lexeme for row creation
@@ -1152,6 +1161,10 @@ public class parser {
                 } else if (!FuncName.equals("")) {
                     TableName = FuncName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    //add the Tablename to lookuparray so we can iterate of the
+                    //tables later in symantic analysis and see if any of the
+                    //existing tables contain our variable
+                    lookUpArray.add(TableName);
                     Parameters = init;
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         // get the current lexeme for row creation
@@ -1192,6 +1205,7 @@ public class parser {
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
                             s_table.Destroy(TableName); //System.out.println("Destroyed table: " +TableName);
+                            lookUpArray.remove(TableName);
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }
@@ -1294,8 +1308,45 @@ public class parser {
             Write_Statement();
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
-            parserWriter.println("rule #38 : expanding");
-            Assign_Statement();
+            /*
+             * Ok we've encountered an Identifier, we should look it up in 
+             * the symbol table and see if it has been declared.
+            */
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ArrayList tempList;
+            String tempLexeme = "";
+            int foundId = 0;
+            
+            //Check current table then up so go in reverse order
+            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
+                tempList = s_table.Lookup(lookUpArray.get(i));
+                tempLexeme = parseTokens.get(index+3);
+                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
+                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
+                    parserWriter.println("rule #38 : expanding");
+                    Assign_Statement();
+                    foundId = 1;
+//                    i = lookUpArray.size();
+                    break;
+                } 
+            }
+            if (foundId == 0) {
+                sourceOfError = "Use of undeclared variable " + tempLexeme;
+                errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
+            }
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
             parserWriter.println("rule #39 : expanding");
@@ -2515,6 +2566,10 @@ public class parser {
             NestingLevel++;
             //insert Table info using s_table API name, nesting, label
             s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+            //add the Tablename to lookuparray so we can iterate of the
+            //tables later in symantic analysis and see if any of the
+            //existing tables contain our variable
+            lookUpArray.add(TableName);
 //##############################################################################
             parserWriter.println("rule #107: TERMINAL");
             Advance_Pointer();

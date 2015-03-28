@@ -79,8 +79,10 @@ public class s_table {
         if (tables.containsKey(name)) {
             return tables.get(name);
         } else {
-            System.err.println("Error, no such table exists.");
-            return null;
+            ArrayList empty = new ArrayList<>();
+            empty.clear();
+            System.err.println("Error, no such table exists: " + name);
+            return empty;
         }
     }
     

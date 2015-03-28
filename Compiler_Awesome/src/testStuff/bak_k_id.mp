@@ -32,7 +32,6 @@ commented with MP_INTEGER this line out from a previous test file}
     Write('Please enter an integer value for I: ');
     Read(I);
     I := I + 1;
-
     FOR I:=5 to 12 do
         If I >= 6 then
             Write ( 'this stuff')
