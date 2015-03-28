@@ -2730,6 +2730,7 @@ public class parser {
                         } else {
 //                            System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                             listIDs.add(parseTokens.get(index + 3));
+                            Variables.add(parseTokens.get(index + 3));
                         }
 //##############################################################################
                         parserWriter.println("rule #114: TERMINAL");
