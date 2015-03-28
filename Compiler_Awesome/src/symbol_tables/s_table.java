@@ -79,7 +79,7 @@ public class s_table {
         if (tables.containsKey(name)) {
             return tables.get(name);
         } else {
-            System.out.println("Error, no such table exists.");
+            System.err.println("Error, no such table exists.");
             return null;
         }
     }
@@ -89,7 +89,7 @@ public class s_table {
         if (tables.containsKey(name)) {
             tables.remove(name);
         } else {
-            System.out.println("Error, table has already been destroyed.");
+            System.err.println("Error, table has already been destroyed.");
         }
     }
     

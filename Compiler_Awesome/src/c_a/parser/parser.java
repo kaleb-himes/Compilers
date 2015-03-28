@@ -1140,6 +1140,7 @@ public class parser {
                         }
                         String tempToken = dynamicParams.get(tempi);
                         //if tempLexeme is not the token then insert row
+                        // and the token is non-empty
                         if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
                             s_table.Insert_Row(TableName, tempLexeme, tempToken, 
                                             Type, Kind, Mode, "1", Parameters);
@@ -1190,7 +1191,7 @@ public class parser {
                         
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-//                            s_table.Destroy(TableName); System.out.println("Destroyed table: " +TableName);
+                            s_table.Destroy(TableName); //System.out.println("Destroyed table: " +TableName);
                         for (String name: tables.keySet()){ 
                             TableName = name;
                         }
@@ -1596,6 +1597,7 @@ public class parser {
         stackTrace.add("Assign_Statement");
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
+        
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index + 3);
         if (Functions.contains(peekID)) {
@@ -1607,7 +1609,7 @@ public class parser {
             parserWriter.println(whichRule + ": expanding");
             Var_Id();
         } else {
-            errorsFound.add("Variable or Function undeclared");
+            potentialError = "Variable or Function undeclared";
             //establish index number of lookahead           
             lookAheadIndex = parseTokens.indexOf(lookAhead);
             //add line no corresponding to error
@@ -2678,6 +2680,7 @@ public class parser {
                 } else {
 //                    System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                     listIDs.add(parseTokens.get(index + 3));
+                    Variables.add(parseTokens.get(index + 3));
                 }
 //##############################################################################
                 parserWriter.println("rule #113: TERMINAL");
@@ -2813,7 +2816,22 @@ public class parser {
             System.out.println("*****************************************************\033[0m");
         } else {
             System.out.println(message);
-            s_table.Print_Tables();
+            //uncomment to print out the tables for verification purposes
+//            s_table.Print_Tables();
+            /* 
+             * NOTE: In Compound_Statement (line 1112) There are two lines
+             * 1193 and 1194 uncomment 1193 (if statement) to see the main
+             * table print out with all it's arguments. Comment out line 1194
+             * (the Destroy method) to see all the tables generated
+             *  --Attention: If the destroy method is commented out there are
+             * rows that will be added to functions and procedures that should
+             * actually be in main. This is expected as it runs dynamically. At
+             * run time it adds the rows to the current table, if tables are not
+             * being destroyed when they are out of scope then the row will be
+             * inserted into the wrong table. This is not and Error, but a
+             * consequence of not destroying the tables. Just be aware of it
+             * if printing them out for verification purposes and testing.
+             */
         }
         parserWriter.close();
 
