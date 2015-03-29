@@ -87,13 +87,14 @@ public class parser {
     static int In_Proc_Func_Flag = 0;
     static String[] init = new String[1];
 //##############################################################################
-    
+
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     static ArrayList<String> lookUpArray = new ArrayList<>();
     static String finalType = "NO_TYPE"; //should be integer, boolean, float, or string
-    static String assignee = "NO_ASSIGNEE";
+    static String assignee = "NO_ASSIGNEE"; //the variable being modified
+    static String tempType = "";   //the type that will be set if finalType is set
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -196,6 +197,7 @@ public class parser {
 // </editor-fold>
 // HEY DUMMIES DON"T FORGET ABOUT THIS (MP_ IN STRING WILL BREAK YOUR SHIT
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
+
     public static void Advance_Pointer() {
         if (lookAhead.equals("MP_STRING_LIT")) {
             index += 3;
@@ -661,7 +663,7 @@ public class parser {
                     // of incoming parameters
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
-                           tempSize++; 
+                            tempSize++;
                         }
                     }
                     Size = tempSize;
@@ -730,10 +732,10 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     int tempSize = 0;
                     Type = "null";
-                    Kind = "null"; 
+                    Kind = "null";
                     int checkLast = dynamicParams.size();
-                    if (dynamicParams.get(checkLast-1).contains("MP_")
-                            && dynamicParams.get(checkLast-2).contains("MP_")) {
+                    if (dynamicParams.get(checkLast - 1).contains("MP_")
+                            && dynamicParams.get(checkLast - 2).contains("MP_")) {
                         Mode = "in / out";
                         // offset for the return variable 
                         tempSize++;
@@ -743,7 +745,7 @@ public class parser {
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
                             // offsets for the number of parameters
-                           tempSize++; 
+                            tempSize++;
                         }
                     }
                     Size = tempSize;
@@ -1096,17 +1098,17 @@ public class parser {
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         // get the current lexeme for row creation
                         String tempLexeme = dynamicParams.get(i);
-                        
+
                         int tempi = i;
-                        while(!dynamicParams.get(tempi).contains("MP_")) {
+                        while (!dynamicParams.get(tempi).contains("MP_")) {
                             tempi++;
                         }
                         String tempToken = dynamicParams.get(tempi);
                         //if tempLexeme is not the token then insert row
                         // and the token is non-empty
                         if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
-                            s_table.Insert_Row(TableName, tempLexeme, tempToken, 
-                                            Type, Kind, Mode, "1", Parameters);
+                            s_table.Insert_Row(TableName, tempLexeme, tempToken,
+                                    Type, Kind, Mode, "1", Parameters);
                         }
                     }
                     //reset procedure name to null
@@ -1125,13 +1127,13 @@ public class parser {
                         String tempLexeme = dynamicParams.get(i);
 
                         int tempi = i;
-                        while(!dynamicParams.get(tempi).contains("MP_")) {
+                        while (!dynamicParams.get(tempi).contains("MP_")) {
                             tempi++;
                         }
                         String tempToken = dynamicParams.get(tempi);
                         if (!tempLexeme.contains("MP_")) {
-                            s_table.Insert_Row(TableName, tempLexeme, tempToken, 
-                                            Type, Kind, Mode, "1", Parameters);
+                            s_table.Insert_Row(TableName, tempLexeme, tempToken,
+                                    Type, Kind, Mode, "1", Parameters);
                         }
                     }
                     //reset function name to null
@@ -1155,12 +1157,12 @@ public class parser {
                         // uncomment DESTROY METHOD when done with testing and 
                         // ready to clear 
                         // out tables that are no longer in scope
-                        
+
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-                            s_table.Destroy(TableName); //System.out.println("Destroyed table: " +TableName);
-                            lookUpArray.remove(TableName);
-                        for (String name: tables.keySet()){ 
+                        s_table.Destroy(TableName); //System.out.println("Destroyed table: " +TableName);
+                        lookUpArray.remove(TableName);
+                        for (String name : tables.keySet()) {
                             TableName = name;
                         }
 
@@ -1222,9 +1224,10 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-                // Ok we found the MP_SCOLON, reset the semantics
-                Reset_Semantics();
                 parserWriter.println("rule #32 : TERMINAL");
+                // Ok we found the MP_SCOLON, reset the semantics
+                assignee = "NO_ASSIGNEE";
+                finalType = "NO_TYPE";
                 Advance_Pointer();
                 parserWriter.println("rule #32 : expanding");
                 Statement();
@@ -2344,7 +2347,7 @@ public class parser {
                     break;
             }
         } else {
-            //How to handle rule 106 vs 160!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //How to handle rule 106 vs 116!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
             String peekID = parseTokens.get(index + 3);
             if (Functions.contains(peekID)) {
@@ -2356,8 +2359,9 @@ public class parser {
                 parserWriter.println("rule #116: expanding");
                 Var_Id();
             } else {
-                errorsFound.add("Expected Variable or Function call found:"
-                        + " " + peekID);
+                sourceOfError = "Expected Variable or Function call found:"
+                        + " " + peekID + "\n attempting to continue parsing";
+                errorsFound.add(sourceOfError);
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
@@ -2367,7 +2371,9 @@ public class parser {
                 //add col no corresponding to error
                 colNo = parseTokens.get(lookAheadIndex + 2);
                 errorLocation.add(colNo);
-        }
+                parserWriter.println("rule #116: expanding");
+                Var_Id();
+            }
         }
     }
 // </editor-fold>
@@ -2414,7 +2420,35 @@ public class parser {
         }
     }
 // </editor-fold>
+    
+    //// HEY DUMMIES THIS RULE HAS A SPECIAL EDGE CASE DEFINITION FOLLOWS:
+    /* Should produce 4 errors, only 3 are seen. FIX SOMEDAY MAYBE????
+    
+    program Program1;
+    var B : integer;
+    X : String;
+    A : Float;
+    begin
+          B := X + A;   {error1 and error 2}
+          A := B;       {error3}
 
+          B := A + B + B; {error4}
+
+          Write('B = ', B)
+    end.
+
+    ERROR at line 6 column 14 in state: Trying to assign MP_STRING to MP_INTEGER.
+
+
+    ERROR at line 6 column 17 in state: Trying to assign MP_FLOAT to MP_INTEGER.
+
+
+    ERROR at line 7 column 13 in state: Trying to assign MP_INTEGER to MP_FLOAT.
+
+    *****************************************************
+    3 ERRORS  FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. 
+    *****************************************************
+    */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
     public static void Var_Id() {
@@ -2424,96 +2458,90 @@ public class parser {
             /*
              * Ok we've encountered an Identifier, we should look it up in 
              * the symbol table and see if it has been declared.
-            */
+             */
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             ArrayList tempList;     // store a table temporarily for checks
-            String tempLexeme = ""; // store the lexeme temporarily for checks
             int foundId = 0;        // equals 1 if ID has been declared already
-            
-            //Check current table then up so go in reverse order
-            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
-                tempList = s_table.Lookup(lookUpArray.get(i));
-                tempLexeme = parseTokens.get(index+3);
-                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
-                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
-                    System.out.println("Found it here:\n" + tempList);
-                    int getType = tempList.indexOf(tempLexeme) + 1;
-                    
-                    //only set final type if it hasn't been set yet. We will
-                    //reset it once we seee MP_SCOLON
-                    if (finalType.equals("NO_TYPE") && assignee.equals("NO_ASSIGNEE")) {
-                        finalType = (String) tempList.get(getType);
-                        //assignee should only be set when type is set as well
-                        //we can use one check to control both assigns
-                        assignee = tempLexeme;
-                    } else {
-                        String tempType = (String) tempList.get(getType);
-                        if (!tempType.equals(finalType)) {
-                            sourceOfError = ("Trying to assign "
-                                    + tempType + " to "
-                                    + finalType);
-                            errorsFound.add(sourceOfError);
-                            //establish index number of lookahead           
-                            lookAheadIndex = parseTokens.indexOf(lookAhead);
-                            //add line no corresponding to error
-                            lineNo = parseTokens.get(lookAheadIndex + 1);
-                            errorLocation.add(lineNo);
 
-                            //add col no corresponding to error
-                            colNo = parseTokens.get(lookAheadIndex + 2);
-                            errorLocation.add(colNo);
-                        }
-                    }
-                    System.out.println("finalType = " + finalType);
-                    parserWriter.println("rule #108 : TERMINAL");
-                    foundId = 1;
-//                    i = lookUpArray.size();
-                    break;
-                } 
-            }
-            if (foundId == 0) {
-                sourceOfError = "Variable " + tempLexeme
-                        + " was never declared, or is out of scope";
-                errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
-                errorLocation.add(lineNo);
-
-                //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
-                errorLocation.add(colNo);
-            }
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            
-            
-            parserWriter.println("rule #108: TERMINAL");
-            
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
             if (!Functions.contains(parseTokens.get(index + 3))) {
                 CurrLexeme = parseTokens.get(index + 3);
                 Variables.add(CurrLexeme);
-//            System.out.println("Set VarID: " + CurrLexeme);
+                System.out.println("Set VarID: " + CurrLexeme);
             }
 //##############################################################################
+            //Check current table then up so go in reverse order
+            for (int i = lookUpArray.size() - 1; i >= 0; i--) {
+                tempList = s_table.Lookup(lookUpArray.get(i));
+//                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + CurrLexeme);
+                if (!tempList.isEmpty() && tempList.contains(CurrLexeme)) {
+//                    System.out.println("Found it here:\n" + tempList);
+                    int getType = tempList.indexOf(CurrLexeme) + 1;
+                    //only set final type if it hasn't been set yet. We will
+                    //reset it once we seee MP_SCOLON
+                    if (finalType.equals("NO_TYPE")) {
+                        finalType = (String) tempList.get(getType);
+                        tempType = finalType;
+                        System.out.println("finalType set: " + finalType);
+                        //assignee should only be set when type is set as well
+                        //we can use one check to control both assigns
+                        assignee = CurrLexeme;
+                        foundId = 1;
+                        break;
+                    } else {
+                        tempType = (String) tempList.get(getType);
+                        System.out.println("tempType set: " + tempType);
+                        foundId = 1;
+                    }
+                }
+            } // END of for loop
+            
+            
+
+            if (foundId == 0) {
+                sourceOfError = "Variable " + CurrLexeme
+                        + " was never declared, or is out of scope";
+                errorsFound.add(sourceOfError);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(index + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(index + 2);
+                errorLocation.add(colNo);
+            }
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            
+            parserWriter.println("rule #108: TERMINAL");
             Advance_Pointer();
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
-            errorsFound.add(sourceOfError);
-            //establish index number of lookahead           
-            lookAheadIndex = parseTokens.indexOf(lookAhead);
+            errorsFound.add(sourceOfError);          
             //add line no corresponding to error
-            lineNo = parseTokens.get(lookAheadIndex + 1);
+            lineNo = parseTokens.get(index + 1);
             errorLocation.add(lineNo);
 
             //add col no corresponding to error
-            colNo = parseTokens.get(lookAheadIndex + 2);
+            colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
+            Advance_Pointer();
+        } //END of G_CHECK
+        
+        if (finalType.compareTo(tempType) != 0) {
+                    errorsFound.add("Trying to assign "
+                            + tempType + " to "
+                            + finalType);
+                    //add line no corresponding to error
+                    lineNo = parseTokens.get(index + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(index + 2);
+                    errorLocation.add(colNo);
         }
     }
 // </editor-fold>
@@ -2801,16 +2829,5 @@ public class parser {
         }
     }
 // </editor-fold>
-    
-// reset symantic analysis assignee and finalType
-// <editor-fold defaultstate="collapsed" desc="Reset_Semantics">
-    static void Reset_Semantics() {
-//        System.out.println("\n\nfinalType = " + finalType);
-//        System.out.println("assignee = " + assignee);
-        finalType = "NO_TYPE"; //should be integer, boolean, float, or string
-        assignee = "NO_ASSIGNEE";
-//        System.out.println("RESET: finalType = " + finalType + " assignee = " 
-//                + assignee + "\n\n");
-    }
-// </editor-fold>
+
 }
