@@ -3,6 +3,7 @@ program Tester;
 var I: Boolean;
 someFloat: Float;
 someBool: Boolean;
+somestuff: Integer;
 x, y, balloon, legcramp: String;
 
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
