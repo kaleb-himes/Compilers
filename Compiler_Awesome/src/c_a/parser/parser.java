@@ -87,12 +87,13 @@ public class parser {
     static int In_Proc_Func_Flag = 0;
     static String[] init = new String[1];
 //##############################################################################
+    
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     static ArrayList<String> lookUpArray = new ArrayList<>();
-    static String finalType; //should be integer, boolean, float, or string
-    static String assignee;
+    static String finalType = "NO_TYPE"; //should be integer, boolean, float, or string
+    static String assignee = "NO_ASSIGNEE";
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1221,6 +1222,8 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
+                // Ok we found the MP_SCOLON, reset the semantics
+                Reset_Semantics();
                 parserWriter.println("rule #32 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #32 : expanding");
@@ -1254,51 +1257,8 @@ public class parser {
             Write_Statement();
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
-            /*
-             * Ok we've encountered an Identifier, we should look it up in 
-             * the symbol table and see if it has been declared.
-            */
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ArrayList tempList;
-            String tempLexeme = "";
-            int foundId = 0;
-            
-            //Check current table then up so go in reverse order
-            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
-                tempList = s_table.Lookup(lookUpArray.get(i));
-                tempLexeme = parseTokens.get(index+3);
-//                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
-                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
-                    System.out.println("Found it here:\n" + tempList);
-                    int getType = tempList.indexOf(tempLexeme) + 1;
-                    finalType = (String) tempList.get(getType);
-                    assignee = tempLexeme;
-                    System.out.println("finalType = " + finalType);
-                    parserWriter.println("rule #38 : expanding");
-                    Assign_Statement();
-                    foundId = 1;
-//                    i = lookUpArray.size();
-                    break;
-                } 
-            }
-            if (foundId == 0) {
-                sourceOfError = "Variable " + tempLexeme
-                        + " was never declared, or is out of scope";
-                errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
-                errorLocation.add(lineNo);
-
-                //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
-                errorLocation.add(colNo);
-            }
-//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            
+            parserWriter.println("rule #38 : expanding");
+            Assign_Statement();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
             parserWriter.println("rule #39 : expanding");
@@ -1582,7 +1542,6 @@ public class parser {
     public static void Assign_Statement() {
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
-        
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index + 3);
         if (Functions.contains(peekID)) {
@@ -2462,16 +2421,86 @@ public class parser {
         // 108. Var_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
+            /*
+             * Ok we've encountered an Identifier, we should look it up in 
+             * the symbol table and see if it has been declared.
+            */
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ArrayList tempList;     // store a table temporarily for checks
+            String tempLexeme = ""; // store the lexeme temporarily for checks
+            int foundId = 0;        // equals 1 if ID has been declared already
+            
+            //Check current table then up so go in reverse order
+            for (int i = lookUpArray.size() - 1; i >= 0; i --) {
+                tempList = s_table.Lookup(lookUpArray.get(i));
+                tempLexeme = parseTokens.get(index+3);
+                System.out.println("Looking in: " + lookUpArray.get(i) +"\nfor: " + tempLexeme);
+                if (!tempList.isEmpty() && tempList.contains(tempLexeme)) {
+                    System.out.println("Found it here:\n" + tempList);
+                    int getType = tempList.indexOf(tempLexeme) + 1;
+                    
+                    //only set final type if it hasn't been set yet. We will
+                    //reset it once we seee MP_SCOLON
+                    if (finalType.equals("NO_TYPE") && assignee.equals("NO_ASSIGNEE")) {
+                        finalType = (String) tempList.get(getType);
+                        //assignee should only be set when type is set as well
+                        //we can use one check to control both assigns
+                        assignee = tempLexeme;
+                    } else {
+                        String tempType = (String) tempList.get(getType);
+                        if (!tempType.equals(finalType)) {
+                            sourceOfError = ("Trying to assign "
+                                    + tempType + " to "
+                                    + finalType);
+                            errorsFound.add(sourceOfError);
+                            //establish index number of lookahead           
+                            lookAheadIndex = parseTokens.indexOf(lookAhead);
+                            //add line no corresponding to error
+                            lineNo = parseTokens.get(lookAheadIndex + 1);
+                            errorLocation.add(lineNo);
+
+                            //add col no corresponding to error
+                            colNo = parseTokens.get(lookAheadIndex + 2);
+                            errorLocation.add(colNo);
+                        }
+                    }
+                    System.out.println("finalType = " + finalType);
+                    parserWriter.println("rule #108 : TERMINAL");
+                    foundId = 1;
+//                    i = lookUpArray.size();
+                    break;
+                } 
+            }
+            if (foundId == 0) {
+                sourceOfError = "Variable " + tempLexeme
+                        + " was never declared, or is out of scope";
+                errorsFound.add(sourceOfError);
+                //establish index number of lookahead           
+                lookAheadIndex = parseTokens.indexOf(lookAhead);
+                //add line no corresponding to error
+                lineNo = parseTokens.get(lookAheadIndex + 1);
+                errorLocation.add(lineNo);
+
+                //add col no corresponding to error
+                colNo = parseTokens.get(lookAheadIndex + 2);
+                errorLocation.add(colNo);
+            }
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            
+            
             parserWriter.println("rule #108: TERMINAL");
-            if (!Functions.contains(parseTokens.get(index + 3))) {
+            
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
+            if (!Functions.contains(parseTokens.get(index + 3))) {
                 CurrLexeme = parseTokens.get(index + 3);
                 Variables.add(CurrLexeme);
 //            System.out.println("Set VarID: " + CurrLexeme);
-//##############################################################################
             }
+//##############################################################################
             Advance_Pointer();
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2770,6 +2799,18 @@ public class parser {
         for (int i = 0; i < M.size(); i++) {
             Parameters[i] = M.get(i);
         }
+    }
+// </editor-fold>
+    
+// reset symantic analysis assignee and finalType
+// <editor-fold defaultstate="collapsed" desc="Reset_Semantics">
+    static void Reset_Semantics() {
+//        System.out.println("\n\nfinalType = " + finalType);
+//        System.out.println("assignee = " + assignee);
+        finalType = "NO_TYPE"; //should be integer, boolean, float, or string
+        assignee = "NO_ASSIGNEE";
+//        System.out.println("RESET: finalType = " + finalType + " assignee = " 
+//                + assignee + "\n\n");
     }
 // </editor-fold>
 }
