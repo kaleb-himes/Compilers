@@ -278,7 +278,8 @@ public class parser {
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
-                    destroyPointer -= 1;
+                    destroyPointer --;
+                    NestingLevel --;
                     parserWriter.println("rule #2  : TERMINAL");
                     Advance_Pointer();
                     break;
@@ -694,10 +695,11 @@ public class parser {
 
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-                        System.out.println("Destroyed table: " +TableName);
-                        destroyPointer -= 1;
+//                        System.out.println("Destroyed table: " +TableName);
+                        destroyPointer--;
+                        NestingLevel --;
                         TableName = lookUpArray.get(destroyPointer);
-                        System.out.println("Table is now: " +TableName);
+//                        System.out.println("Table is now: " +TableName);
 
 //##############################################################################
                         parserWriter.println("rule #17 : TERMINAL");
@@ -792,10 +794,11 @@ public class parser {
 
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
-                        System.out.println("Destroyed table: " +TableName);
-                        destroyPointer -= 1;
+//                        System.out.println("Destroyed table: " +TableName);
+                        destroyPointer --;
+                        NestingLevel --;
                         TableName = lookUpArray.get(destroyPointer);
-                        System.out.println("Table is now: " +TableName);
+//                        System.out.println("Table is now: " +TableName);
 
 //##############################################################################
                         parserWriter.println("rule #18 : TERMINAL");
@@ -2737,7 +2740,7 @@ public class parser {
         } else {
             System.out.println(message);
             //uncomment to print out the tables for verification purposes
-//            s_table.Print_Tables();
+            s_table.Print_Tables();
             /* 
              * NOTE: In Compound_Statement (line 1112) There are two lines
              * 1193 and 1194 uncomment 1193 (if statement) to see the main

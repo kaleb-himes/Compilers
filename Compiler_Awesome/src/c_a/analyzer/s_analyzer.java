@@ -119,7 +119,7 @@ public class s_analyzer extends c_a.parser.parser {
                 if (rememberTableName.equals("NO_TABLE")) {
                     rememberTableName = TableName;
                 }
-                System.out.println("Current tableName: " + rememberTableName);
+//                System.out.println("Current tableName: " + rememberTableName);
                 int getType = tempList.indexOf(CurrLexeme) + 1;
                 // only set final type if it hasn't been set yet. We will
                 // reset it once we seee MP_SCOLON
