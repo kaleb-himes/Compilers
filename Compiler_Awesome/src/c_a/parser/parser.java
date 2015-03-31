@@ -71,14 +71,14 @@ public class parser {
     static int blockState;
     static PrintWriter parserWriter;
 // Lexicallity
-    static ArrayList Variables = new ArrayList<>();
+    public static ArrayList Variables = new ArrayList<>();
     public static ArrayList Functions = new ArrayList<>();
     static ArrayList Procedures = new ArrayList<>();
 
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
-    static String TableName, ProcName, FuncName, Label_1 = "L";
+    public static String TableName, ProcName, FuncName, Label_1 = "L";
     static int NestingLevel, Label_2;
     public static String CurrLexeme, Type, Kind, Mode, CurrToken;
     static String[] Parameters;
@@ -1482,11 +1482,11 @@ public class parser {
                         //establish index number of lookahead           
                         lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 } //end case for LParen
@@ -1498,11 +1498,11 @@ public class parser {
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         } //end case for MP_WRITE
@@ -2367,11 +2367,11 @@ public class parser {
                 //establish index number of lookahead           
                 lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 parserWriter.println("rule #116: expanding");
                 Var_Id();
@@ -2464,15 +2464,6 @@ public class parser {
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//##############################################################################
-//###### SYMBOL TABLE STUFF ####################################################
-//##############################################################################
-            if (!Functions.contains(parseTokens.get(index + 3))) {
-                CurrLexeme = parseTokens.get(index + 3);
-                Variables.add(CurrLexeme);
-//                System.out.println("Set VarID: " + CurrLexeme);
-            }
-//##############################################################################
             //Check current table then up so go in reverse order
             s_analyzer.analyze_variable();
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -2533,20 +2524,9 @@ public class parser {
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
-
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$ SYMANTIC ANALYSIS STUFF $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//##############################################################################
-//###### SYMBOL TABLE STUFF ####################################################
-//##############################################################################
-            if (!Variables.contains(parseTokens.get(index + 3))) {
-                CurrLexeme = parseTokens.get(index + 3);
-                FuncName = CurrLexeme;
-                Functions.add(parseTokens.get(index + 3));
-//            System.out.println("Set FuncName: " + FuncName);
-            }
-//##############################################################################
             s_analyzer.analyze_function();
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 

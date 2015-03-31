@@ -15,6 +15,15 @@ import symbol_tables.s_table;
 public class s_analyzer extends c_a.parser.parser {
 
     public static void analyze_variable() {
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            if (!Functions.contains(parseTokens.get(index + 3))) {
+                CurrLexeme = parseTokens.get(index + 3);
+                Variables.add(CurrLexeme);
+//                System.out.println("Set VarID: " + CurrLexeme);
+            }
+//##############################################################################
         ArrayList tempList;     // store a table temporarily for checks
         int foundId = 0;        // equals 1 if ID has been declared already
         for (int i = lookUpArray.size() - 1; i >= 0; i--) {
@@ -74,13 +83,26 @@ public class s_analyzer extends c_a.parser.parser {
                 }
                 break;
             default:
-                    // check the function arguments instead
+                // check the function arguments instead
                 // we have the print for "found it here"
                 break;
         }
     }
 
     public static void analyze_function() {
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+            CurrLexeme = parseTokens.get(index + 3);
+            if (!Variables.contains(CurrLexeme)
+                    && !Functions.contains(CurrLexeme)) {
+                FuncName = CurrLexeme;
+                Functions.add(CurrLexeme);
+//            System.out.println("Set FuncName: " + CurrLexeme + " at line: " + 
+//                    parseTokens.get(index + 1) + " and col: " 
+//                    + parseTokens.get(index + 2));
+            }
+//##############################################################################
         ArrayList tempList;     // store a table temporarily for checks
 //      int foundId = 0;        // equals 1 if ID has been declared already
         // Check current table then up so go in reverse order
@@ -112,7 +134,7 @@ public class s_analyzer extends c_a.parser.parser {
         } // END of for loop
 
         if (!Functions.contains(CurrLexeme)) {
-            sourceOfError = "Variable " + CurrLexeme
+            sourceOfError = "Function " + CurrLexeme
                     + " was never declared, or is out of scope";
             errorsFound.add(sourceOfError);
             // add line no corresponding to error
