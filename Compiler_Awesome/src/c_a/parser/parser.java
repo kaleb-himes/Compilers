@@ -87,6 +87,7 @@ public class parser {
     static ArrayList<String> listIDs = new ArrayList<>();
     static int In_Proc_Func_Flag = 0;
     static String[] init = new String[1];
+    public static int destroyPointer = 0;   //will limit the scope of lookup
 //##############################################################################
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -97,6 +98,7 @@ public class parser {
     public static String assignee = "NO_ASSIGNEE"; //the variable being modified
     public static String tempType = "";            //the type that will be set if finalType is set
     public static int checkFuncArgs = 0;            //alert Var_Id to check function types
+    public static String rememberTableName = "NO_TABLE";
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -276,6 +278,7 @@ public class parser {
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
+                    destroyPointer -= 1;
                     parserWriter.println("rule #2  : TERMINAL");
                     Advance_Pointer();
                     break;
@@ -681,6 +684,22 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+//                        System.out.println("TABLENAME: " + TableName);
+                        // uncomment DESTROY METHOD when done with testing and 
+                        // ready to clear 
+                        // out tables that are no longer in scope
+
+                        //uncomment this if statement to see main table at end
+//                        if (!TableName.equals("Tester"))
+                        System.out.println("Destroyed table: " +TableName);
+                        destroyPointer -= 1;
+                        TableName = lookUpArray.get(destroyPointer);
+                        System.out.println("Table is now: " +TableName);
+
+//##############################################################################
                         parserWriter.println("rule #17 : TERMINAL");
                         Advance_Pointer();
                         break;
@@ -763,6 +782,22 @@ public class parser {
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//##############################################################################
+//                        System.out.println("TABLENAME: " + TableName);
+                        // uncomment DESTROY METHOD when done with testing and 
+                        // ready to clear 
+                        // out tables that are no longer in scope
+
+                        //uncomment this if statement to see main table at end
+//                        if (!TableName.equals("Tester"))
+                        System.out.println("Destroyed table: " +TableName);
+                        destroyPointer -= 1;
+                        TableName = lookUpArray.get(destroyPointer);
+                        System.out.println("Table is now: " +TableName);
+
+//##############################################################################
                         parserWriter.println("rule #18 : TERMINAL");
                         Advance_Pointer();
                         break;
@@ -1092,6 +1127,8 @@ public class parser {
                 if (!ProcName.equals("")) {
                     TableName = ProcName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    //increment the destroyPointer
+                    destroyPointer++;
                     //add the Tablename to lookuparray so we can iterate of the
                     //tables later in symantic analysis and see if any of the
                     //existing tables contain our variable
@@ -1119,6 +1156,7 @@ public class parser {
                 } else if (!FuncName.equals("")) {
                     TableName = FuncName;
                     s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                    destroyPointer++;
                     //add the Tablename to lookuparray so we can iterate of the
                     //tables later in symantic analysis and see if any of the
                     //existing tables contain our variable
@@ -1152,23 +1190,6 @@ public class parser {
                 G_Check = Match("MP_END");
                 switch (G_Check) {
                     case 1:
-//##############################################################################
-//############ SYMBOL TABLE STUFF ##############################################
-//##############################################################################
-//                        System.out.println("TABLENAME: " + TableName);
-                        // uncomment DESTROY METHOD when done with testing and 
-                        // ready to clear 
-                        // out tables that are no longer in scope
-
-                        //uncomment this if statement to see main table at end
-//                        if (!TableName.equals("Tester"))
-                        s_table.Destroy(TableName); //System.out.println("Destroyed table: " +TableName);
-                        lookUpArray.remove(TableName);
-                        for (String name : tables.keySet()) {
-                            TableName = name;
-                        }
-
-//##############################################################################
                         parserWriter.println("rule #30 : TERMINAL");
                         Advance_Pointer();
                         break;

@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
  *
  * @author khimes
  */
-public class s_table {
+public class s_table extends c_a.parser.parser {
     public static LinkedHashMap<String, ArrayList<String>> tables;
     static ArrayList<String> Rows;
     static String Previous;

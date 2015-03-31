@@ -84,6 +84,7 @@ public class s_analyzer extends c_a.parser.parser {
                 break;
             default:
                 // check the function arguments instead
+                s_table.Lookup(rememberTableName);
                 // we have the print for "found it here"
                 break;
         }
@@ -112,9 +113,13 @@ public class s_analyzer extends c_a.parser.parser {
             if (!tempList.isEmpty() && tempList.contains(CurrLexeme)) {
 //              System.out.println("Found it here:\n" + tempList);
 //              foundId = 1;
+                
                 // set flag so Var_Id knows to check function types instead
                 checkFuncArgs = 1;
-
+                if (rememberTableName.equals("NO_TABLE")) {
+                    rememberTableName = TableName;
+                }
+                System.out.println("Current tableName: " + rememberTableName);
                 int getType = tempList.indexOf(CurrLexeme) + 1;
                 // only set final type if it hasn't been set yet. We will
                 // reset it once we seee MP_SCOLON
