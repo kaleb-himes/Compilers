@@ -15,6 +15,7 @@ import symbol_tables.s_table;
 public class s_analyzer extends c_a.parser.parser {
 
     public static void analyze_variable() {
+        checkFuncArgs = 0;
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################

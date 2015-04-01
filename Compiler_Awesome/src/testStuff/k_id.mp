@@ -1,5 +1,6 @@
 program Program1;
   var A : integer;
+        B: float;
   someString : String;
   tempfloat: float;
   tempbool: Boolean;
@@ -12,7 +13,9 @@ program Program1;
     end; {funct}
 
     begin
-      A := 1;
-      someString := funct(tempfloat, tempbool);
+      A := B + B;
+      someString := tempfloat;
+      someString := tempfloat;
+      somestring := C;
       Write('A = ', A)
     end.
