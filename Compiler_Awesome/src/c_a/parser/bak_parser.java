@@ -32,7 +32,6 @@ public class bak_parser {
     static List<String> errorLocation;
 
     //variables to keep track of error reporting info
-    static int lookAheadIndex;
     static String lineNo;
     static String colNo;
 
@@ -166,14 +165,12 @@ public class bak_parser {
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 Error();
 
@@ -209,14 +206,12 @@ public class bak_parser {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
                     errorsFound.add(sourceOfError);
 
-                    //establish index number of lookahead           
-                    lookAheadIndex = parseTokens.indexOf(lookAhead);
                     //add line no corresponding to error
-                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
                     //add col no corresponding to error
-                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    colNo = parseTokens.get(index + 2);
                     errorLocation.add(colNo);
                     break;
                 }
@@ -225,13 +220,12 @@ public class bak_parser {
                 errorsFound.add(sourceOfError);
 
                 //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
 
                 break;
@@ -262,14 +256,12 @@ public class bak_parser {
 
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -318,14 +310,12 @@ public class bak_parser {
                             + "found:  " + lookAhead;
                     errorsFound.add(sourceOfError);
 
-                    //establish index number of lookahead           
-                    lookAheadIndex = parseTokens.indexOf(lookAhead);
                     //add line no corresponding to error
-                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
                     //add col no corresponding to error
-                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    colNo = parseTokens.get(index + 2);
                     errorLocation.add(colNo);
 
                     break;
@@ -389,14 +379,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -440,14 +428,12 @@ public class bak_parser {
                         + " MP_BOOLEAN instead found: " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -516,14 +502,12 @@ public class bak_parser {
                                 + "" + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 }
@@ -533,14 +517,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -573,14 +555,12 @@ public class bak_parser {
                                 + "" + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 }
@@ -590,14 +570,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -625,14 +603,12 @@ public class bak_parser {
                         + " " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -666,14 +642,12 @@ public class bak_parser {
                             + "" + lookAhead;
                     errorsFound.add(sourceOfError);
 
-                    //establish index number of lookahead           
-                    lookAheadIndex = parseTokens.indexOf(lookAhead);
                     //add line no corresponding to error
-                    lineNo = parseTokens.get(lookAheadIndex + 1);
+                    lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
                     //add col no corresponding to error
-                    colNo = parseTokens.get(lookAheadIndex + 2);
+                    colNo = parseTokens.get(index + 2);
                     errorLocation.add(colNo);
                     break;
                 }
@@ -682,14 +656,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -725,14 +697,12 @@ public class bak_parser {
                                 + "MP_RPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 }
@@ -812,14 +782,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -852,14 +820,12 @@ public class bak_parser {
                                 + ": " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 }
@@ -869,14 +835,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -919,14 +883,12 @@ public class bak_parser {
                                 + "found: " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 }
@@ -936,14 +898,12 @@ public class bak_parser {
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         }
@@ -1082,14 +1042,12 @@ public class bak_parser {
                                         + "MP_RPAREN found: " + lookAhead;
                                 errorsFound.add(sourceOfError);
 
-                                //establish index number of lookahead           
-                                lookAheadIndex = parseTokens.indexOf(lookAhead);
                                 //add line no corresponding to error
-                                lineNo = parseTokens.get(lookAheadIndex + 1);
+                                lineNo = parseTokens.get(index + 1);
                                 errorLocation.add(lineNo);
 
                                 //add col no corresponding to error
-                                colNo = parseTokens.get(lookAheadIndex + 2);
+                                colNo = parseTokens.get(index + 2);
                                 errorLocation.add(colNo);
                                 break;
                         } //end case for R_PAREN
@@ -1099,14 +1057,12 @@ public class bak_parser {
                                 + "MP_LPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 } //end case for LPAREN
@@ -1116,14 +1072,12 @@ public class bak_parser {
                         + "MP_READ found: " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         } //end case for READ
@@ -1224,14 +1178,12 @@ public class bak_parser {
                                         + "MP_RPAREN found: " + lookAhead;
                                 errorsFound.add(sourceOfError);
 
-                                //establish index number of lookahead           
-                                lookAheadIndex = parseTokens.indexOf(lookAhead);
                                 //add line no corresponding to error
-                                lineNo = parseTokens.get(lookAheadIndex + 1);
+                                lineNo = parseTokens.get(index + 1);
                                 errorLocation.add(lineNo);
 
                                 //add col no corresponding to error
-                                colNo = parseTokens.get(lookAheadIndex + 2);
+                                colNo = parseTokens.get(index + 2);
                                 errorLocation.add(colNo);
                                 break;
                         } //end case for RParen
@@ -1241,14 +1193,12 @@ public class bak_parser {
                                 + "MP_LPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 } //end case for LParen
@@ -1258,14 +1208,12 @@ public class bak_parser {
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         } //end case for MP_WRITE
@@ -1329,16 +1277,6 @@ public class bak_parser {
             Var_Id();
         } else {
             potentialError = "Variable or Function undeclared";
-            //establish index number of lookahead           
-            lookAheadIndex = parseTokens.indexOf(lookAhead);
-            //add line no corresponding to error
-            lineNo = parseTokens.get(lookAheadIndex + 1);
-            errorLocation.add(lineNo);
-
-            //add col no corresponding to error
-            colNo = parseTokens.get(lookAheadIndex + 2);
-            errorLocation.add(colNo);
-            parserWriter.println(whichRule + ": expanding");
         }
 
         G_Check = Match("MP_ASSIGN");
@@ -1354,14 +1292,13 @@ public class bak_parser {
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
+
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         } //end case for Assign
@@ -1398,14 +1335,12 @@ public class bak_parser {
                                 + "MP_THEN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
 
-                        //establish index number of lookahead           
-                        lookAheadIndex = parseTokens.indexOf(lookAhead);
                         //add line no corresponding to error
-                        lineNo = parseTokens.get(lookAheadIndex + 1);
+                        lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
                         //add col no corresponding to error
-                        colNo = parseTokens.get(lookAheadIndex + 2);
+                        colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
                 } //end case for Then
@@ -1415,20 +1350,19 @@ public class bak_parser {
                         + "MP_IF found: " + lookAhead;
                 errorsFound.add(sourceOfError);
 
-                //establish index number of lookahead           
-                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
-                lineNo = parseTokens.get(lookAheadIndex + 1);
+                lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
                 //add col no corresponding to error
-                colNo = parseTokens.get(lookAheadIndex + 2);
+                colNo = parseTokens.get(index + 2);
                 errorLocation.add(colNo);
                 break;
         } //end case for If
     }
 // </editor-fold>
 
+//MONICA TO HERE
 // rules 57 and 58
 // <editor-fold defaultstate="collapsed" desc="Opt_Else_Part">
     public static void Opt_Else_Part() {
