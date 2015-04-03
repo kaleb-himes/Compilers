@@ -796,6 +796,8 @@ public class parser {
                         destroyPointer --;
                         NestingLevel --;
                         TableName = lookUpArray.get(destroyPointer);
+                        
+                        Mode = "";
 //                        System.out.println("Table is now: " +TableName);
 
 //##############################################################################
