@@ -100,6 +100,8 @@ public class parser {
     public static String tempType = "";            //the type that will be set if finalType is set
     public static int checkFuncArgs = 0;            //alert Var_Id to check function types
     public static String rememberTableName = "NO_TABLE";
+    public static int comingFromRead = 0;
+    public static int comingFromWrite = 0;
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1279,11 +1281,15 @@ public class parser {
         } // 36. Statement -> Read_Statement
         else if (lookAhead.equals("MP_READ")) {
             parserWriter.println("rule #36 : expanding");
+            comingFromRead = 1;
             Read_Statement();
+            comingFromRead = 0;
         } // 37. Statement -> Write_Statement
         else if (lookAhead.equals("MP_WRITE") || lookAhead.equals("MP_WRITELN")) {
             parserWriter.println("rule #37 : expanding");
+            comingFromWrite = 1;
             Write_Statement();
+            comingFromWrite = 0;
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
             parserWriter.println("rule #38 : expanding");

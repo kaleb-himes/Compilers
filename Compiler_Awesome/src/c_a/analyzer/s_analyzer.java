@@ -32,7 +32,7 @@ public class s_analyzer extends c_a.parser.parser {
 //                System.out.println("Set VarID: " + CurrLexeme);
         }
 //##############################################################################
-        ArrayList <String> tempList;     // store a table temporarily for checks
+        ArrayList<String> tempList;     // store a table temporarily for checks
         int foundId = 0;        // equals 1 if ID has been declared already
         for (int i = destroyPointer; i >= 0; i--) {
             tempList = s_table.Lookup(lookUpArray.get(i));
@@ -95,7 +95,10 @@ public class s_analyzer extends c_a.parser.parser {
                 }
                 break;
             case 1:
-                
+                // handles read and write where comparisons are unneccessary
+                if (comingFromRead == 1 || comingFromWrite == 1) {
+                    break;
+                }
                 // check the function arguments instead
                 ArrayList<String> tempList2;
                 //no need to check for empty, we know it's there cause we're
@@ -113,42 +116,67 @@ public class s_analyzer extends c_a.parser.parser {
                 }
                 if (FuncCompare == 1 && !alreadyChecked.contains(CurrLexeme)) {
                     // what we're looking at
-                    System.out.println("current lexeme is: " + CurrLexeme);
-                    System.out.println("We're looking at in function: " + rememberFunctionType);
+//                    System.out.println("current lexeme is: " + CurrLexeme);
+//                    System.out.println("We're looking at in function: " + rememberFunctionType);
+
                     //remember which ones we've checked so we don't add them over
                     //and over
                     alreadyChecked.add(CurrLexeme);
-
                     int typeLocation = tempList2.indexOf(CurrLexeme);
                     String getType = tempList2.get(typeLocation + 1);
-                    System.out.println("We want to compare to: " + getType);
+//                    System.out.println("We want to compare to: " + getType);
+                    if (!rememberFunctionType.equals(getType)) {
+                        errorsFound.add("Function " + rememberFunctionName + 
+                                " returns a " + rememberFunctionType + 
+                                " you tried to assign this to " + CurrLexeme +
+                               " which is of type " + getType);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(index + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(index + 2);
+                        errorLocation.add(colNo);
+                    }
                     ArgCompare = 1;
                 } else if (ArgCompare == 1 && !alreadyChecked.contains(CurrLexeme)) {
                     // what we're looking at
                     int typeLocation = tempList2.indexOf(CurrLexeme);
                     String getType = tempList2.get(typeLocation + 1);
-                    System.out.println("current lexeme is: " + CurrLexeme);
-                    System.out.println("We're looking at in arg: " + getType);
+//                    System.out.println("current lexeme is: " + CurrLexeme);
+//                    System.out.println("We're looking at in arg: " + getType);
                     //remember which ones we've checked so we don't add them over
                     //and over
                     alreadyChecked.add(CurrLexeme);
 
-                    
                     rememberFunctionType = checkFuncArgs_List.get(compareToArg);
                     String compareTo = checkFuncArgs_List.get(compareToArg);
-                    System.out.println("We want to compare to: " + compareTo);
+//                    System.out.println("We want to compare to: " + compareTo);
+                    if (!compareTo.equals(getType)) {
+                        errorsFound.add("Trying pass argument of type "
+                                + getType + " function " + rememberFunctionName 
+                                + " wanted " + rememberFunctionType);
+                        //add line no corresponding to error
+                        lineNo = parseTokens.get(index + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(index + 2);
+                        errorLocation.add(colNo);
+                    }
                     compareToArg++;
-                    System.out.println("compareToArg = " + compareToArg);
-                    if (compareToArg == checkFuncArgs_List.size()-1) {
+//                    System.out.println("compareToArg = " + compareToArg);
+                    if (compareToArg == checkFuncArgs_List.size() - 1) {
                         ArgCompare = 0;
                         FuncCompare = 1;
                         checkFuncArgs = 0;
-                        System.out.println("\n\n");
+                        rememberFunctionName = "NO_FUNCTION";
+                        rememberFunctionType = "NO_FUNC_TYPE";
+//                        System.out.println("\n\n");
                     }
                 }
                 // we have the print for "found it here"
                 checkFuncArgs_List.clear();
-                ;
                 break;
         }
     }
@@ -185,9 +213,9 @@ public class s_analyzer extends c_a.parser.parser {
                     FuncCompare = 1;
                 } else {
                     FuncCompare = 0;
-                    
+
                 }
-                
+
                 if (rememberTableName.equals("NO_TABLE") && tempList.contains(CurrLexeme)) {
                     rememberFunctionName = CurrLexeme;
                     int getPosition = tempList.indexOf(CurrLexeme);
