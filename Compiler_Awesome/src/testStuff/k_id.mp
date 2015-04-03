@@ -13,9 +13,8 @@ program Program1;
     end; {funct}
 
     begin
-      A := B + B;
       someString := tempfloat;
-      someString := tempfloat;
-      somestring := C;
+      B := A + A;
+      someString := someString;
       Write('A = ', A)
     end.

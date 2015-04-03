@@ -61,6 +61,7 @@ public class parser {
     public static List<String> errorsFound;
     public static String sourceOfError = "";
     public static List<String> errorLocation;
+    static int endOfErrors = 0;
 
     //variables to keep track of error reporting info
 //    static int lookAheadIndex;
@@ -181,7 +182,6 @@ public class parser {
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Get_Lookahead ran over EOF";
-                    //Error();
                     errorsFound.add(sourceOfError);
                     break;
                 }
@@ -210,8 +210,7 @@ public class parser {
 //                System.out.println("skipping: " + peek);
                 index++;
                 if (index > parseTokens.size()) {
-                    sourceOfError = "Advance_Pointer ran over EOF";
-                    //Error();
+                    sourceOfError = "Advance_Pointer ran over EOF";;
                     errorsFound.add(sourceOfError);
                     break;
                 }
@@ -233,13 +232,12 @@ public class parser {
         G_Check = Match("MP_EOF");
         switch (G_Check) {
             case 1:
-                parserWriter.println("rule #1  : TERMINAL");
-
                 if (errorsFound.size() > 0) {
                     Error();
                 } else {
                     Terminate("Program parsed successfully, found MP_EOF");
                 }
+                parserWriter.println("rule #1  : TERMINAL");
                 break;
 
             default:
@@ -263,7 +261,7 @@ public class parser {
 // rule 2
 // <editor-fold defaultstate="collapsed" desc="Program"> 
     public static void Program() {
-
+       
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
         parserWriter.println("rule #2  : expanding");
@@ -1583,16 +1581,6 @@ public class parser {
             Var_Id();
         } else {
             potentialError = "Variable or Function undeclared";
-            //establish index number of lookahead           
-//            lookAheadIndex = parseTokens.indexOf(lookAhead);
-            //add line no corresponding to error
-            lineNo = parseTokens.get(index + 1);
-            errorLocation.add(lineNo);
-
-            //add col no corresponding to error
-            colNo = parseTokens.get(index + 2);
-            errorLocation.add(colNo);
-            parserWriter.println(whichRule + ": expanding");
         }
 
         G_Check = Match("MP_ASSIGN");
@@ -2474,6 +2462,8 @@ public class parser {
      *****************************************************
      3 ERRORS  FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. 
      *****************************************************
+    
+    UPDATE: MAY BE FIXED???
      */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
@@ -2696,8 +2686,10 @@ public class parser {
 
         if (errorsFound.size() <= 20) {
             int errorPlace = 0;
-            for (int i = 0; i < errorsFound.size() - 1; i++) {
+            for (int i = 0; i < errorsFound.size(); i++) {
                 String message = "\033[31mERROR at line " + errorLocation.get(errorPlace)
+                        //errorLocation[ line, col, line, col, ...]
+                        //errorsFound[ message, message, message, ...]
                         + " column " + errorLocation.get(errorPlace + 1) + " in state: "
                         + errorsFound.get(i) + ".\n\033[0m";
                 //while the reader is still open
@@ -2719,9 +2711,9 @@ public class parser {
                     + "CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
             System.out.println("***********************************************"
                     + "******\033[0m");
-            System.exit(0);
+//            System.exit(0);
         }
-
+        endOfErrors = 1;
         Terminate("");
     }
     // </editor-fold>
@@ -2733,8 +2725,11 @@ public class parser {
          * Prints a message before exiting the program 
          */
         if (errorsFound.size() > 0) {
+            if (endOfErrors == 0) {
+                Error();
+            }
             System.out.println("\033[31m*****************************************************");
-            System.out.print("\033[31m" + (errorsFound.size() - 1) + " ERRORS "
+            System.out.print("\033[31m" + (errorsFound.size()) + " ERRORS "
                     + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
             System.out.println("*****************************************************\033[0m");
         } else {

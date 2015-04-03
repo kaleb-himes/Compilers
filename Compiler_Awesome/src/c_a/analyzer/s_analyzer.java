@@ -71,6 +71,7 @@ public class s_analyzer extends c_a.parser.parser {
                     System.out.println("colNo: " + parseTokens.get(index + 2));
                     System.out.println("ERROR: finalType = " + finalType);
                     System.out.println("ERROR: tempType = " + tempType);
+                    
                     errorsFound.add("Trying to assign "
                             + tempType + " to "
                             + finalType);
