@@ -2728,10 +2728,17 @@ public class parser {
             if (endOfErrors == 0) {
                 Error();
             }
-            System.out.println("\033[31m*****************************************************");
-            System.out.print("\033[31m" + (errorsFound.size()) + " ERRORS "
-                    + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
-            System.out.println("*****************************************************\033[0m");
+           if (errorsFound.size() == 1) {
+                System.out.println("\033[31m****************************************************************");
+                System.out.print("\033[31m" + (errorsFound.size()) + " ERROR"
+                        + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
+                System.out.println("****************************************************************\033[0m");
+            } else {
+                System.out.println("\033[31m****************************************************************");
+                System.out.print("\033[31m" + (errorsFound.size()) + " ERRORS"
+                        + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
+                System.out.println("****************************************************************\033[0m");
+            }
         } else {
             System.out.println(message);
             //uncomment to print out the tables for verification purposes
