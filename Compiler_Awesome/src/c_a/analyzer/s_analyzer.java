@@ -14,29 +14,36 @@ import symbol_tables.s_table;
  */
 public class s_analyzer extends c_a.parser.parser {
 
+    static ArrayList<String> checkFuncArgs_List = new ArrayList<>();
+    static String rememberFunctionName = "NO_FUNCTION";
+    static String rememberFunctionType = "NO_FUNC_TYPE";
+    static int FuncCompare = 0;
+    static int ArgCompare = 0;
+    static int compareToArg = 0;
+    static ArrayList<String> alreadyChecked = new ArrayList<>();
+
     public static void analyze_variable() {
-        checkFuncArgs = 0;
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            if (!Functions.contains(parseTokens.get(index + 3))) {
-                CurrLexeme = parseTokens.get(index + 3);
-                Variables.add(CurrLexeme);
+        if (!Functions.contains(parseTokens.get(index + 3))) {
+            CurrLexeme = parseTokens.get(index + 3);
+            Variables.add(CurrLexeme);
 //                System.out.println("Set VarID: " + CurrLexeme);
-            }
+        }
 //##############################################################################
-        ArrayList tempList;     // store a table temporarily for checks
+        ArrayList <String> tempList;     // store a table temporarily for checks
         int foundId = 0;        // equals 1 if ID has been declared already
-        for (int i = lookUpArray.size() - 1; i >= 0; i--) {
+        for (int i = destroyPointer; i >= 0; i--) {
             tempList = s_table.Lookup(lookUpArray.get(i));
 //          System.out.println("Looking in: " + lookUpArray.get(i) + "\nfor: " + CurrLexeme);
             if (!tempList.isEmpty() && tempList.contains(CurrLexeme)) {
 //              System.out.println("Found it here:\n" + tempList);
                 int getType = tempList.indexOf(CurrLexeme) + 1;
-                    //only set final type if it hasn't been set yet. We will
-                //reset it once we seee MP_SCOLON
+                //only set final type if it hasn't been set yet. We will
+                //reset it once we see MP_SCOLON
                 if (finalType.equals("NO_TYPE")) {
-                    finalType = (String) tempList.get(getType);
+                    finalType = tempList.get(getType);
                     tempType = finalType;
 //                  System.out.println("finalType set: " + finalType);
                     //assignee should only be set when type is set as well
@@ -45,7 +52,7 @@ public class s_analyzer extends c_a.parser.parser {
                     foundId = 1;
                     break;
                 } else {
-                    tempType = (String) tempList.get(getType);
+                    tempType = tempList.get(getType);
 //                  System.out.println("tempType set: " + tempType);
                     foundId = 1;
                 }
@@ -64,14 +71,17 @@ public class s_analyzer extends c_a.parser.parser {
             colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
         }
+//        System.out.println("checkFunArgs = " + checkFuncArgs);
+
         switch (checkFuncArgs) {
+
             case 0:
                 if (finalType.compareTo(tempType) != 0) {
-                    System.out.println("lineNo: " + parseTokens.get(index + 1));
-                    System.out.println("colNo: " + parseTokens.get(index + 2));
-                    System.out.println("ERROR: finalType = " + finalType);
-                    System.out.println("ERROR: tempType = " + tempType);
-                    
+//                    System.out.println("lineNo: " + parseTokens.get(index + 1));
+//                    System.out.println("colNo: " + parseTokens.get(index + 2));
+//                    System.out.println("ERROR: finalType = " + finalType);
+//                    System.out.println("ERROR: tempType = " + tempType);
+
                     errorsFound.add("Trying to assign "
                             + tempType + " to "
                             + finalType);
@@ -84,10 +94,61 @@ public class s_analyzer extends c_a.parser.parser {
                     errorLocation.add(colNo);
                 }
                 break;
-            default:
+            case 1:
+                
                 // check the function arguments instead
-                s_table.Lookup(rememberTableName);
+                ArrayList<String> tempList2;
+                //no need to check for empty, we know it's there cause we're
+                //remembering it from when it was added.
+                tempList2 = s_table.Lookup(rememberTableName);
+                int getLocation = tempList2.indexOf(rememberFunctionName);
+                if (!alreadyChecked.contains(CurrLexeme)) {
+                    for (int i = getLocation + 7; i < tempList2.size(); i++) {
+                        if (tempList2.get(i).contains("MP_")) {
+                            checkFuncArgs_List.add(tempList2.get(i));
+//                            System.out.println("Adding: " + tempList2.get(i));
+                        }
+
+                    }
+                }
+                if (FuncCompare == 1 && !alreadyChecked.contains(CurrLexeme)) {
+                    // what we're looking at
+                    System.out.println("current lexeme is: " + CurrLexeme);
+                    System.out.println("We're looking at in function: " + rememberFunctionType);
+                    //remember which ones we've checked so we don't add them over
+                    //and over
+                    alreadyChecked.add(CurrLexeme);
+
+                    int typeLocation = tempList2.indexOf(CurrLexeme);
+                    String getType = tempList2.get(typeLocation + 1);
+                    System.out.println("We want to compare to: " + getType);
+                    ArgCompare = 1;
+                } else if (ArgCompare == 1 && !alreadyChecked.contains(CurrLexeme)) {
+                    // what we're looking at
+                    int typeLocation = tempList2.indexOf(CurrLexeme);
+                    String getType = tempList2.get(typeLocation + 1);
+                    System.out.println("current lexeme is: " + CurrLexeme);
+                    System.out.println("We're looking at in arg: " + getType);
+                    //remember which ones we've checked so we don't add them over
+                    //and over
+                    alreadyChecked.add(CurrLexeme);
+
+                    
+                    rememberFunctionType = checkFuncArgs_List.get(compareToArg);
+                    String compareTo = checkFuncArgs_List.get(compareToArg);
+                    System.out.println("We want to compare to: " + compareTo);
+                    compareToArg++;
+                    System.out.println("compareToArg = " + compareToArg);
+                    if (compareToArg == checkFuncArgs_List.size()-1) {
+                        ArgCompare = 0;
+                        FuncCompare = 1;
+                        checkFuncArgs = 0;
+                        System.out.println("\n\n");
+                    }
+                }
                 // we have the print for "found it here"
+                checkFuncArgs_List.clear();
+                ;
                 break;
         }
     }
@@ -96,37 +157,51 @@ public class s_analyzer extends c_a.parser.parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-            CurrLexeme = parseTokens.get(index + 3);
-            if (!Variables.contains(CurrLexeme)
-                    && !Functions.contains(CurrLexeme)) {
-                FuncName = CurrLexeme;
-                Functions.add(CurrLexeme);
+        CurrLexeme = parseTokens.get(index + 3);
+        if (!Variables.contains(CurrLexeme)
+                && !Functions.contains(CurrLexeme)) {
+            FuncName = CurrLexeme;
+            Functions.add(CurrLexeme);
 //            System.out.println("Set FuncName: " + CurrLexeme + " at line: " + 
 //                    parseTokens.get(index + 1) + " and col: " 
 //                    + parseTokens.get(index + 2));
-            }
+        }
 //##############################################################################
-        ArrayList tempList;     // store a table temporarily for checks
+        ArrayList<String> tempList;     // store a table temporarily for checks
 //      int foundId = 0;        // equals 1 if ID has been declared already
         // Check current table then up so go in reverse order
-        for (int i = lookUpArray.size() - 1; i >= 0; i--) {
+        for (int i = destroyPointer; i >= 0; i--) {
             tempList = s_table.Lookup(lookUpArray.get(i));
 //          System.out.println("Looking in: " + lookUpArray.get(i) + "\nfor: " + CurrLexeme);
             if (!tempList.isEmpty() && tempList.contains(CurrLexeme)) {
 //              System.out.println("Found it here:\n" + tempList);
 //              foundId = 1;
-                
+
                 // set flag so Var_Id knows to check function types instead
+                compareToArg = 0;
+//                System.out.println(parseTokens.get(index));
                 checkFuncArgs = 1;
-                if (rememberTableName.equals("NO_TABLE")) {
-                    rememberTableName = TableName;
+                if (FuncCompare == 0) {
+                    FuncCompare = 1;
+                } else {
+                    FuncCompare = 0;
+                    
+                }
+                
+                if (rememberTableName.equals("NO_TABLE") && tempList.contains(CurrLexeme)) {
+                    rememberFunctionName = CurrLexeme;
+                    int getPosition = tempList.indexOf(CurrLexeme);
+                    rememberFunctionType = tempList.get(getPosition + 1);
+                    rememberTableName = lookUpArray.get(i);
+//                    System.out.println("rememberTableName = " + rememberTableName);
+//                    System.out.println("rememberFunctionName = " + rememberFunctionName);
                 }
 //                System.out.println("Current tableName: " + rememberTableName);
                 int getType = tempList.indexOf(CurrLexeme) + 1;
                 // only set final type if it hasn't been set yet. We will
                 // reset it once we seee MP_SCOLON
                 if (finalType.equals("NO_TYPE")) {
-                    finalType = (String) tempList.get(getType);
+                    finalType = tempList.get(getType);
                     tempType = finalType;
 //                  System.out.println("finalType set: " + finalType);
                     // assignee should only be set when type is set as well
@@ -134,7 +209,7 @@ public class s_analyzer extends c_a.parser.parser {
                     assignee = CurrLexeme;
                     break;
                 } else {
-                    tempType = (String) tempList.get(getType);
+                    tempType = tempList.get(getType);
 //                  System.out.println("tempType set: " + tempType);
                 }
             }
@@ -152,7 +227,7 @@ public class s_analyzer extends c_a.parser.parser {
             colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
         }
-//
+
 //            if (finalType.compareTo(tempType) != 0) {
 //                System.out.println("lineNo: " + parseTokens.get(index + 1));
 //                System.out.println("colNo: " + parseTokens.get(index + 2));

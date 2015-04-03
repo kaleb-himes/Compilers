@@ -13,16 +13,19 @@ import java.util.LinkedHashMap;
  * @author khimes
  */
 public class s_table extends c_a.parser.parser {
+
     public static LinkedHashMap<String, ArrayList<String>> tables;
     static ArrayList<String> Rows;
     static String Previous;
-    
+
     public static void Init_Table() {
         tables = new LinkedHashMap<>();
     }
+
     //create a new table to take on values.
-    public static void New_Table(String TableName, 
-                                            String NestingLevel, String Label) {
+
+    public static void New_Table(String TableName,
+            String NestingLevel, String Label) {
         Rows = new ArrayList<>();
         Rows.add(NestingLevel);
         //set the value to the label currently in use
@@ -36,39 +39,42 @@ public class s_table extends c_a.parser.parser {
      *                inserted
      * @param values: type, kind, mode, size, parameters
      */
-    
+
     /*
      * Example of values: (lexeme)  int, var, null, 4, null
      * Example of values: (lexeme)  null, function, null, null, (a, b, c, mary)
      */
-    public static void Insert_Row(String TableName, String Lexeme, String Token, 
-                             String Type, String Kind, String Mode, String Size, 
-                                                          String[] Parameters) {
-        //add the lexeme
-        tables.get(TableName).add(Lexeme);
-        //add the token
-        tables.get(TableName).add(Token);
-        //add the Type
-        tables.get(TableName).add(Type);
-        //add the Kind
-        tables.get(TableName).add(Kind);
-        //add the Mode
-        tables.get(TableName).add(Mode);
-        //add the Size
-        if (Size.equals("0")) {
-            Size = null;
-        }
-        tables.get(TableName).add(Size);
+    public static void Insert_Row(String TableName, String Lexeme, String Token,
+            String Type, String Kind, String Mode, String Size,
+            String[] Parameters) {
+        if (!Lexeme.equals("")) {
+            //add the lexeme
+            tables.get(TableName).add(Lexeme);
+            //add the token
+            tables.get(TableName).add(Token);
+            //add the Type
+            tables.get(TableName).add(Type);
+            //add the Kind
+            tables.get(TableName).add(Kind);
+            //add the Mode
+            tables.get(TableName).add(Mode);
+            //add the Size
+            if (Size.equals("0")) {
+                Size = null;
+            }
+            tables.get(TableName).add(Size);
         //add Parameters
-        //need to remember how many were added as we iterate over this later
-        for (int i = 0; i < Parameters.length; i++) {
-            if (i < Parameters.length-1)
-                tables.get(TableName).add(Parameters[i]);
-            else
-                tables.get(TableName).add(Parameters[i]+"\n");
+            //need to remember how many were added as we iterate over this later
+            for (int i = 0; i < Parameters.length; i++) {
+                if (i < Parameters.length - 1) {
+                    tables.get(TableName).add(Parameters[i]);
+                } else {
+                    tables.get(TableName).add(Parameters[i] + "\n");
+                }
+            }
         }
     }
-    
+
     //returns the 
 
     /*
@@ -85,20 +91,20 @@ public class s_table extends c_a.parser.parser {
             return empty;
         }
     }
-    
+
     //if record exists in primary HashMap it will be removed.
     public static void Destroy(String name) {
         if (tables.containsKey(name)) {
-            tables.remove(name);
+            destroyPointer--;
         } else {
             System.err.println("Error, table has already been destroyed.");
         }
     }
-    
+
     public static void Print_Tables() {
-        for (String name: tables.keySet()){
-            String value = tables.get(name).toString(); 
-            System.out.println(name + " " + value);
-        } 
+//        for (String name : tables.keySet()) {
+//            String value = tables.get(name).toString();
+//            System.out.println(name + " " + value);
+//        }
     }
 }
