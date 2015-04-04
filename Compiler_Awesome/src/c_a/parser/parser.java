@@ -2695,14 +2695,16 @@ public class parser {
         if (errorsFound.size() <= 20) {
             int errorPlace = 0;
             for (int i = 0; i < errorsFound.size(); i++) {
-                String message = "\033[31mERROR at line " + errorLocation.get(errorPlace)
+                String message1 = "\033[31mERROR at line " + errorLocation.get(errorPlace)
                         //errorLocation[ line, col, line, col, ...]
                         //errorsFound[ message, message, message, ...]
                         + " column " + errorLocation.get(errorPlace + 1) + " in state: "
-                        + errorsFound.get(i) + ".\n\033[0m";
+                        + "\033[0m";
+                String message2 = "\033[31m" + errorsFound.get(i) + ".\n\033[0m";
                 //while the reader is still open
                 System.out.println();
-                System.out.println(message);
+                System.out.println(message1);
+                System.out.println(message2);
                 errorPlace += 2;
             }
         } else {

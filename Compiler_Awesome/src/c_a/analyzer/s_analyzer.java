@@ -128,7 +128,7 @@ public class s_analyzer extends c_a.parser.parser {
                     if (!rememberFunctionType.equals(getType)) {
                         errorsFound.add("Function " + rememberFunctionName + 
                                 " returns a " + rememberFunctionType + 
-                                " you tried to assign this to " + CurrLexeme +
+                                " you tried to assign this to the variable " + CurrLexeme +
                                " which is of type " + getType);
                         //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
@@ -153,9 +153,9 @@ public class s_analyzer extends c_a.parser.parser {
                     String compareTo = checkFuncArgs_List.get(compareToArg);
 //                    System.out.println("We want to compare to: " + compareTo);
                     if (!compareTo.equals(getType)) {
-                        errorsFound.add("Trying pass argument of type "
-                                + getType + " function " + rememberFunctionName 
-                                + " wanted " + rememberFunctionType);
+                        errorsFound.add("Trying to pass argument of type "
+                                + getType + " to function " + rememberFunctionName 
+                                + " which wanted a " + rememberFunctionType);
                         //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);

@@ -12,9 +12,7 @@ program Program1;
         funct := someString;
     end; {funct}
 
-    begin
-      someString := tempfloat;
-      B := A + A;
-      someString := someString;
-      Write('A = ', A)
+    begin {Program 1}
+      A := funct(tempbool, B);
+      Write('A = ', A);
     end.
