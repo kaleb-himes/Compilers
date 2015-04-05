@@ -145,6 +145,14 @@ public class parser {
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
             line = line.trim().replaceAll(" +", " ");
+
+            //if the line is a string, terminate the line with three apostrophes
+            //in a row. This can't exist in the string as provided by the 
+            //scanner, so cannot occur in scanner.out 
+            if (line.contains("MP_STRING_LIT")) {
+                line = line.concat("'''");
+            }
+
             //split the string into tokens using space as the splitter
             StringTokenizer st = new StringTokenizer(line, " ");
             while (st.hasMoreElements()) {
@@ -169,7 +177,6 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Get_Lookahead"> 
     public static void Get_Lookahead() {
         /* Get Look Ahead */
-        /* TODO LOGIC HERE FOR LOOK AHEAD */
         previous = lookAhead;
         if (index < parseTokens.size()) {
             lookAhead = parseTokens.get(index);
@@ -180,7 +187,6 @@ public class parser {
             index += 3;
             lookAhead = parseTokens.get(index);
             while (!lookAhead.contains("}")) {
-//                System.out.println("skipping: " + lookAhead);
                 index++;
                 if (index > parseTokens.size()) {
                     sourceOfError = "Get_Lookahead ran over EOF";
@@ -194,30 +200,38 @@ public class parser {
                 Get_Lookahead();
             }
         }
-//        System.out.println("Lookahead ------------------------------------------->" + lookAhead);
         if (!potentialError.equals("")) {
-//            System.out.println("Potential Error ------------------------------------->" + potentialError);
             potentialError = "";
         }
     }
 // </editor-fold>
-// HEY DUMMIES DON"T FORGET ABOUT THIS (MP_ IN STRING WILL BREAK YOUR SHIT
 // <editor-fold defaultstate="collapsed" desc="Advance_Pointer"> 
 
     public static void Advance_Pointer() {
         if (lookAhead.equals("MP_STRING_LIT")) {
             index += 3;
             String peek = parseTokens.get(index);
-            while (!peek.contains("MP_")) {
-//                System.out.println("skipping: " + peek);
+            //as long as we are not at the last part of the string
+            while (!peek.contains("'''")) {
                 index++;
                 if (index > parseTokens.size()) {
-                    sourceOfError = "Advance_Pointer ran over EOF";;
+                    sourceOfError = "Advance_Pointer ran over EOF";
                     errorsFound.add(sourceOfError);
                     break;
                 }
                 peek = parseTokens.get(index);
             }
+            
+            //if we are at the last part of the string, update parseTokens to 
+            //remove the ''' we added. If we are at the last part of the string,
+            //we know a token will be next. 
+            if (peek.contains("'''")) {
+              parseTokens.add(index, parseTokens.get(index).substring(0, parseTokens.get(index).length() - 3));
+              index++;
+            }
+            
+            index++;
+            peek = parseTokens.get(index);
         } else {
             index += 4;
         }
@@ -263,7 +277,7 @@ public class parser {
 // rule 2
 // <editor-fold defaultstate="collapsed" desc="Program"> 
     public static void Program() {
-       
+
         // 2. Program -> Prog_Head MP_SCOLON Block MP_PERIOD
         //precondition
         parserWriter.println("rule #2  : expanding");
@@ -278,8 +292,8 @@ public class parser {
                 G_Check = Match("MP_PERIOD");
                 //we do want to fall through here, to evaluate second G_Check
                 if (G_Check == 1) {
-                    destroyPointer --;
-                    NestingLevel --;
+                    destroyPointer--;
+                    NestingLevel--;
                     parserWriter.println("rule #2  : TERMINAL");
                     Advance_Pointer();
                     break;
@@ -697,7 +711,7 @@ public class parser {
 //                        if (!TableName.equals("Tester"))
 //                        System.out.println("Destroyed table: " +TableName);
                         destroyPointer--;
-                        NestingLevel --;
+                        NestingLevel--;
                         TableName = lookUpArray.get(destroyPointer);
 //                        System.out.println("Table is now: " +TableName);
 
@@ -795,10 +809,10 @@ public class parser {
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
 //                        System.out.println("Destroyed table: " +TableName);
-                        destroyPointer --;
-                        NestingLevel --;
+                        destroyPointer--;
+                        NestingLevel--;
                         TableName = lookUpArray.get(destroyPointer);
-                        
+
                         Mode = "";
 //                        System.out.println("Table is now: " +TableName);
 
@@ -2471,7 +2485,7 @@ public class parser {
      3 ERRORS  FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. 
      *****************************************************
     
-    UPDATE: MAY BE FIXED???
+     UPDATE: MAY BE FIXED???
      */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
@@ -2738,7 +2752,7 @@ public class parser {
             if (endOfErrors == 0) {
                 Error();
             }
-           if (errorsFound.size() == 1) {
+            if (errorsFound.size() == 1) {
                 System.out.println("\033[31m****************************************************************");
                 System.out.print("\033[31m" + (errorsFound.size()) + " ERROR"
                         + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
