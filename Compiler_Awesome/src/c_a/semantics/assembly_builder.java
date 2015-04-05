@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
  * @author khimes
  */
 public class assembly_builder {
-    static PrintWriter assemblyWriter;
+    public static PrintWriter assemblyWriter;
     
     public static void init_assembly_writer() 
                     throws FileNotFoundException, UnsupportedEncodingException {

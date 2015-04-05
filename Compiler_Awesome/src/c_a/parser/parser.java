@@ -37,6 +37,7 @@ import c_a.semantics.s_analyzer;
 import static c_a.fileReader.file_reader.reader;
 import static c_a.semantics.assembly_builder.close_assembly_writer;
 import static c_a.semantics.assembly_builder.init_assembly_writer;
+import static c_a.semantics.assembly_builder.assemblyWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
