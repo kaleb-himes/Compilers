@@ -35,6 +35,8 @@ package c_a.parser;
 
 import c_a.semantics.s_analyzer;
 import static c_a.fileReader.file_reader.reader;
+import static c_a.semantics.assembly_builder.close_assembly_writer;
+import static c_a.semantics.assembly_builder.init_assembly_writer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import symbol_tables.s_table;
-import static symbol_tables.s_table.tables;
 
 /**
  *
@@ -111,6 +112,12 @@ public class parser {
 
         //initialize the parserWriter for parse tree generation
         parserWriter = new PrintWriter("src/parser_resources/parser.out", "UTF-8");
+        /*
+         * if you get an error from this line, right-click 
+         * "Source Packages -> New -> Java Package", name it "semantic_resources"
+         * right-click semantic_resouces -> New -> Empty File, name it "assembly.il"
+         */
+        init_assembly_writer();
 
         /* 
          * Re-initialize the file reader to read from our scanner output file
@@ -2769,6 +2776,7 @@ public class parser {
              */
         }
         parserWriter.close();
+        close_assembly_writer();
 
         System.exit(0);
     }
