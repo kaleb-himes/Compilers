@@ -33,7 +33,7 @@
  */
 package c_a.parser;
 
-import c_a.analyzer.s_analyzer;
+import c_a.semantics.s_analyzer;
 import static c_a.fileReader.file_reader.reader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
