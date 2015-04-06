@@ -1,1 +1,17 @@
+READ_ASSIGN -> Apples
+Apples
+PUSH #0
+Cost
+ASSIGN-TO
+Apples
 MULTIPLY
+PUSH #5
+WRITE_OUT -> Cost
+Cost
+ASSIGN-TO
+Apples
+MULTIPLY
+PUSH #7
+WRITE_OUT -> Cost
+POP D0
+HLT

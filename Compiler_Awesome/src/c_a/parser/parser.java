@@ -1458,6 +1458,7 @@ public class parser {
     public static void Read_Param() {
         // 48. Read_Param -> Var_Id
         parserWriter.println("rule #48 : expanding");
+        assemblyWriter.print("READ_ASSIGN -> ");
         Var_Id();
     }
 // </editor-fold>
@@ -1474,10 +1475,12 @@ public class parser {
             if (G_Check == 1) {
                 whichWrite = 2;
                 parserWriter.println("rule #50 : TERMINAL");
+                assemblyWriter.print("WRITE_LINE -> ");
             }
         } else {
             whichWrite = 1;
             parserWriter.println("rule #49 : TERMINAL");
+            assemblyWriter.print("WRITE_OUT -> ");
         }
         switch (G_Check) {
             case 1:
@@ -1616,6 +1619,7 @@ public class parser {
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
+                assemblyWriter.println("ASSIGN-TO");
                 parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
                 parserWriter.println(whichRule + ": expanding");
@@ -2227,6 +2231,7 @@ public class parser {
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
+                assemblyWriter.println("PLUS");
                 parserWriter.println("rule #88: TERMINAL");
                 Advance_Pointer();
                 return 0;
@@ -2234,6 +2239,7 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
+                        assemblyWriter.println("MINUS");
                         parserWriter.println("rule #89: TERMINAL");
                         Advance_Pointer();
                         return 0;
@@ -2241,6 +2247,7 @@ public class parser {
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
                             case 1:
+                                assemblyWriter.println("OR");
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
@@ -2354,9 +2361,13 @@ public class parser {
         G_Check = Match("MP_INTEGER_LIT");
         if (lookAhead.equals("MP_INTEGER_LIT")) {
             parserWriter.println("rule #99: TERMINAL");
+            CurrLexeme = parseTokens.get(index + 3);
+            assemblyWriter.println("PUSH #" + CurrLexeme);
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FLOAT")) {
             parserWriter.println("rule #100: TERMINAL");
+            CurrLexeme = parseTokens.get(index + 3);
+            assemblyWriter.println(CurrLexeme);
             Advance_Pointer();
         } else if (lookAhead.equals("MP_STRING_LIT")) {
             parserWriter.println("rule #101: TERMINAL");
@@ -2769,6 +2780,7 @@ public class parser {
              * if printing them out for verification purposes and testing.
              */
         }
+        assemblyWriter.print("POP D0\nHLT\n");
         parserWriter.close();
         close_assembly_writer();
 

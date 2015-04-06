@@ -8,11 +8,11 @@ program Program1;
     function funct(somefloat: float; somebool: Boolean) : Integer;
     begin {funct}
         read(someInt);
-        write('found the Integer');
+        write('found the Integer MP_INTEGER and'' some other stuff ');
         funct := someInt;
     end; {funct}
 
     begin {Program 1}
-      A := funct(B, tempbool) * A;
+      A := funct(B, tempbool) * A + someInt - 3;
       Write('A = ', A);
     end.

@@ -5,6 +5,7 @@
  */
 package c_a.semantics;
 
+import static c_a.semantics.assembly_builder.assemblyWriter;
 import java.util.ArrayList;
 import symbol_tables.s_table;
 
@@ -28,6 +29,7 @@ public class s_analyzer extends c_a.parser.parser {
 //##############################################################################
         if (!Functions.contains(parseTokens.get(index + 3))) {
             CurrLexeme = parseTokens.get(index + 3);
+            assemblyWriter.println(CurrLexeme);
             Variables.add(CurrLexeme);
 //                System.out.println("Set VarID: " + CurrLexeme);
         }
@@ -189,6 +191,7 @@ public class s_analyzer extends c_a.parser.parser {
         if (!Variables.contains(CurrLexeme)
                 && !Functions.contains(CurrLexeme)) {
             FuncName = CurrLexeme;
+            assemblyWriter.println(CurrLexeme);
             Functions.add(CurrLexeme);
 //            System.out.println("Set FuncName: " + CurrLexeme + " at line: " + 
 //                    parseTokens.get(index + 1) + " and col: " 
