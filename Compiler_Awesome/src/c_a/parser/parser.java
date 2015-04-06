@@ -2293,13 +2293,15 @@ public class parser {
         G_Check = Match("MP_TIMES");
         switch (G_Check) {
             case 1:
+                assemblyWriter.print("MULTIPLY\n");
                 parserWriter.println("rule #94: TERMINAL");
                 Advance_Pointer();
                 return 0;
             default:
-                G_Check = Match("MP_FORWARD_SLASH");
+                G_Check = Match("MP_FORWARD_SLASH\n");
                 switch (G_Check) {
                     case 1:
+                        assemblyWriter.print("FORWARD_SLASH\n");
                         parserWriter.println("rule #95: TERMINAL");
                         Advance_Pointer();
                         return 0;
@@ -2307,6 +2309,7 @@ public class parser {
                         G_Check = Match("MP_DIV");
                         switch (G_Check) {
                             case 1:
+                                assemblyWriter.print("DIVIDE\n");
                                 parserWriter.println("rule #96: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
@@ -2314,6 +2317,7 @@ public class parser {
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
                                     case 1:
+                                        assemblyWriter.print("MODULUS\n");
                                         parserWriter.println("rule #97: TERMINAL");
                                         Advance_Pointer();
                                         return 0;
@@ -2321,6 +2325,7 @@ public class parser {
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
                                             case 1:
+                                                assemblyWriter.print("AND");
                                                 parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
                                                 return 0;
