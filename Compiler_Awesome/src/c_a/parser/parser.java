@@ -2465,35 +2465,9 @@ public class parser {
     }
 // </editor-fold>
 
-    //// HEY DUMMIES THIS RULE HAS A SPECIAL EDGE CASE DEFINITION FOLLOWS:
-    /* Should produce 4 errors, only 3 are seen. FIX SOMEDAY MAYBE????
-    
-     program Program1;
-     var B : integer;
-     X : String;
-     A : Float;
-     begin
-     B := X + A;   {error1 and error 2}
-     A := B;       {error3}
-
-     B := A + B + B; {error4}
-
-     Write('B = ', B)
-     end.
-
-     ERROR at line 6 column 14 in state: Trying to assign MP_STRING to MP_INTEGER.
-
-
-     ERROR at line 6 column 17 in state: Trying to assign MP_FLOAT to MP_INTEGER.
-
-
-     ERROR at line 7 column 13 in state: Trying to assign MP_INTEGER to MP_FLOAT.
-
-     *****************************************************
-     3 ERRORS  FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. 
-     *****************************************************
-    
-     UPDATE: MAY BE FIXED???
+    /*
+     * Thanks to Tabitha's catch on array bounds this "hey dummies" no longer
+     * applies. Thank you Tabitha.
      */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
