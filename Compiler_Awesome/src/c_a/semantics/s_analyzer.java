@@ -21,15 +21,18 @@ public class s_analyzer extends c_a.parser.parser {
     static int FuncCompare = 0;
     static int ArgCompare = 0;
     static int compareToArg = 0;
+    public static int Offset = 0;  //rather than incrementing, grab offset out of S-table and register is the nexting level
     static ArrayList<String> alreadyChecked = new ArrayList<>();
 
     public static void analyze_variable() {
+        assemblyWriter.print(Offset + "(" + currRegister + ") ");
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
         if (!Functions.contains(parseTokens.get(index + 3))) {
             CurrLexeme = parseTokens.get(index + 3);
-            assemblyWriter.println(CurrLexeme);
+            assemblyWriter.println("                ;" + CurrLexeme);
+            Offset++;
             Variables.add(CurrLexeme);
 //                System.out.println("Set VarID: " + CurrLexeme);
         }

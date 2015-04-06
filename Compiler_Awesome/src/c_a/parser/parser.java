@@ -56,8 +56,10 @@ public class parser {
     static String lookAhead = "";
     static String previous = "";
     public static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
-            expMark, simpExpMark, G_Check;
+            expMark, simpExpMark, G_Check, whichWrite;
     public static List<String> parseTokens;
+    public static String currRegister;
+    public static int registerDepth;
 
     //keep track of all errors found while parsing program
     public static List<String> errorsFound;
@@ -81,7 +83,7 @@ public class parser {
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
-    public static String TableName, ProcName, FuncName, Label_1 = "L";
+    public static String TableName, ProcName, FuncName, Label_1 = "D";
     static int NestingLevel, Label_2;
     public static String CurrLexeme, Type, Kind, Mode, CurrToken;
     static String[] Parameters;
@@ -1458,7 +1460,7 @@ public class parser {
     public static void Read_Param() {
         // 48. Read_Param -> Var_Id
         parserWriter.println("rule #48 : expanding");
-        assemblyWriter.print("READ_ASSIGN -> ");
+        assemblyWriter.print("RD ");
         Var_Id();
     }
 // </editor-fold>
@@ -1468,19 +1470,17 @@ public class parser {
     public static void Write_Statement() {
         // 49. Write_Statement -> MP_WRITE_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
         // 50. Write_Statement -> MP_WRITELN_WORD MP_LPAREN Write_Param Write_Param_Tail MP_RPAREN
-        int whichWrite = 0;
+        whichWrite = 0;
         G_Check = Match("MP_WRITE");
         if (G_Check == 0) {
             G_Check = Match("MP_WRITELN");
             if (G_Check == 1) {
                 whichWrite = 2;
                 parserWriter.println("rule #50 : TERMINAL");
-                assemblyWriter.print("WRITE_LINE -> ");
             }
         } else {
             whichWrite = 1;
             parserWriter.println("rule #49 : TERMINAL");
-            assemblyWriter.print("WRITE_OUT -> ");
         }
         switch (G_Check) {
             case 1:
@@ -1593,6 +1593,11 @@ public class parser {
     public static void Write_Param() {
         // 53. Write_Param -> Ordinal_Expression
         parserWriter.println("rule #53 : expanding");
+        if (whichWrite == 1) {
+            assemblyWriter.print("WRT -> ");
+        } else {
+            assemblyWriter.print("WRTLN -> ");
+        }
         Ordinal_Expression();
     }
 // </editor-fold>
@@ -2137,21 +2142,27 @@ public class parser {
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
+            assemblyWriter.println("EQUALS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
+            assemblyWriter.println("LESS_THAN");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
+            assemblyWriter.println("GREATER_THAN");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
+            assemblyWriter.println("LESS_THAN_OR_EQUAL_TO");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
+            assemblyWriter.println("GREATER_THAN_OR_EQUAL_TO");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
+            assemblyWriter.println("NOT_EQUAL");
             Advance_Pointer();
         } else {
             return -1;
@@ -2464,6 +2475,8 @@ public class parser {
             lookUpArray.add(TableName);
 //##############################################################################
             parserWriter.println("rule #107: TERMINAL");
+            assemblyWriter.println("PUSH " + registerDepth);
+            assemblyWriter.println("PUSH SP");
             Advance_Pointer();
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2690,6 +2703,8 @@ public class parser {
                 } //end case Identifier
                 break;
             default:
+                int tempSize = listIDs.size();
+                assemblyWriter.println("ADD SP #" + tempSize + " SP");
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
         } //end case Comma
