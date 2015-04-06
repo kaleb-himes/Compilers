@@ -1,17 +1,17 @@
-READ_ASSIGN -> Apples
-Apples
-PUSH #0
-Cost
+funct
+READ_ASSIGN -> someInt
+WRITE_OUT -> ASSIGN-TO
+someInt
+A
 ASSIGN-TO
-Apples
+B
+tempbool
 MULTIPLY
-PUSH #5
-WRITE_OUT -> Cost
-Cost
-ASSIGN-TO
-Apples
-MULTIPLY
-PUSH #7
-WRITE_OUT -> Cost
+A
+PLUS
+someInt
+MINUS
+PUSH #3
+WRITE_OUT -> A
 POP D0
 HLT
