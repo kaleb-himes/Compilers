@@ -1,16 +1,10 @@
-program Program3;
-  var Sum : Integer;
-      I: Integer;
-      N : Integer;
-
-    begin 
-        read(N);
-        I := 1;
-        Sum := 0;
-
-    while (I <= N) or (I > 100) do begin
-      Sum := Sum + I;
-      I := I + 1;
-      Write (I, Sum)
-      end
-    end.
+program Program2;
+  var Apples : integer;
+    Fred : integer;
+    X : integer;
+  begin
+    Apples := 0;
+    X := 10;
+    Fred := Apples + Apples * X;
+    Write('Apples = ', Apples, '; X = ', X,' and Fred = ', Fred)
+  end.

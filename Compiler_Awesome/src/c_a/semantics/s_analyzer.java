@@ -25,7 +25,9 @@ public class s_analyzer extends c_a.parser.parser {
     static ArrayList<String> alreadyChecked = new ArrayList<>();
 
     public static void analyze_variable() {
-        assemblyWriter.print(Offset + "(" + currRegister + ") ");
+        //currRegister = s_table.getOffset();
+        
+        assemblyWriter.print(Offset + "(" + "D0" + ") ");
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################

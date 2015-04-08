@@ -1,33 +1,22 @@
-PUSH 0
-PUSH SP
+MOV SP D0
 ADD SP #1 SP
 ADD SP #1 SP
 ADD SP #1 SP
-RD 0(null)                 ;N
-1(null)                 ;I
-ASSIGN-TO
-PUSH #1
-2(null)                 ;Sum
+0(D0)                 ;Apples
 ASSIGN-TO
 PUSH #0
-3(null)                 ;I
-LESS_THAN_OR_EQUAL_TO
-4(null)                 ;N
-OR
-5(null)                 ;I
-GREATER_THAN
-PUSH #100
-6(null)                 ;Sum
+1(D0)                 ;X
 ASSIGN-TO
-7(null)                 ;Sum
-PLUS
-8(null)                 ;I
-9(null)                 ;I
+PUSH #10
+2(D0)                 ;Fred
 ASSIGN-TO
-10(null)                 ;I
+3(D0)                 ;Apples
 PLUS
-PUSH #1
-WRT -> 11(null)                 ;I
-WRT -> 12(null)                 ;Sum
+4(D0)                 ;Apples
+MULTIPLY
+5(D0)                 ;X
+WRT -> WRT -> 6(D0)                 ;Apples
+WRT -> WRT -> 7(D0)                 ;X
+WRT -> WRT -> 8(D0)                 ;Fred
 POP D0
 HLT

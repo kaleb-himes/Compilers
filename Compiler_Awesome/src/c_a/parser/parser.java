@@ -58,8 +58,6 @@ public class parser {
     public static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
             expMark, simpExpMark, G_Check, whichWrite;
     public static List<String> parseTokens;
-    public static String currRegister;
-    public static int registerDepth;
 
     //keep track of all errors found while parsing program
     public static List<String> errorsFound;
@@ -83,7 +81,7 @@ public class parser {
 //##############################################################################
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
-    public static String TableName, ProcName, FuncName, Label_1 = "D";
+    public static String TableName, ProcName, FuncName, Label_1 = "L";
     static int NestingLevel, Label_2;
     public static String CurrLexeme, Type, Kind, Mode, CurrToken;
     static String[] Parameters;
@@ -554,7 +552,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 4;
+                Size++;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
@@ -569,7 +567,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 1;
+                Size++;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
@@ -584,7 +582,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 1;
+                Size++;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
@@ -599,7 +597,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size = 1;
+                Size++;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
@@ -2475,8 +2473,9 @@ public class parser {
             lookUpArray.add(TableName);
 //##############################################################################
             parserWriter.println("rule #107: TERMINAL");
-            assemblyWriter.println("PUSH " + registerDepth);
-            assemblyWriter.println("PUSH SP");
+            //reisterDept = s_table.getNestingLevel();
+//            assemblyWriter.println("PUSH " + registerDepth);
+            assemblyWriter.println("MOV SP D0");
             Advance_Pointer();
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;

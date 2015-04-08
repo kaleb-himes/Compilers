@@ -102,9 +102,16 @@ public class s_table extends c_a.parser.parser {
     }
 
     public static void Print_Tables() {
-//        for (String name : tables.keySet()) {
-//            String value = tables.get(name).toString();
-//            System.out.println(name + " " + value);
-//        }
+        for (String name : tables.keySet()) {
+            String value = tables.get(name).toString();
+            System.out.println(name + " " + value);
+        }
+    }
+    
+    public static void Get_Offset(String TableName, String Variable){
+        if (tables.containsKey(TableName)) {
+            int getVal = tables.get(TableName).indexOf(Variable);
+            String result = tables.get(TableName).get(getVal);
+        }
     }
 }
