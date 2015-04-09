@@ -108,10 +108,18 @@ public class s_table extends c_a.parser.parser {
         }
     }
     
-    public static void Get_Offset(String TableName, String Variable){
+    public static String Get_Offset(String TableName, String Variable){
+//        System.out.println("TableName = " + TableName);
+        System.out.println("Variable = " + Variable);
+        String result = "DEFAULT";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Variable);
-            String result = tables.get(TableName).get(getVal);
+//            System.out.println("getVal = " + getVal);
+            if (getVal != -1) {
+                result = tables.get(TableName).get(getVal+5);
+            }
+            System.out.println("result = " + result);
         }
+        return result;
     }
 }

@@ -104,6 +104,7 @@ public class parser {
     public static String rememberTableName = "NO_TABLE";
     public static int comingFromRead = 0;
     public static int comingFromWrite = 0;
+    public static int comingFromFactor_NotFuncOrVar = 0;
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -145,6 +146,7 @@ public class parser {
         ProcName = "";
         FuncName = "";
         dynamicParams.add("");
+        Size = 0;
         //initialize Parameters to empty set, update as needed
         init[0] = "NO_PARAMS";
         Parameters = init;
@@ -2371,24 +2373,30 @@ public class parser {
         if (lookAhead.equals("MP_INTEGER_LIT")) {
             parserWriter.println("rule #99: TERMINAL");
             CurrLexeme = parseTokens.get(index + 3);
-            assemblyWriter.println("PUSH #" + CurrLexeme);
+            assemblyWriter.println("#" + CurrLexeme);
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FLOAT")) {
             parserWriter.println("rule #100: TERMINAL");
             CurrLexeme = parseTokens.get(index + 3);
             assemblyWriter.println(CurrLexeme);
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_STRING_LIT")) {
             parserWriter.println("rule #101: TERMINAL");
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_TRUE")) {
             parserWriter.println("rule #102: TERMINAL");
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FALSE")) {
             parserWriter.println("rule #103: TERMINAL");
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NOT")) {
             parserWriter.println("rule #104: TERMINAL");
+            comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LPAREN")) {
             parserWriter.println("rule #105: TERMINAL");
