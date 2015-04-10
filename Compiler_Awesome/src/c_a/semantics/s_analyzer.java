@@ -25,14 +25,11 @@ public class s_analyzer extends c_a.parser.parser {
     static ArrayList<String> alreadyChecked = new ArrayList<>();
 
     public static void analyze_variable() {
-            Offset = s_table.Get_Offset(TableName, CurrLexeme);
-            assemblyWriter.print(Offset + "(" + "D0" + ") ");
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
         if (!Functions.contains(parseTokens.get(index + 3))) {
             CurrLexeme = parseTokens.get(index + 3);
-            assemblyWriter.println("                ;" + CurrLexeme);
             Variables.add(CurrLexeme);
 //                System.out.println("Set VarID: " + CurrLexeme);
         }

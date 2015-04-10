@@ -35,9 +35,10 @@ package c_a.parser;
 
 import c_a.semantics.s_analyzer;
 import static c_a.fileReader.file_reader.reader;
+import static c_a.semantics.assembly_builder.assemblyWriter;
 import static c_a.semantics.assembly_builder.close_assembly_writer;
 import static c_a.semantics.assembly_builder.init_assembly_writer;
-import static c_a.semantics.assembly_builder.assemblyWriter;
+import static c_a.semantics.s_analyzer.Offset;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -105,6 +106,7 @@ public class parser {
     public static int comingFromRead = 0;
     public static int comingFromWrite = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
+    public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1624,7 +1626,8 @@ public class parser {
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
-                assemblyWriter.println("ASSIGN-TO");
+                lineOfAssemblyCode.add("MOV ");
+//                assemblyWriter.println("ASSIGN-TO");
                 parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
                 parserWriter.println(whichRule + ": expanding");
@@ -2360,6 +2363,7 @@ public class parser {
 // rules 99, 100, 101, 102, 103, 104, 105, 106 and 116   
 // <editor-fold defaultstate="collapsed" desc="Factor">
     public static void Factor() {
+        ArrayList<String> tempList = new ArrayList<>();
         // 99.  Factor -> MP_INTEGER_LIT (unsigned int)
         // 100. Factor -> MP_FLOAT   (unsigned float) MP_FLOAT_LIT?
         // 101. Factor -> MP_STRING_LIT
@@ -2373,7 +2377,13 @@ public class parser {
         if (lookAhead.equals("MP_INTEGER_LIT")) {
             parserWriter.println("rule #99: TERMINAL");
             CurrLexeme = parseTokens.get(index + 3);
-            assemblyWriter.println("#" + CurrLexeme);
+            Add_To_Line_Of_Assembly_Code("#" + CurrLexeme + " ");
+            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                assemblyWriter.print(lineOfAssemblyCode.get(i));
+            }
+            assemblyWriter.println();
+            lineOfAssemblyCode.clear();
+            
             comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_FLOAT")) {
@@ -2522,6 +2532,12 @@ public class parser {
             s_analyzer.analyze_variable();
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             parserWriter.println("rule #108: TERMINAL");
+            Offset = s_table.Get_Offset(TableName, CurrLexeme);
+            lineOfAssemblyCode.add(Offset + "(" + "D0" + ") ");
+            lineOfAssemblyCode.add("                ;" + CurrLexeme);
+            
+//            assemblyWriter.print(Offset + "(" + "D0" + ") ");
+//            assemblyWriter.println("                ;" + CurrLexeme);
             Advance_Pointer();
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2837,4 +2853,29 @@ public class parser {
     }
 // </editor-fold>
 
+    static void Add_To_Line_Of_Assembly_Code (String in) {
+        //A method that takes the current string "in" and places it at the front
+        //of the line of assembly code
+        ArrayList<String> tempList = new ArrayList<>();
+        tempList.add(in);
+        int containsMov = 0;
+        for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+            String lookingAt = lineOfAssemblyCode.get(i);
+            if (lookingAt.equals("MOV ")) {
+                containsMov = 1;
+            }
+            tempList.add(lookingAt);
+        }
+        lineOfAssemblyCode.clear();
+        if (containsMov == 1) {
+            lineOfAssemblyCode.add("MOV ");
+        }
+        for (int i = 0; i < tempList.size(); i++) {
+            String lookingAt = tempList.get(i);
+            if (!lookingAt.equals("MOV ")) {
+                lineOfAssemblyCode.add(lookingAt);
+            }
+        }
+        tempList.clear();
+    }
 }
