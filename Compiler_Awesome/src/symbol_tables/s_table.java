@@ -123,7 +123,7 @@ public class s_table extends c_a.parser.parser {
         return result;
     }
     
-       public static String Get_NestingLevel(String TableName, String Variable){
+       public static String Get_NestingLevel(String TableName){
         String getVal = "DEFAULT";
         
         if (tables.containsKey(TableName)) {
