@@ -1266,7 +1266,7 @@ public class parser {
             parserWriter.println("rule #39 : expanding");
             If_Statement();
         } // 40. Statement -> While_Statement
-        else if (lookAhead.equals("MP_WHILE")) {
+        else if (lookAhead.equals("MP_WHAssign_SILE")) {
             parserWriter.println("rule #40 : expanding");
             While_Statement();
         } // 41. Statement -> Repeat_Statement
@@ -2393,6 +2393,8 @@ public class parser {
             //reisterDept = s_table.getNestingLevel();
 //            assemblyWriter.println("PUSH " + registerDepth);
             assemblyWriter.println("MOV SP D0");
+            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName, assignee) + ")");
+            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
             Advance_Pointer();
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2409,8 +2411,8 @@ public class parser {
 // </editor-fold>
 
     /*
-     * Thanks to Tabitha's catch on array bounds this "hey dummies" no longer
-     * applies. Thank you Tabitha.
+     * Thanks to Tabetha's catch on array bounds this "hey dummies" no longer
+     * applies. Thank you Tabetha.
      */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
@@ -2431,10 +2433,11 @@ public class parser {
             parserWriter.println("rule #108: TERMINAL");
             Offset = s_table.Get_Offset(TableName, CurrLexeme);
             lineOfAssemblyCode.add(Offset + "(" + "D0" + ") ");
-            lineOfAssemblyCode.add("                ;" + CurrLexeme);
-            
-//            assemblyWriter.print(Offset + "(" + "D0" + ") ");
-//            assemblyWriter.println("                ;" + CurrLexeme);
+            //adds comment, to make assembly code clearer
+            lineOfAssemblyCode.add("                ;" + CurrLexeme + "\n");
+            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName, assignee) + ")");
+            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
+
             Advance_Pointer();
         } else {
             sourceOfError = "Var_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2467,6 +2470,9 @@ public class parser {
 //            System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
+            
+            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName, assignee) + ")");
+            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
             Advance_Pointer();
         } else {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2496,6 +2502,8 @@ public class parser {
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
             parserWriter.println("rule #110: TERMINAL");
+            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName, assignee) + ")");
+            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
             Advance_Pointer();
         } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2509,7 +2517,7 @@ public class parser {
             errorLocation.add(colNo);
         }
     }
-// </editor-fold>
+// </editor-fold>            lineOfAssemblyCode.add("PUSH ");
 
 // rule 111
 // <editor-fold defaultstate="collapsed" desc="Boolean_Expression">
@@ -2636,7 +2644,7 @@ public class parser {
             for (int i = 0; i < errorsFound.size(); i++) {
                 String message1 = "\033[31mERROR at line " + errorLocation.get(errorPlace)
                         //errorLocation[ line, col, line, col, ...]
-                        //errorsFound[ message, message, message, ...]
+                        //errorsFound message, message, message, ...]
                         + " column " + errorLocation.get(errorPlace + 1) + " in state: "
                         + "\033[0m";
                 String message2 = "\033[31m" + errorsFound.get(i) + ".\n\033[0m";
@@ -2750,20 +2758,28 @@ public class parser {
         ArrayList<String> tempList = new ArrayList<>();
         tempList.add(in);
         int containsMov = 0;
+        int containsPush = 0;
         for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
             String lookingAt = lineOfAssemblyCode.get(i);
             if (lookingAt.equals("MOV ")) {
                 containsMov = 1;
+            } //MT added, remove if wrong
+            else if (lookingAt.equals("PUSH ")) {
+                containsPush = 1;
             }
+                        
             tempList.add(lookingAt);
         }
         lineOfAssemblyCode.clear();
         if (containsMov == 1) {
             lineOfAssemblyCode.add("MOV ");
+        } //MT added, remove if wrong
+        else if (containsPush == 1) {
+            lineOfAssemblyCode.add("PUSH ");
         }
         for (int i = 0; i < tempList.size(); i++) {
             String lookingAt = tempList.get(i);
-            if (!lookingAt.equals("MOV ")) {
+            if (!lookingAt.equals("MOV ") || !lookingAt.equals("PUSH ")) {
                 lineOfAssemblyCode.add(lookingAt);
             }
         }

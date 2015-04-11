@@ -10,38 +10,6 @@ import java.io.IOException;
  */
 public class Dispatcher {
 
-//    public static final String MP_AND = "and";
-//    public static final String MP_BEGIN = "begin";
-//    public static final String MP_BOOLEAN = "Boolean";
-//    public static final String MP_DIV = "div";
-//    public static final String MP_DO = "do";
-//    public static final String MP_DOWNTO = "downto";
-//    public static final String MP_ELSE = "else";
-//    public static final String MP_END = "end";
-//    public static final String MP_FALSE = "false";
-//    public static final String MP_FIXED = "fixed";
-//    public static final String MP_FLOAT = "float";
-//    public static final String MP_FOR = "for";
-//    public static final String MP_FUNCTION = "function";
-//    public static final String MP_IF = "if";
-//    public static final String MP_INTEGER = "integer";
-//    public static final String MP_MOD = "mod";
-//    public static final String MP_NOT = "not";
-//    public static final String MP_OR = "or";
-//    public static final String MP_PROCEDURE = "procedure";
-//    public static final String MP_PROGRAM = "program";
-//    public static final String MP_READ = "read";
-//    public static final String MP_REPEAT = "repeat";
-//    public static final String MP_STRING = "string";
-//    public static final String MP_THEN = "then";
-//    public static final String MP_TRUE = "true";
-//    public static final String MP_TO = "to";
-//    public static final String MP_TYPE = "type";
-//    public static final String MP_UNTIL = "until";
-//    public static final String MP_VAR = "var";
-//    public static final String MP_WHILE = "while";
-//    public static final String MP_WRITE = "write";
-//    public static final String MP_WRITELN = "writeln";
     public static final String MP_ASSIGN = ":=";
     public static final String MP_COLON = ":";
     public static final String MP_COMMA = ",";

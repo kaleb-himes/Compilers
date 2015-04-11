@@ -122,4 +122,16 @@ public class s_table extends c_a.parser.parser {
         }
         return result;
     }
+    
+       public static String Get_NestingLevel(String TableName, String Variable){
+        String getVal = "DEFAULT";
+        
+        if (tables.containsKey(TableName)) {
+            getVal = tables.get(TableName).get(0);
+
+        }
+
+        return getVal;
+    }
+    
 }

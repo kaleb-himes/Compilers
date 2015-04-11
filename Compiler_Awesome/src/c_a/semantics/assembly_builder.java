@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Prints out the microPascal assembly code generated in s_analyzer to an 
+ * output file. 
  */
 package c_a.semantics;
 
@@ -21,13 +20,10 @@ public class assembly_builder {
         
         assemblyWriter = new PrintWriter("src/semantic_resources/assembly.il", "UTF-8");
         //a test printout
-//        assemblyWriter.println("Test printout");
-        
+//        assemblyWriter.println("Test printout");     
     }
     
     public static void close_assembly_writer() {
         assemblyWriter.close();
-    }
-    
-    
+    }  
 }

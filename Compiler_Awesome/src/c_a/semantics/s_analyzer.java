@@ -21,7 +21,8 @@ public class s_analyzer extends c_a.parser.parser {
     static int FuncCompare = 0;
     static int ArgCompare = 0;
     static int compareToArg = 0;
-    public static String Offset;  //rather than incrementing, grab offset out of S-table and register is the nexting level
+    //grabs offset out of S-table and registers the nesting level
+    public static String Offset;  
     static ArrayList<String> alreadyChecked = new ArrayList<>();
 
     public static void analyze_variable() {
@@ -82,7 +83,7 @@ public class s_analyzer extends c_a.parser.parser {
 //                    System.out.println("lineNo: " + parseTokens.get(index + 1));
 //                    System.out.println("colNo: " + parseTokens.get(index + 2));
 //                    System.out.println("ERROR: finalType = " + finalType);
-//                    System.out.println("ERROR: tempType = " + tempType);
+//                    System.out.println("ERROR: tempType = " + tempType);checkFunc
 
                     errorsFound.add("Trying to assign "
                             + tempType + " to "
