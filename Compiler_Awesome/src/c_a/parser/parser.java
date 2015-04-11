@@ -1219,6 +1219,13 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
+                if (lineOfAssemblyCode.size() > 5) {
+                    lineOfAssemblyCode.remove(lineOfAssemblyCode.size() - 1);
+                }
+                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                }
+//                assemblyWriter.println();
                 parserWriter.println("rule #32 : TERMINAL");
                 // Ok we found the MP_SCOLON, reset the semantics
                 assignee = "NO_ASSIGNEE";
@@ -1241,16 +1248,11 @@ public class parser {
 // rules 34, 35, 36, 37, 38, 39, 40, 41, 42, and 43
 // <editor-fold defaultstate="collapsed" desc="Statement">
     public static void Statement() {
+        lineOfAssemblyCode.clear();
         // 35. Statement -> Compound_Statement
         if (lookAhead.equals("MP_BEGIN")) {
             parserWriter.println("rule #35 : expanding");
-            lineOfAssemblyCode.clear();
             Compound_Statement();
-            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                assemblyWriter.print(lineOfAssemblyCode.get(i));
-            }
-            assemblyWriter.println();
-            lineOfAssemblyCode.clear();
         } // 36. Statement -> Read_Statement
         else if (lookAhead.equals("MP_READ")) {
             parserWriter.println("rule #36 : expanding");
@@ -1266,13 +1268,7 @@ public class parser {
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
             parserWriter.println("rule #38 : expanding");
-            lineOfAssemblyCode.clear();
             Assign_Statement();
-            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                assemblyWriter.print(lineOfAssemblyCode.get(i));
-            }
-            assemblyWriter.println();
-            lineOfAssemblyCode.clear();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
             parserWriter.println("rule #39 : expanding");
@@ -1552,6 +1548,7 @@ public class parser {
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index + 3);
+        String[] Lexeme_Token = new String[2];
         if (Functions.contains(peekID)) {
             whichRule = "rule #55";
             parserWriter.println(whichRule + ": expanding");
@@ -1559,7 +1556,7 @@ public class parser {
         } else if (Variables.contains(peekID)) {
             whichRule = "rule #54";
             parserWriter.println(whichRule + ": expanding");
-            Var_Id();
+            Lexeme_Token = Var_Id();
         } else {
             potentialError = "Variable or Function undeclared";
         }
@@ -1568,7 +1565,7 @@ public class parser {
         switch (G_Check) {
             case 1:
                 lineOfAssemblyCode.add("MOV ");
-
+                
                 parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
                 parserWriter.println(whichRule + ": expanding");
@@ -2428,7 +2425,7 @@ public class parser {
      */
 // rule 108
 // <editor-fold defaultstate="collapsed" desc="Var_Id">
-    public static void Var_Id() {
+    public static String[] Var_Id() {
         // 108. Var_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
@@ -2463,7 +2460,10 @@ public class parser {
             errorLocation.add(colNo);
             Advance_Pointer();
         } //END of G_CHECK
-
+        String[] tempString = new String[2];
+        tempString[0] = TableName;
+        tempString[1] = CurrLexeme;
+        return tempString;
     }
 // </editor-fold>
 
@@ -2711,7 +2711,7 @@ public class parser {
         } else {
             System.out.println(message);
             //uncomment to print out the tables for verification purposes
-            s_table.Print_Tables();
+//            s_table.Print_Tables();
             /* 
              * NOTE: In Compound_Statement (line 1112) There are two lines
              * 1193 and 1194 uncomment 1193 (if statement) to see the main
