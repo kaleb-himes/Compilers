@@ -1,35 +1,19 @@
 /*
- * There should be a case statement that switches on a global lookahead variable.
- * The case statement should have case clauses for each rule in the grammar that 
- * has the nonterminal of this method on the left, plus one 
- * (the "others" clause) for the error condition.
- *
- * Each method should have pre- and post-conditions.
- * Each case clause should be commented with the rule number and actual rule it expands.
- * In each case clause, the right hand side of the appropriate rule should be expanded:
- * Wherever a token appears, a call to a new method, Match, must be made with the token as an argument;
- * wherever a nonterminal appears, a call to that nonterminal's method must be inserted.
- * In the "others" clause, a call to a new method, Error, must be made.
- * You will need to provide stubs for Match and Error as well.
- *
- * The case selectors must, of course, be of your proper Token_Type, and you will 
- * need to insert dummy tokens for now in order to make it possible to compile the stubs.
  * 
- * In some cases you may know the proper tokens to make the correct selection. 
- * You may insert them at this point. You can change them later if you are wrong.
+ * The parser takes the information from the scanner (i.e. token, lineNo, colNo, 
+ * lexeme) and using recursive descent and one token of lookahead makes sure 
+ * that the program provided follows the rule of this particular version of 
+ * microPascal.
  * 
- * Without knowing the proper tokens to insert, your nonterminal methods will not 
- * actually be able to call other nonterminal methods, so make sure your stubs to 
- * not try to execute such calls. One way to do this is to ensure that the dummy 
- * value you insert for the lookahead always takes the "others" route, where you 
- * can print your message from last time, as in "Expression has not yet been 
- * implemented." You will be removing these messages one at a time as you later 
- * completely implement these stubs.
+ * For each rule there is either a case statement that switches on a global 
+ * lookahead variable, or a series of if/else statements. Each rule (that could
+ * lead to an error has appropriate error handling, via insertion into an array.
+ * Relevant errors are printed out to assist the user with debugging. 
  * 
- * Finally, you will need to insert temporarily a series of calls in your parser 
- * that calls each of the nonterminal methods and the Match and Error methods, 
- * just to see that the program works to the extent that each method can be called.
- * Remember that each team member is to get a subset of the nonterminals to implement as stubs.
+ * When we encounter a terminal, we call "match" on it, and that information is 
+ * added to the symbol table, which keeps track of various information for each
+ * associated lexeme. 
+ * 
  */
 package c_a.parser;
 
@@ -67,14 +51,14 @@ public class parser {
     static int endOfErrors = 0;
 
     //variables to keep track of error reporting info
-//    static int lookAheadIndex;
     public static String lineNo;
     public static String colNo;
 
     static String potentialError = "";
     static int blockState;
     static PrintWriter parserWriter;
-// Lexicallity
+    
+    // Lexicallity
     public static ArrayList Variables = new ArrayList<>();
     public static ArrayList Functions = new ArrayList<>();
     static ArrayList Procedures = new ArrayList<>();
@@ -272,7 +256,6 @@ public class parser {
                 sourceOfError = "Sys_Goal, Expected MP_EOF found: " + lookAhead;
                 errorsFound.add(sourceOfError);
                 //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
                 //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
@@ -313,8 +296,6 @@ public class parser {
                     sourceOfError = "Program, Expected MP_PERIOD, found: " + lookAhead;
                     errorsFound.add(sourceOfError);
 
-                    //establish index number of lookahead           
-//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
                     //add line no corresponding to error
                     lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
@@ -327,8 +308,7 @@ public class parser {
             default:
                 sourceOfError = "Program, Expected MP_SCOLON found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
+
                 //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
@@ -360,8 +340,7 @@ public class parser {
                 sourceOfError = "Prog_Head, Expected MP_PROGRAM found:"
                         + " " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
+
                 //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
@@ -430,9 +409,6 @@ public class parser {
                     sourceOfError = "Var_Dec_Part, Expected MP_SCOLON "
                             + "found:  " + lookAhead;
                     errorsFound.add(sourceOfError);
-                    //establish index number of lookahead           
-//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
-                    //add line no corresponding to error
                     lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
@@ -521,9 +497,7 @@ public class parser {
                 sourceOfError = "Var_Dec, Expected MP_COLON found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -611,9 +585,6 @@ public class parser {
                 sourceOfError = "Type, Expected MP_INTEGER, MP_FLOAT, MP_STRING, or"
                         + " MP_BOOLEAN instead found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -736,9 +707,6 @@ public class parser {
                         sourceOfError = "Proc_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -752,9 +720,7 @@ public class parser {
                 sourceOfError = "Proc_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -836,9 +802,7 @@ public class parser {
                         sourceOfError = "Func_Dec, Expected MP_SCOLON_2 found: "
                                 + "" + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -852,9 +816,7 @@ public class parser {
                 sourceOfError = "Func_Dec, Expected MP_SCOLON_1 found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -892,9 +854,7 @@ public class parser {
                 sourceOfError = "Proc_Head, Expected MP_PROCEDURE found:"
                         + " " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -930,9 +890,6 @@ public class parser {
                     sourceOfError = "Func_Head, Expected MP_COLON found: "
                             + "" + lookAhead;
                     errorsFound.add(sourceOfError);
-                    //establish index number of lookahead           
-//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
-                    //add line no corresponding to error
                     lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
@@ -945,9 +902,6 @@ public class parser {
                 sourceOfError = "Func_Head, Expected MP_FUNCTION found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -985,9 +939,7 @@ public class parser {
                         sourceOfError = "Opt_Formal_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1062,9 +1014,7 @@ public class parser {
                 sourceOfError = "Val_Param_Sec, Expected MP_COLON found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1099,9 +1049,6 @@ public class parser {
                         sourceOfError = "Var_Param_Sec, Expected MP_COLON found"
                                 + ": " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1115,9 +1062,7 @@ public class parser {
                 sourceOfError = "Var_Param_Sec, Expected MP_VAR found: "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1229,9 +1174,7 @@ public class parser {
                         sourceOfError = "Compound_Statement, Expected MP_END "
                                 + "found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1245,9 +1188,7 @@ public class parser {
                 sourceOfError = "Compound_Statement, Expected MP_BEGIN found "
                         + "" + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1387,9 +1328,7 @@ public class parser {
                                 sourceOfError = "Read_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
                                 errorsFound.add(sourceOfError);
-                                //establish index number of lookahead           
-//                                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                                //add line no corresponding to error
+
                                 lineNo = parseTokens.get(index + 1);
                                 errorLocation.add(lineNo);
 
@@ -1403,9 +1342,7 @@ public class parser {
                         sourceOfError = "Read_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1419,9 +1356,7 @@ public class parser {
                 sourceOfError = "Read_Statement, Expected "
                         + "MP_READ found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1520,9 +1455,7 @@ public class parser {
                                 sourceOfError = "Write_Statement, Expected "
                                         + "MP_RPAREN found: " + lookAhead;
                                 errorsFound.add(sourceOfError);
-                                //establish index number of lookahead           
-//                                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                                //add line no corresponding to error
+
                                 lineNo = parseTokens.get(index + 1);
                                 errorLocation.add(lineNo);
 
@@ -1536,9 +1469,7 @@ public class parser {
                         sourceOfError = "Write_Statement, Expected "
                                 + "MP_LPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1552,9 +1483,7 @@ public class parser {
                 sourceOfError = "Write_Statement, Expected "
                         + "MP_WRITE or MP_WRITE_LN found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1627,7 +1556,7 @@ public class parser {
         switch (G_Check) {
             case 1:
                 lineOfAssemblyCode.add("MOV ");
-//                assemblyWriter.println("ASSIGN-TO");
+
                 parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
                 parserWriter.println(whichRule + ": expanding");
@@ -1638,9 +1567,7 @@ public class parser {
                 sourceOfError = "Assign_Statement, Expected "
                         + "MP_ASSIGN found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1679,9 +1606,7 @@ public class parser {
                         sourceOfError = "If_Statement, Expected "
                                 + "MP_THEN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+ 
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1695,9 +1620,7 @@ public class parser {
                 sourceOfError = "If_Statement, Expected "
                         + "MP_IF found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1726,9 +1649,7 @@ public class parser {
                 sourceOfError = "Opt_Else_Part: Semi-colon in if part, terminates the if statement"
                         + " before else part can be evaluated.";
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1782,9 +1703,7 @@ public class parser {
                         sourceOfError = "Repeat_Statement, Expected "
                                 + "MP_UNTIL found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1798,9 +1717,7 @@ public class parser {
                 sourceOfError = "Repeat_Statement, Expected "
                         + "MP_REPEAT found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1836,9 +1753,7 @@ public class parser {
                         sourceOfError = "While_Statement, Expected "
                                 + "MP_DO found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1852,9 +1767,7 @@ public class parser {
                 sourceOfError = "While_Statement, Expected "
                         + "MP_WHILE found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1902,9 +1815,7 @@ public class parser {
                                 sourceOfError = "For_Statement, Expected "
                                         + "MP_DO found: " + lookAhead;
                                 errorsFound.add(sourceOfError);
-                                //establish index number of lookahead           
-//                                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                                //add line no corresponding to error
+
                                 lineNo = parseTokens.get(index + 1);
                                 errorLocation.add(lineNo);
 
@@ -1918,9 +1829,7 @@ public class parser {
                         sourceOfError = "For_Statement, Expected "
                                 + "MP_ASSIGN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1934,9 +1843,7 @@ public class parser {
                 sourceOfError = "For_Statement, Expected "
                         + "MP_FOR found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -1989,9 +1896,7 @@ public class parser {
                         sourceOfError = "Step_Val, Expected "
                                 + "MP_TO or MP_DOWNTO found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -1999,7 +1904,9 @@ public class parser {
                         colNo = parseTokens.get(index + 2);
                         errorLocation.add(colNo);
                         break;
-                } //end case DownTo
+                } //                        //establish index number of lookahead           
+//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to errorend case DownTo
         }
     }
 // </editor-fold>
@@ -2049,9 +1956,7 @@ public class parser {
                         sourceOfError = "Opt_Actual_Param_List, Expected "
                                 + "MP_RPAREN found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -2422,9 +2327,7 @@ public class parser {
                 default:
                     sourceOfError = "Factor, expected MP_RPAREN found: " + lookAhead;
                     errorsFound.add(sourceOfError);
-                    //establish index number of lookahead           
-//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
-                    //add line no corresponding to error
+
                     lineNo = parseTokens.get(index + 1);
                     errorLocation.add(lineNo);
 
@@ -2434,7 +2337,6 @@ public class parser {
                     break;
             }
         } else {
-            //How to handle rule 106 vs 116!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //use a flag of some sort?
             String peekID = parseTokens.get(index + 3);
             if (Functions.contains(peekID)) {
@@ -2449,9 +2351,6 @@ public class parser {
                 sourceOfError = "Expected Variable or Function call found:"
                         + " " + peekID + "\n attempting to continue parsing";
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -2498,9 +2397,7 @@ public class parser {
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
-            //establish index number of lookahead           
-//            lookAheadIndex = parseTokens.indexOf(lookAhead);
-            //add line no corresponding to error
+
             lineNo = parseTokens.get(index + 1);
             errorLocation.add(lineNo);
 
@@ -2575,9 +2472,7 @@ public class parser {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             //Error();
             errorsFound.add(sourceOfError);
-            //establish index number of lookahead           
-//            lookAheadIndex = parseTokens.indexOf(lookAhead);
-            //add line no corresponding to error
+
             lineNo = parseTokens.get(index + 1);
             errorLocation.add(lineNo);
 
@@ -2605,9 +2500,7 @@ public class parser {
         } else {
             sourceOfError = "Function_Id, Expected MP_IDENTIFIER found: " + lookAhead;
             errorsFound.add(sourceOfError);
-            //establish index number of lookahead           
-//            lookAheadIndex = parseTokens.indexOf(lookAhead);
-            //add line no corresponding to error
+
             lineNo = parseTokens.get(index + 1);
             errorLocation.add(lineNo);
 
@@ -2664,9 +2557,7 @@ public class parser {
                 sourceOfError = "Id_List, Expected "
                         + "MP_IDENTIFIER found: " + lookAhead;
                 errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                lookAheadIndex = parseTokens.indexOf(lookAhead);
-                //add line no corresponding to error
+
                 lineNo = parseTokens.get(index + 1);
                 errorLocation.add(lineNo);
 
@@ -2713,9 +2604,7 @@ public class parser {
                         sourceOfError = "Id_Tail, Expected "
                                 + "MP_IDENTIFIER found: " + lookAhead;
                         errorsFound.add(sourceOfError);
-                        //establish index number of lookahead           
-//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
-                        //add line no corresponding to error
+
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
 
@@ -2825,7 +2714,9 @@ public class parser {
         System.exit(0);
     }
 // </editor-fold>
-
+                        //establish index number of lookahead           
+//                        lookAheadIndex = parseTokens.indexOf(lookAhead);
+                        //add line no corresponding to error
 //match a token
 // <editor-fold defaultstate="collapsed" desc="Match">    
     /*
