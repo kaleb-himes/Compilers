@@ -1244,7 +1244,13 @@ public class parser {
         // 35. Statement -> Compound_Statement
         if (lookAhead.equals("MP_BEGIN")) {
             parserWriter.println("rule #35 : expanding");
+            lineOfAssemblyCode.clear();
             Compound_Statement();
+            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                assemblyWriter.print(lineOfAssemblyCode.get(i));
+            }
+            assemblyWriter.println();
+            lineOfAssemblyCode.clear();
         } // 36. Statement -> Read_Statement
         else if (lookAhead.equals("MP_READ")) {
             parserWriter.println("rule #36 : expanding");
@@ -1260,7 +1266,13 @@ public class parser {
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
             parserWriter.println("rule #38 : expanding");
+            lineOfAssemblyCode.clear();
             Assign_Statement();
+            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                assemblyWriter.print(lineOfAssemblyCode.get(i));
+            }
+            assemblyWriter.println();
+            lineOfAssemblyCode.clear();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
             parserWriter.println("rule #39 : expanding");
@@ -2283,11 +2295,11 @@ public class parser {
             parserWriter.println("rule #99: TERMINAL");
             CurrLexeme = parseTokens.get(index + 3);
             Add_To_Line_Of_Assembly_Code("#" + CurrLexeme + " ");
-            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                assemblyWriter.print(lineOfAssemblyCode.get(i));
-            }
-            assemblyWriter.println();
-            lineOfAssemblyCode.clear();
+//            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+//                assemblyWriter.print(lineOfAssemblyCode.get(i));
+//            }
+//            assemblyWriter.println();
+//            lineOfAssemblyCode.clear();
             
             comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
@@ -2756,6 +2768,7 @@ public class parser {
         //A method that takes the current string "in" and places it at the front
         //of the line of assembly code
         ArrayList<String> tempList = new ArrayList<>();
+        tempList.clear();
         tempList.add(in);
         int containsMov = 0;
         int containsPush = 0;
