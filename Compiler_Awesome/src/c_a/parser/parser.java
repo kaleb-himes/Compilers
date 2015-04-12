@@ -2188,6 +2188,8 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
+            String tempString = ("BRFS L" + labelCounter);
+            operationsArray.add(tempString);
             operationsArray.add("CMPLTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
@@ -2199,15 +2201,21 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            assemblyWriter.println("LESS_THAN_OR_EQUAL_TO");
+            String tempString = ("BRFS L" + labelCounter);
+            operationsArray.add(tempString);
+            operationsArray.add("CMPLES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            assemblyWriter.println("GREATER_THAN_OR_EQUAL_TO");
+            String tempString = ("BRFS L" + labelCounter);
+            operationsArray.add(tempString);
+            operationsArray.add("CMPGES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
-            assemblyWriter.println("NOT_EQUAL");
+            String tempString = ("BRFS L" + labelCounter);
+            operationsArray.add(tempString);
+            operationsArray.add("CMPNES");
             Advance_Pointer();
         } else {
             return -1;

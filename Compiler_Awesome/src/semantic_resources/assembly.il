@@ -7,7 +7,7 @@ MOV #0 2(D0)                   ;Cost
 RD 1(D0)                   ;Apples
 PUSH 1(D0)                   ;Apples
 PUSH #0
-CMPGTS
+CMPLES
 BRFS L1
 PUSH 2(D0)                   ;Cost
 PUSH 1(D0)                   ;Apples
