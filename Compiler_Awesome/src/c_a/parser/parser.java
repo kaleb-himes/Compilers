@@ -90,6 +90,7 @@ public class parser {
     public static int comingFromRead = 0;
     public static int comingFromWrite = 0;
     static int comingFromIf = 0;
+    static int comingFromWhile = 0;
     public static int comingFromAssignStatement = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
@@ -1333,7 +1334,9 @@ public class parser {
         } // 40. Statement -> While_Statement
         else if (lookAhead.equals("MP_WHILE")) {
             parserWriter.println("rule #40 : expanding");
+            comingFromWhile = 1;
             While_Statement();
+            comingFromWhile = 0;
         } // 41. Statement -> Repeat_Statement
         else if (lookAhead.equals("MP_REPEAT")) {
             parserWriter.println("rule #41 : expanding");
@@ -1860,10 +1863,20 @@ public class parser {
         G_Check = Match("MP_WHILE");
         switch (G_Check) {
             case 1:
+                //drop label 1 and save it for later
+                int beginningLabel = labelCounter;
+                assemblyWriter.println("L" + labelCounter + ":");
+                labelCounter++;
                 parserWriter.println("rule #60: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #60: expanding");
                 Boolean_Expression();
+                // write the default branch-to statement
+                assemblyWriter.println("BR L" + Integer.toString(labelCounter + 1));
+                //and drop label 2
+                assemblyWriter.println("L" + labelCounter + ":");
+                labelCounter++;
+                
                 G_Check = Match("MP_DO");
                 switch (G_Check) {
                     case 1:
@@ -1871,6 +1884,11 @@ public class parser {
                         Advance_Pointer();
                         parserWriter.println("rule #60: expanding");
                         Statement();
+                        //finished the statement now let's loop back to the beginning;
+                        assemblyWriter.println("BR L" + Integer.toString(beginningLabel));
+                        //and finally drop the exit the while loop label
+                        assemblyWriter.println("L" + labelCounter + ":");
+                        labelCounter++;
                         break;
 
                     default:
@@ -1968,7 +1986,7 @@ public class parser {
                                 }
                                 assemblyWriter.println();
                                 lineOfAssemblyCode.clear();
-                                
+
                                 //control variable
                                 lineOfAssemblyCode.clear();
                                 lineOfAssemblyCode.add("PUSH ");
@@ -1990,10 +2008,10 @@ public class parser {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
                                 lineOfAssemblyCode.clear();
-                                
+
                                 assemblyWriter.println("CMPNES");
-                                assemblyWriter.println("BRTS L" + Integer.toString(labelCounter-1));
-                                
+                                assemblyWriter.println("BRTS L" + Integer.toString(labelCounter - 1));
+
                                 break;
                             default:
                                 sourceOfError = "For_Statement, Expected "
@@ -2261,27 +2279,48 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            String tempString = ("BRFS L" + labelCounter);
-            operationsArray.add(tempString);
+            if (comingFromWhile == 0) {
+                String tempString = ("BRFS L" + labelCounter);
+                operationsArray.add(tempString);
+            } else {
+                String tempString = ("BRTS L" + labelCounter);
+                operationsArray.add(tempString);
+            }
             operationsArray.add("CMPLTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
             //will be popped in reverse so branch first then "compare greater than stack"
-            String tempString = ("BRFS L" + labelCounter);
-            operationsArray.add(tempString);
+            if (comingFromWhile == 0) {
+                String tempString = ("BRFS L" + labelCounter);
+                operationsArray.add(tempString);
+            } else {
+                String tempString = ("BRTS L" + labelCounter);
+                operationsArray.add(tempString);
+            }
             operationsArray.add("CMPGTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            String tempString = ("BRFS L" + labelCounter);
-            operationsArray.add(tempString);
+            //apparently the logic is different when dealing with a while loop =)
+            if (comingFromWhile == 0) {
+                String tempString = ("BRFS L" + labelCounter);
+                operationsArray.add(tempString);
+            } else {
+                String tempString = ("BRTS L" + labelCounter);
+                operationsArray.add(tempString);
+            }
             operationsArray.add("CMPLES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            String tempString = ("BRFS L" + labelCounter);
-            operationsArray.add(tempString);
+            if (comingFromWhile == 0) {
+                String tempString = ("BRFS L" + labelCounter);
+                operationsArray.add(tempString);
+            } else {
+                String tempString = ("BRTS L" + labelCounter);
+                operationsArray.add(tempString);
+            }
             operationsArray.add("CMPGES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
@@ -2615,7 +2654,8 @@ public class parser {
                 tempString = Var_Id();
                 expressionsVarId = tempString[0];
                 if ((comingFromAssignStatement == 1
-                        || comingFromIf == 1)
+                        || comingFromIf == 1
+                        || comingFromWhile == 1)
                         && comingFromWrite == 0) {
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("PUSH ");
