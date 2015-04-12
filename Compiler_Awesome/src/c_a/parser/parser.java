@@ -99,6 +99,7 @@ public class parser {
     public static int OperationsCounter = 0;
     static int guessOffset = 1;
     static int labelCounter = 1;                    //drop labels in if statements etc
+    static String expressionsVarId = "EXPR_VAR_ID_DEFAULT";
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1473,7 +1474,7 @@ public class parser {
             assemblyWriter.print(lineOfAssemblyCode.get(i));
         }
         lineOfAssemblyCode.clear();
-        
+
     }
 // </editor-fold>
 
@@ -1713,7 +1714,7 @@ public class parser {
                         parserWriter.println("rule #56: expanding");
                         //branch to next label
                         Opt_Else_Part();
-                        
+
                         break;
 
                     default:
@@ -1780,7 +1781,7 @@ public class parser {
                 case 1:
                     // terminate the previous if part with a branch to...
                     String tempString = "BR L" + Integer.toString(labelCounter + 1);
-                        assemblyWriter.println(tempString);
+                    assemblyWriter.println(tempString);
                     //drop a label
                     assemblyWriter.println("L" + labelCounter + ":");
                     labelCounter++;
@@ -1907,12 +1908,15 @@ public class parser {
     public static void For_Statement() {
         // 61. For_Statement -> MP_FOR_WORD Control_Var MP_ASSIGN Init_Val Step_Val Final_Val MP_DO Statement
         G_Check = Match("MP_FOR");
+        String ControlVarLexeme = "DEFAULT_CONTROL_VAR_LEXEME";
+        String FinalValLexeme = "DEFAULT_FINAL_VAL_LEXEME";
         switch (G_Check) {
             case 1:
                 parserWriter.println("rule #61: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #61: expanding");
-                Control_Var();
+                ControlVarLexeme = Control_Var();
+
                 G_Check = Match("MP_ASSIGN");
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
@@ -1921,18 +1925,75 @@ public class parser {
                         Advance_Pointer();
                         parserWriter.println("rule #61: expanding");
                         Init_Val();
+                        assemblyWriter.println("ADDS");
+                        lineOfAssemblyCode.clear();
+                        lineOfAssemblyCode.add("POP ");
+                        String offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                        lineOfAssemblyCode.add(offset);
+                        lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                        lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
+                        for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                            assemblyWriter.print(lineOfAssemblyCode.get(i));
+                        }
+                        lineOfAssemblyCode.clear();
                         parserWriter.println("rule #61: expanding");
                         Step_Val();
                         parserWriter.println("rule #61: expanding");
                         Final_Val();
+                        //should get the variable ID that was found from expanding
+                        //expression in Final_Val()
+                        FinalValLexeme = expressionsVarId;
                         G_Check = Match("MP_DO");
                         //we do want to fall through here, to evaluate third G_Check
                         switch (G_Check) {
                             case 1:
+                                //drop a label
+                                assemblyWriter.println("L" + labelCounter + ":");
+                                labelCounter++;
                                 parserWriter.println("rule #61: TERMINAL");
                                 Advance_Pointer();
                                 parserWriter.println("rule #61: expanding");
                                 Statement();
+                                //add 1 to the control variable
+                                lineOfAssemblyCode.clear();
+                                lineOfAssemblyCode.add("ADD ");
+                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add(" #1 ");
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
+                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                }
+                                lineOfAssemblyCode.clear();
+                                
+                                //control variable
+                                lineOfAssemblyCode.clear();
+                                lineOfAssemblyCode.add("PUSH ");
+                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
+                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                }
+                                lineOfAssemblyCode.clear();
+                                //final value
+                                lineOfAssemblyCode.add("PUSH ");
+                                offset = s_table.Get_Offset(TableName, FinalValLexeme);
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add("                   ;" + FinalValLexeme + "\n");
+                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                }
+                                lineOfAssemblyCode.clear();
+                                
+                                assemblyWriter.println("CMPNES");
+                                assemblyWriter.println("BRTS L" + Integer.toString(labelCounter-1));
+                                
                                 break;
                             default:
                                 sourceOfError = "For_Statement, Expected "
@@ -1980,10 +2041,22 @@ public class parser {
 
 // rule 62
 // <editor-fold defaultstate="collapsed" desc="Control_Var">
-    public static void Control_Var() {
+    public static String Control_Var() {
         // 62. Control_Var -> Var_Id
         parserWriter.println("rule #62: expanding");
-        Var_Id();
+        String[] tempString;
+        tempString = Var_Id();
+        lineOfAssemblyCode.clear();
+        lineOfAssemblyCode.add("PUSH ");
+        String offset = s_table.Get_Offset(TableName, tempString[0]);
+        lineOfAssemblyCode.add(offset);
+        lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+        lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
+        for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+            assemblyWriter.print(lineOfAssemblyCode.get(i));
+        }
+        lineOfAssemblyCode.clear();
+        return tempString[0];
     }
 // </editor-fold>
 
@@ -2540,7 +2613,8 @@ public class parser {
                 parserWriter.println("rule #116: expanding");
                 String[] tempString;
                 tempString = Var_Id();
-                if ((comingFromAssignStatement == 1 
+                expressionsVarId = tempString[0];
+                if ((comingFromAssignStatement == 1
                         || comingFromIf == 1)
                         && comingFromWrite == 0) {
                     lineOfAssemblyCode.clear();
