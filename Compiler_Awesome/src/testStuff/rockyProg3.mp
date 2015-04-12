@@ -1,10 +1,15 @@
-program Program2;
-  var Apples : integer;
-    Fred : integer;
-    X : integer;
-    Y : string;
-  begin
-    Read(Apples, X);
-    Fred := X + X * Apples;
-    Write('Apples = ', Apples, ' ; X = ', X,' and Fred = ', Fred)
-  end.
+program Program1;
+ var Apples: Integer;			{1(D0)}
+       Cost:   Integer;				{2(D0)}
+ begin
+     Read(Apples);
+     if Apples > 0
+       then begin
+         Cost := Apples * 5;
+         Write(Cost)
+       end
+       else begin
+         Cost := Apples * 7;
+         Write(Cost)
+       end
+   end.

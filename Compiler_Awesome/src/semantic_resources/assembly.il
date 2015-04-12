@@ -3,25 +3,27 @@ ADD SP #1 SP
 ADD SP #1 SP
 MOV #0 1(D0)                   ;Apples
 ADD SP #1 SP
-MOV #0 2(D0)                   ;Fred
-ADD SP #1 SP
-MOV #0 3(D0)                   ;X
-ADD SP #1 SP
+MOV #0 2(D0)                   ;Cost
 RD 1(D0)                   ;Apples
-RD 3(D0)                   ;X
-PUSH 2(D0)                   ;Fred
-PUSH 3(D0)                   ;X
-PUSH 3(D0)                   ;X
 PUSH 1(D0)                   ;Apples
+PUSH #0
+CMPGTS
+BRFS L1
+PUSH 2(D0)                   ;Cost
+PUSH 1(D0)                   ;Apples
+PUSH #5
 MULS
-ADDS
-POP 2(D0)                   ;Fred
-WRT #" Apples =  "
-WRT 1(D0)                   ;Apples
-WRT #" ; X =  "
-WRT 3(D0)                   ;X
-WRT #" and Fred =  "
-WRT 2(D0)                   ;Fred
+POP 2(D0)                   ;Cost
+WRT 2(D0)                   ;Cost
+BR L2
+L1:
+PUSH 2(D0)                   ;Cost
+PUSH 1(D0)                   ;Apples
+PUSH #7
+MULS
+POP 2(D0)                   ;Cost
+WRT 2(D0)                   ;Cost
+L2:
 WRTLN #""
 POP D0
 HLT

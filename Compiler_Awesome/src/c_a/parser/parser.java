@@ -89,6 +89,7 @@ public class parser {
     public static String rememberTableName = "NO_TABLE";
     public static int comingFromRead = 0;
     public static int comingFromWrite = 0;
+    static int comingFromIf = 0;
     public static int comingFromAssignStatement = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
@@ -97,6 +98,7 @@ public class parser {
     public static int ExpressionCounter = 0;
     public static int OperationsCounter = 0;
     static int guessOffset = 1;
+    static int labelCounter = 1;                    //drop labels in if statements etc
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1323,8 +1325,10 @@ public class parser {
             Assign_Statement();
         } // 39. Statement -> If_Statement
         else if (lookAhead.equals("MP_IF")) {
+            comingFromIf = 1;
             parserWriter.println("rule #39 : expanding");
             If_Statement();
+            comingFromIf = 0;
         } // 40. Statement -> While_Statement
         else if (lookAhead.equals("MP_WHAssign_SILE")) {
             parserWriter.println("rule #40 : expanding");
@@ -1707,7 +1711,9 @@ public class parser {
                         parserWriter.println("rule #56: expanding");
                         Statement();
                         parserWriter.println("rule #56: expanding");
+                        //branch to next label
                         Opt_Else_Part();
+                        
                         break;
 
                     default:
@@ -1772,9 +1778,18 @@ public class parser {
             G_Check = Match("MP_ELSE");
             switch (G_Check) {
                 case 1:
+                    // terminate the previous if part with a branch to...
+                    String tempString = "BR L" + Integer.toString(labelCounter + 1);
+                        assemblyWriter.println(tempString);
+                    //drop a label
+                    assemblyWriter.println("L" + labelCounter + ":");
+                    labelCounter++;
+                    System.out.println("labelCounter = " + labelCounter);
                     Advance_Pointer();
                     parserWriter.println("rule #57: expanding");
                     Statement();
+                    // end by adding the branch to label from 8 lines up
+                    assemblyWriter.println("L" + labelCounter + ":");
                     break;
 
                 default:
@@ -2173,11 +2188,14 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            assemblyWriter.println("LESS_THAN");
+            operationsArray.add("CMPLTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
-            assemblyWriter.println("GREATER_THAN");
+            //will be popped in reverse so branch first then "compare greater than stack"
+            String tempString = ("BRFS L" + labelCounter);
+            operationsArray.add(tempString);
+            operationsArray.add("CMPGTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
@@ -2514,7 +2532,9 @@ public class parser {
                 parserWriter.println("rule #116: expanding");
                 String[] tempString;
                 tempString = Var_Id();
-                if (comingFromAssignStatement == 1) {
+                if ((comingFromAssignStatement == 1 
+                        || comingFromIf == 1)
+                        && comingFromWrite == 0) {
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("PUSH ");
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
