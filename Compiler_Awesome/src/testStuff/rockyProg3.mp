@@ -6,5 +6,5 @@ program Program2;
     Apples := 0;
     X := 10;
     Fred := Apples + Apples * X;
-    Write('Apples = ', Apples, '; X = ', X,' and Fred = ', Fred)
+    Write('Apples = ', Apples, ' ; X = ', X,' and Fred = ', Fred)
   end.
