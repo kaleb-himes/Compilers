@@ -1331,7 +1331,7 @@ public class parser {
             If_Statement();
             comingFromIf = 0;
         } // 40. Statement -> While_Statement
-        else if (lookAhead.equals("MP_WHAssign_SILE")) {
+        else if (lookAhead.equals("MP_WHILE")) {
             parserWriter.println("rule #40 : expanding");
             While_Statement();
         } // 41. Statement -> Repeat_Statement
