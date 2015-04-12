@@ -11,7 +11,7 @@ ADDS
 POP 1(D0)                   ;I
 L1:
 WRT 1(D0)                   ;I
-ADD 1(D0) #1 1(D0)                   ;I
+ADD 1(D0) #1 1(D0)
 PUSH 1(D0)                   ;I
 PUSH 2(D0)                   ;N
 CMPNES

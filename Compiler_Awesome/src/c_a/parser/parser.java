@@ -1963,10 +1963,10 @@ public class parser {
                                 lineOfAssemblyCode.add(" #1 ");
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
+                                assemblyWriter.println();
                                 lineOfAssemblyCode.clear();
                                 
                                 //control variable
