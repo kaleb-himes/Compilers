@@ -1,22 +1,19 @@
 MOV SP D0
 ADD SP #1 SP
+ADD SP #1 SP
 MOV #0 1(D0)                   ;Apples
 ADD SP #1 SP
 MOV #0 2(D0)                   ;Fred
 ADD SP #1 SP
 MOV #0 3(D0)                   ;X
 ADD SP #1 SP
-PUSH 1(D0)                   ;Apples
-PUSH #0
-ADDS
-POP 1(D0)                   ;Apples
-PUSH 3(D0)                   ;X
-PUSH #10
-ADDS
-POP 3(D0)                   ;X
+RD 1(D0)                   ;Apples
+RD 3(D0)                   ;X
 PUSH 2(D0)                   ;Fred
 PUSH 3(D0)                   ;X
 PUSH 3(D0)                   ;X
+PUSH 1(D0)                   ;Apples
+MULS
 ADDS
 POP 2(D0)                   ;Fred
 WRT #" Apples =  "

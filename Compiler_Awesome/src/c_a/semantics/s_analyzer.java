@@ -192,11 +192,7 @@ public class s_analyzer extends c_a.parser.parser {
         if (!Variables.contains(CurrLexeme)
                 && !Functions.contains(CurrLexeme)) {
             FuncName = CurrLexeme;
-            assemblyWriter.println(CurrLexeme);
             Functions.add(CurrLexeme);
-//            System.out.println("Set FuncName: " + CurrLexeme + " at line: " + 
-//                    parseTokens.get(index + 1) + " and col: " 
-//                    + parseTokens.get(index + 2));
         }
 //##############################################################################
         ArrayList<String> tempList;     // store a table temporarily for checks
