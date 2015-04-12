@@ -1594,6 +1594,16 @@ public class parser {
                 if (ExpressionCounter == 1 && OperationsCounter == 0) {
 //                    assemblyWriter.println("ExpressionCounter = " + ExpressionCounter);
                     assemblyWriter.println("ADDS");
+                    lineOfAssemblyCode.clear();
+                    lineOfAssemblyCode.add("POP ");
+                    String offset = s_table.Get_Offset(TableName, tempString[0]);
+                    lineOfAssemblyCode.add(offset);
+                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                    lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
+                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                        assemblyWriter.print(lineOfAssemblyCode.get(i));
+                    }
+                    lineOfAssemblyCode.clear();
                 } else {
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("POP ");

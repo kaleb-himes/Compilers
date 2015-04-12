@@ -9,14 +9,14 @@ ADD SP #1 SP
 PUSH 1(D0)                   ;Apples
 PUSH #0
 ADDS
+POP 1(D0)                   ;Apples
 PUSH 3(D0)                   ;X
 PUSH #10
 ADDS
+POP 3(D0)                   ;X
 PUSH 2(D0)                   ;Fred
-PUSH 1(D0)                   ;Apples
-PUSH 1(D0)                   ;Apples
 PUSH 3(D0)                   ;X
-MULS
+PUSH 3(D0)                   ;X
 ADDS
 POP 2(D0)                   ;Fred
 WRT #" Apples =  "
