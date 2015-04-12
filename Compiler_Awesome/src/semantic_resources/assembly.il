@@ -15,7 +15,7 @@ PUSH 1(D0)                   ;Apples
 PUSH 3(D0)                   ;X
 MULS
 ADDS
-ADDS
+POP 2(D0)                   ;Fred
 WRT -> WRT -> PUSH 1(D0)                   ;Apples
 WRT -> WRT -> PUSH 3(D0)                   ;X
 WRT -> WRT -> PUSH 2(D0)                   ;Fred

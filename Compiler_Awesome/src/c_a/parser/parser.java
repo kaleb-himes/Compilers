@@ -93,6 +93,7 @@ public class parser {
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
     public static ArrayList<String> operationsArray = new ArrayList<>();
     public static int ExpressionCounter = 0;
+    public static int OperationsCounter = 0;
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     public void runParse() throws FileNotFoundException, IOException {
@@ -1582,7 +1583,8 @@ public class parser {
 
                 ExpressionCounter = Expression();
                 
-                if (ExpressionCounter == 1 && operationsArray.isEmpty()) {
+                
+                if (ExpressionCounter == 1 && OperationsCounter == 0) {
 //                    assemblyWriter.println("ExpressionCounter = " + ExpressionCounter);
                     assemblyWriter.println("ADDS");
                 } else {
@@ -2061,7 +2063,8 @@ public class parser {
             assemblyWriter.println(operationsArray.get(i));
             operationsArray.remove(i);
         }
-        return ExpressionCounter;
+        int returnExpressionCounter = ExpressionCounter;
+        return returnExpressionCounter;
     }
 // </editor-fold>
 
@@ -2193,10 +2196,10 @@ public class parser {
         // 88. Add_Op -> MP_PLUS
         // 89. Add_Op -> MP_MINUS
         // 90. Add_Op -> MP_OR
-
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
+                OperationsCounter++;
                 operationsArray.add("ADDS");
                 parserWriter.println("rule #88: TERMINAL");
                 Advance_Pointer();
@@ -2205,6 +2208,7 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
+                        OperationsCounter++;
                         operationsArray.add("SUBS");
                         parserWriter.println("rule #89: TERMINAL");
                         Advance_Pointer();
@@ -2213,6 +2217,7 @@ public class parser {
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
                             case 1:
+                                OperationsCounter++;
                                 operationsArray.add("ORS");
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
@@ -2266,6 +2271,7 @@ public class parser {
         G_Check = Match("MP_TIMES");
         switch (G_Check) {
             case 1:
+                OperationsCounter++;
                 operationsArray.add("MULS");
                 parserWriter.println("rule #94: TERMINAL");
                 Advance_Pointer();
@@ -2274,6 +2280,7 @@ public class parser {
                 G_Check = Match("MP_FORWARD_SLASH\n");
                 switch (G_Check) {
                     case 1:
+                        OperationsCounter++;
                         operationsArray.add("DIVS");
                         parserWriter.println("rule #95: TERMINAL");
                         Advance_Pointer();
@@ -2282,6 +2289,7 @@ public class parser {
                         G_Check = Match("MP_DIV");
                         switch (G_Check) {
                             case 1:
+                                OperationsCounter++;
                                 operationsArray.add("DIVS");
                                 parserWriter.println("rule #96: TERMINAL");
                                 Advance_Pointer();
@@ -2290,6 +2298,7 @@ public class parser {
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
                                     case 1:
+                                        OperationsCounter++;
                                         operationsArray.add("MODS");
                                         parserWriter.println("rule #97: TERMINAL");
                                         Advance_Pointer();
@@ -2298,6 +2307,7 @@ public class parser {
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
                                             case 1:
+                                                OperationsCounter++;
                                                 operationsArray.add("ANDS");
                                                 parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
