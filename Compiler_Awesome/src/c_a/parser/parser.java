@@ -1876,7 +1876,7 @@ public class parser {
                 //and drop label 2
                 assemblyWriter.println("L" + labelCounter + ":");
                 labelCounter++;
-                
+
                 G_Check = Match("MP_DO");
                 switch (G_Check) {
                     case 1:
@@ -2934,17 +2934,6 @@ public class parser {
                         }
 //##############################################################################
 
-                        lineOfAssemblyCode.clear();
-                        lineOfAssemblyCode.add("MOV #0 ");
-                        String offset = Integer.toString(guessOffset);
-                        lineOfAssemblyCode.add(offset);
-                        lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                        lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
-                        for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                            assemblyWriter.print(lineOfAssemblyCode.get(i));
-                        }
-                        lineOfAssemblyCode.clear();
-
                         parserWriter.println("rule #114: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #114: expanding");
@@ -2968,6 +2957,21 @@ public class parser {
             default:
                 int tempSize = listIDs.size();
                 assemblyWriter.println("ADD SP #" + tempSize + " SP");
+//                int storeGuessOffset = guessOffset;
+                for (int i = 0; i < listIDs.size()-1; i++) {
+                    lineOfAssemblyCode.clear();
+                    lineOfAssemblyCode.add("MOV #0 ");
+                    String offset = Integer.toString(guessOffset);
+                    lineOfAssemblyCode.add(offset);
+                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                    lineOfAssemblyCode.add("                   ;" + listIDs.get(i) + "\n");
+                    for (int j = 0; j < lineOfAssemblyCode.size(); j++) {
+                        assemblyWriter.print(lineOfAssemblyCode.get(j));
+                    }
+                    lineOfAssemblyCode.clear();
+                    guessOffset++;
+                }
+//                guessOffset = storeGuessOffset;
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
         } //end case Comma

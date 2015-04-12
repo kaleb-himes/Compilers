@@ -1,14 +1,12 @@
-program Program3;
- var Sum: Integer;
-       I:   Integer;
-       N:   Integer;	
+program Program4;
+ var Sum, I, N : Integer;
  begin
      Read(N);
-     I   := 1;
-    Sum := 0;
-     while (I <= N) or (I > 100) do begin
+     I   := 0;
+     Sum := 0;
+     repeat
        Sum := Sum + I;
-       I := I + 1;
-       Write(I, Sum)
-     end
+       I   := I + 1;
+       Write(I, Sum);
+     until (I > N) and (I <= 100)
    end.
