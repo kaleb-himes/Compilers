@@ -2646,7 +2646,7 @@ public class parser {
                     if (comingFromWrite == 1) {
                         lineOfAssemblyCode.add("WRT ");
                     } else {
-                        lineOfAssemblyCode.add("WRTLN");
+                        lineOfAssemblyCode.add("WRTLN ");
                     }
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
                     lineOfAssemblyCode.add(offset);
