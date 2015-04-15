@@ -89,6 +89,7 @@ public class parser {
     public static String rememberTableName = "NO_TABLE";
     public static int comingFromRead = 0;
     public static int comingFromWrite = 0;
+    public static int comingFromWriteLn = 0;
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
     public static int comingFromAssignStatement = 0;
@@ -457,27 +458,10 @@ public class parser {
         G_Check = Match("MP_SCOLON");
         switch (G_Check) {
             case 1:
-//uncomment for semi-colon errors
-//                if (!previous.equals("MP_SCOLON")
-//                        && !parseTokens.get(index+4).equals("MP_SCOLON")) {
                 parserWriter.println("rule #7  : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #7  : expanding");
                 Var_Dec_Tail();
-//                }
-//                else {
-//                    sourceOfError = "Too many Semi-Colons.";
-//                    errorsFound.add(sourceOfError);
-                //establish index number of lookahead           
-//                    lookAheadIndex = parseTokens.indexOf(lookAhead);
-//                    //add line no corresponding to error
-//                    lineNo = parseTokens.get(lookAheadIndex + 1);
-//                    errorLocation.add(lineNo);
-//
-//                    //add col no corresponding to error
-//                    colNo = parseTokens.get(lookAheadIndex + 2);
-//                    errorLocation.add(colNo);
-//                }
                 break;
             default:
                 parserWriter.println("rule #8  : --E--");
@@ -505,9 +489,15 @@ public class parser {
 //##############################################################################
                 for (int i = 0; i < listIDs.size(); i++) {
                     CurrLexeme = listIDs.get(i);
+                    if (listIDs.size() > 1) {
+                        s_table.Insert_Row(TableName, CurrLexeme,
+                            CurrToken, Type, Kind, Mode,
+                            Integer.toString(i+1), Parameters);
+                    } else {
                     s_table.Insert_Row(TableName, CurrLexeme,
                             CurrToken, Type, Kind, Mode,
                             Integer.toString(Size), Parameters);
+                    }
                 }
                 listIDs.clear();
 //##############################################################################
@@ -1317,9 +1307,15 @@ public class parser {
             comingFromRead = 0;
         } // 37. Statement -> Write_Statement
         else if (lookAhead.equals("MP_WRITE") || lookAhead.equals("MP_WRITELN")) {
+            if (lookAhead.equals("MP_WRITE")) {
+                comingFromWrite = 1;
+            } else {
+                comingFromWriteLn = 1;
+            }
             parserWriter.println("rule #37 : expanding");
-            comingFromWrite = 1;
+
             Write_Statement();
+            comingFromWriteLn = 0;
             comingFromWrite = 0;
         } // 38. Statement -> Assign_Statement
         else if (lookAhead.equals("MP_IDENTIFIER")) {
@@ -1624,17 +1620,6 @@ public class parser {
             whichRule = "rule #54";
             parserWriter.println(whichRule + ": expanding");
             tempString = Var_Id();
-            lineOfAssemblyCode.clear();
-            lineOfAssemblyCode.add("PUSH ");
-            String offset = s_table.Get_Offset(TableName, tempString[0]);
-            lineOfAssemblyCode.add(offset);
-            lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-            lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
-            for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                assemblyWriter.print(lineOfAssemblyCode.get(i));
-            }
-            lineOfAssemblyCode.clear();
-
         } else {
             potentialError = "Variable or Function undeclared";
         }
@@ -1649,10 +1634,7 @@ public class parser {
                 parserWriter.println(whichRule + ": expanding");
 
                 ExpressionCounter = Expression();
-
                 if (ExpressionCounter == 1 && OperationsCounter == 0) {
-//                    assemblyWriter.println("ExpressionCounter = " + ExpressionCounter);
-                    assemblyWriter.println("ADDS");
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("POP ");
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
@@ -1812,6 +1794,9 @@ public class parser {
         G_Check = Match("MP_REPEAT");
         switch (G_Check) {
             case 1:
+                //drop a label
+                assemblyWriter.println("L" + labelCounter + ":");
+                labelCounter++;
                 parserWriter.println("rule #59: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #59: expanding");
@@ -1943,7 +1928,6 @@ public class parser {
                         Advance_Pointer();
                         parserWriter.println("rule #61: expanding");
                         Init_Val();
-                        assemblyWriter.println("ADDS");
                         lineOfAssemblyCode.clear();
                         lineOfAssemblyCode.add("POP ");
                         String offset = s_table.Get_Offset(TableName, ControlVarLexeme);
@@ -2064,16 +2048,6 @@ public class parser {
         parserWriter.println("rule #62: expanding");
         String[] tempString;
         tempString = Var_Id();
-        lineOfAssemblyCode.clear();
-        lineOfAssemblyCode.add("PUSH ");
-        String offset = s_table.Get_Offset(TableName, tempString[0]);
-        lineOfAssemblyCode.add(offset);
-        lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-        lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
-        for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-            assemblyWriter.print(lineOfAssemblyCode.get(i));
-        }
-        lineOfAssemblyCode.clear();
         return tempString[0];
     }
 // </editor-fold>
@@ -2667,9 +2641,13 @@ public class parser {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
                     lineOfAssemblyCode.clear();
-                } else if (comingFromWrite == 1) {
+                } else if (comingFromWrite == 1 || comingFromWriteLn == 1) {
                     lineOfAssemblyCode.clear();
-                    lineOfAssemblyCode.add("WRT ");
+                    if (comingFromWrite == 1) {
+                        lineOfAssemblyCode.add("WRT ");
+                    } else {
+                        lineOfAssemblyCode.add("WRTLN");
+                    }
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
                     lineOfAssemblyCode.add(offset);
                     lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
@@ -2958,17 +2936,8 @@ public class parser {
                 int tempSize = listIDs.size();
                 assemblyWriter.println("ADD SP #" + tempSize + " SP");
 //                int storeGuessOffset = guessOffset;
-                for (int i = 0; i < listIDs.size()-1; i++) {
-                    lineOfAssemblyCode.clear();
-                    lineOfAssemblyCode.add("MOV #0 ");
-                    String offset = Integer.toString(guessOffset);
-                    lineOfAssemblyCode.add(offset);
-                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                    lineOfAssemblyCode.add("                   ;" + listIDs.get(i) + "\n");
-                    for (int j = 0; j < lineOfAssemblyCode.size(); j++) {
-                        assemblyWriter.print(lineOfAssemblyCode.get(j));
-                    }
-                    lineOfAssemblyCode.clear();
+                for (int i = 0; i < listIDs.size() - 1; i++) {
+                    outputLineOfAssemblyCode("MOV #0 ", Integer.toString(guessOffset), listIDs.get(i));
                     guessOffset++;
                 }
 //                guessOffset = storeGuessOffset;
@@ -3046,7 +3015,7 @@ public class parser {
         } else {
             System.out.println(message);
             //uncomment to print out the tables for verification purposes
-//            s_table.Print_Tables();
+            s_table.Print_Tables();
             /* 
              * NOTE: In Compound_Statement (line 1112) There are two lines
              * 1193 and 1194 uncomment 1193 (if statement) to see the main
@@ -3101,4 +3070,19 @@ public class parser {
     }
 // </editor-fold>
 
+    static void outputLineOfAssemblyCode(String firstLine, String secondLine,
+            String firstLexeme) {
+        lineOfAssemblyCode.clear();
+        lineOfAssemblyCode.add(firstLine);
+        lineOfAssemblyCode.add(secondLine);
+        lineOfAssemblyCode.add("(D"
+                + s_table.Get_NestingLevel(TableName) + ")");
+
+        lineOfAssemblyCode.add("                   ;" + firstLexeme
+                + "\n");
+        for (int j = 0; j < lineOfAssemblyCode.size(); j++) {
+            assemblyWriter.print(lineOfAssemblyCode.get(j));
+        }
+        lineOfAssemblyCode.clear();
+    }
 }
