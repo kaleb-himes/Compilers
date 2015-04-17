@@ -27,8 +27,11 @@ PUSH 2(D0)                   ;I
 PUSH #1
 ADDS
 POP 2(D0)                   ;I
+WRT #" I =  "
 WRT 2(D0)                   ;I
+WRT #" \nSum =  "
 WRT 1(D0)                   ;Sum
+WRT #" \n  "
 BR L1
 L3:
 WRTLN #""

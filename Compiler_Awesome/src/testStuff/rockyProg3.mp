@@ -9,6 +9,6 @@ program Program3;
      while (I <= N) or (I > 100) do begin
        Sum := Sum + I;
        I := I + 1;
-       Write(I, Sum)
+       Write('I = ', I, '\nSum = ', Sum, '\n')
      end
    end.
