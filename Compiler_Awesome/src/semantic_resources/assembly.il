@@ -1,11 +1,8 @@
 MOV SP D0
 ADD SP #1 SP
 ADD SP #1 SP
-MOV #0 1(D0)                   ;Sum
 ADD SP #1 SP
-MOV #0 2(D0)                   ;I
 ADD SP #1 SP
-MOV #0 3(D0)                   ;N
 RD 3(D0)                   ;N
 PUSH #1
 POP 2(D0)                   ;I

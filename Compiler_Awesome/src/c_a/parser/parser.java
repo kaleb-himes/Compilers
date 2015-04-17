@@ -542,16 +542,6 @@ public class parser {
                 Size++;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
-                lineOfAssemblyCode.clear();
-                lineOfAssemblyCode.add("MOV #0 ");
-                offset = Integer.toString(guessOffset);
-                lineOfAssemblyCode.add(offset);
-                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
-                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-                }
-                lineOfAssemblyCode.clear();
                 Advance_Pointer();
                 //write rule #10 to file
                 break;
@@ -567,16 +557,6 @@ public class parser {
                 Size++;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
-                lineOfAssemblyCode.clear();
-                lineOfAssemblyCode.add("MOV #0.0 ");
-                offset = Integer.toString(guessOffset);
-                lineOfAssemblyCode.add(offset);
-                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
-                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-                }
-                lineOfAssemblyCode.clear();
                 Advance_Pointer();
                 //write rule #11 to file
                 break;
@@ -592,16 +572,6 @@ public class parser {
                 Size++;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
-//                lineOfAssemblyCode.clear();
-//                lineOfAssemblyCode.add("MOV #\"\" ");
-//                offset = Integer.toString(guessOffset);
-//                lineOfAssemblyCode.add(offset);
-//                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-//                lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
-//                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-//                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-//                }
-//                lineOfAssemblyCode.clear();
                 Advance_Pointer();
                 //write rule #12 to file
                 break;
@@ -617,16 +587,6 @@ public class parser {
                 Size++;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
-                lineOfAssemblyCode.clear();
-                lineOfAssemblyCode.add("MOV #0 ");
-                offset = Integer.toString(guessOffset);
-                lineOfAssemblyCode.add(offset);
-                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
-                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-                }
-                lineOfAssemblyCode.clear();
                 Advance_Pointer();
                 //write rule #13 to file
                 break;
@@ -2699,12 +2659,8 @@ public class parser {
             lookUpArray.add(TableName);
 //##############################################################################
             parserWriter.println("rule #107: TERMINAL");
-            //reisterDept = s_table.getNestingLevel();
-//            assemblyWriter.println("PUSH " + registerDepth);
             assemblyWriter.println("MOV SP D0");
             assemblyWriter.println("ADD SP #1 SP");
-//            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName) + ")");
-//            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
             Advance_Pointer();
         } else {
             sourceOfError = "Prog_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2935,12 +2891,6 @@ public class parser {
             default:
                 int tempSize = listIDs.size();
                 assemblyWriter.println("ADD SP #" + tempSize + " SP");
-//                int storeGuessOffset = guessOffset;
-                for (int i = 0; i < listIDs.size() - 1; i++) {
-                    outputLineOfAssemblyCode("MOV #0 ", Integer.toString(guessOffset), listIDs.get(i));
-                    guessOffset++;
-                }
-//                guessOffset = storeGuessOffset;
                 parserWriter.println("rule #115: --E--");
                 potentialError = "Id_Tail, Treated as empty";
         } //end case Comma
