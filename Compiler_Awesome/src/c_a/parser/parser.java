@@ -92,6 +92,7 @@ public class parser {
     public static int comingFromWriteLn = 0;
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
+    static int comingFromRepeat = 0;
     public static int comingFromAssignStatement = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
@@ -1296,7 +1297,9 @@ public class parser {
         } // 41. Statement -> Repeat_Statement
         else if (lookAhead.equals("MP_REPEAT")) {
             parserWriter.println("rule #41 : expanding");
+            comingFromRepeat = 1;
             Repeat_Statement();
+            comingFromRepeat = 0;
         } // 42. Statement -> For_Statement
         else if (lookAhead.equals("MP_FOR")) {
             parserWriter.println("rule #42 : expanding");
@@ -1769,6 +1772,11 @@ public class parser {
                         Advance_Pointer();
                         parserWriter.println("rule #59: expanding");
                         Boolean_Expression();
+                        // write the default branch-to statement
+                        assemblyWriter.println("BR L" + Integer.toString(labelCounter - 1));
+                        //and drop label 2
+                        assemblyWriter.println("L" + labelCounter + ":");
+                        labelCounter++;
                         break;
 
                     default:
@@ -2158,7 +2166,9 @@ public class parser {
 // rule 73
 // <editor-fold defaultstate="collapsed" desc="Expression">
     public static int Expression() {
-        operationsArray.clear();
+        if (comingFromRepeat != 1) {
+            operationsArray.clear();
+        }
         ExpressionCounter++;
 //        System.out.println("Expression Iteration = " + ExpressionCounter);
         // 73. Expression -> Simple_Expression Opt_Relational_Part
@@ -2169,9 +2179,11 @@ public class parser {
 
         //print out operations array in reverse order with assemblyWriter.
         for (int i = operationsArray.size() - 1; i >= 0; i--) {
+            System.out.println(operationsArray.get(i));
             assemblyWriter.println(operationsArray.get(i));
             operationsArray.remove(i);
         }
+        operationsArray.clear();
         int returnExpressionCounter = ExpressionCounter;
         return returnExpressionCounter;
     }
@@ -2589,7 +2601,8 @@ public class parser {
                 expressionsVarId = tempString[0];
                 if ((comingFromAssignStatement == 1
                         || comingFromIf == 1
-                        || comingFromWhile == 1)
+                        || comingFromWhile == 1
+                        || comingFromRepeat == 1)
                         && comingFromWrite == 0) {
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("PUSH ");
