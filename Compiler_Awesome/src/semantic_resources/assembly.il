@@ -12,10 +12,10 @@ L1:
 PUSH 2(D0)                   ;I
 PUSH 3(D0)                   ;N
 CMPLES
-BRTS L2
 PUSH 2(D0)                   ;I
 PUSH #100
 CMPGTS
+ORS
 BRTS L2
 BR L3
 L2:

@@ -93,6 +93,7 @@ public class parser {
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
     static int comingFromRepeat = 0;
+    static int sawAnd = 0, sawOr = 0;
     public static int comingFromAssignStatement = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
@@ -492,12 +493,12 @@ public class parser {
                     CurrLexeme = listIDs.get(i);
                     if (listIDs.size() > 1) {
                         s_table.Insert_Row(TableName, CurrLexeme,
-                            CurrToken, Type, Kind, Mode,
-                            Integer.toString(i+1), Parameters);
+                                CurrToken, Type, Kind, Mode,
+                                Integer.toString(i + 1), Parameters);
                     } else {
-                    s_table.Insert_Row(TableName, CurrLexeme,
-                            CurrToken, Type, Kind, Mode,
-                            Integer.toString(Size), Parameters);
+                        s_table.Insert_Row(TableName, CurrLexeme,
+                                CurrToken, Type, Kind, Mode,
+                                Integer.toString(Size), Parameters);
                     }
                 }
                 listIDs.clear();
@@ -2166,9 +2167,7 @@ public class parser {
 // rule 73
 // <editor-fold defaultstate="collapsed" desc="Expression">
     public static int Expression() {
-        if (comingFromRepeat != 1) {
-            operationsArray.clear();
-        }
+        operationsArray.clear();
         ExpressionCounter++;
 //        System.out.println("Expression Iteration = " + ExpressionCounter);
         // 73. Expression -> Simple_Expression Opt_Relational_Part
@@ -2183,7 +2182,7 @@ public class parser {
             assemblyWriter.println(operationsArray.get(i));
             operationsArray.remove(i);
         }
-        operationsArray.clear();
+//        operationsArray.clear();
         int returnExpressionCounter = ExpressionCounter;
         return returnExpressionCounter;
     }
@@ -2225,54 +2224,22 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            if (comingFromWhile == 0) {
-                String tempString = ("BRFS L" + labelCounter);
-                operationsArray.add(tempString);
-            } else {
-                String tempString = ("BRTS L" + labelCounter);
-                operationsArray.add(tempString);
-            }
             operationsArray.add("CMPLTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
-            //will be popped in reverse so branch first then "compare greater than stack"
-            if (comingFromWhile == 0) {
-                String tempString = ("BRFS L" + labelCounter);
-                operationsArray.add(tempString);
-            } else {
-                String tempString = ("BRTS L" + labelCounter);
-                operationsArray.add(tempString);
-            }
             operationsArray.add("CMPGTS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            //apparently the logic is different when dealing with a while loop =)
-            if (comingFromWhile == 0) {
-                String tempString = ("BRFS L" + labelCounter);
-                operationsArray.add(tempString);
-            } else {
-                String tempString = ("BRTS L" + labelCounter);
-                operationsArray.add(tempString);
-            }
             operationsArray.add("CMPLES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            if (comingFromWhile == 0) {
-                String tempString = ("BRFS L" + labelCounter);
-                operationsArray.add(tempString);
-            } else {
-                String tempString = ("BRTS L" + labelCounter);
-                operationsArray.add(tempString);
-            }
             operationsArray.add("CMPGES");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
-            String tempString = ("BRFS L" + labelCounter);
-            operationsArray.add(tempString);
             operationsArray.add("CMPNES");
             Advance_Pointer();
         } else {
@@ -2370,8 +2337,8 @@ public class parser {
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
                             case 1:
+                                sawOr = 1;
                                 OperationsCounter++;
-                                operationsArray.add("ORS");
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
@@ -2460,8 +2427,8 @@ public class parser {
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
                                             case 1:
+                                                sawAnd = 1;
                                                 OperationsCounter++;
-                                                operationsArray.add("ANDS");
                                                 parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
                                                 return 0;
@@ -2800,6 +2767,17 @@ public class parser {
         // 111. Boolean_Expression -> Expression
         parserWriter.println("rule #111: expanding");
         Expression();
+        if (sawAnd == 1) {
+            assemblyWriter.println("ANDS");
+            String tempString = ("BRTS L" + labelCounter);
+            assemblyWriter.println(tempString);
+        } else if (sawOr == 1) {
+            assemblyWriter.println("ORS");
+            String tempString = ("BRTS L" + labelCounter);
+            assemblyWriter.println(tempString);
+        }
+        sawOr = 0;
+        sawAnd = 0;
     }
 // </editor-fold>
 
