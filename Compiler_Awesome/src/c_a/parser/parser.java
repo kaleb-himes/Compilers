@@ -1652,6 +1652,8 @@ public class parser {
                 Advance_Pointer();
                 parserWriter.println("rule #56: expanding");
                 Boolean_Expression();
+                String tempString = ("BRFS L" + labelCounter);
+                assemblyWriter.println(tempString);
                 G_Check = Match("MP_THEN");
                 //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
