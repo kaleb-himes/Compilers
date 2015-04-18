@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Generates the assembly code for the user provided program, provided that the 
+ * program does not have any errors (which would be caught in the scanner or the
+ * parser, depending on the type of error. This assembly code is output to file.
  */
 package c_a.semantics;
 
