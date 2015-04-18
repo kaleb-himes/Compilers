@@ -26,6 +26,9 @@ public class s_table extends c_a.parser.parser {
 
     public static void New_Table(String TableName,
             String NestingLevel, String Label) {
+        //HEY DUMMIES HERE IS YOUR ISSUE, DESTROY POINTER ISN"T POINTING
+        //AT THE RIGHT TABLE WHEN THIS IS CALLED
+//        destroyPointer++;
         Rows = new ArrayList<>();
         Rows.add(NestingLevel);
         //set the value to the label currently in use
@@ -111,7 +114,7 @@ public class s_table extends c_a.parser.parser {
     public static String Get_Offset(String TableName, String Variable){
 //        System.out.println("TableName = " + TableName);
 //        System.out.println("Variable = " + Variable);
-        String result = "DEFAULT";
+        String result = "DEFAULT_GET_OFFSET";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Variable);
 //            System.out.println("getVal = " + getVal);

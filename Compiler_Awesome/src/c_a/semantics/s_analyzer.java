@@ -80,21 +80,16 @@ public class s_analyzer extends c_a.parser.parser {
 
             case 0:
                 if (finalType.compareTo(tempType) != 0) {
-//                    System.out.println("lineNo: " + parseTokens.get(index + 1));
-//                    System.out.println("colNo: " + parseTokens.get(index + 2));
-//                    System.out.println("ERROR: finalType = " + finalType);
-//                    System.out.println("ERROR: tempType = " + tempType);checkFunc
-
-                    errorsFound.add("Trying to assign "
-                            + tempType + " to "
-                            + finalType);
-                    //add line no corresponding to error
-                    lineNo = parseTokens.get(index + 1);
-                    errorLocation.add(lineNo);
-
-                    //add col no corresponding to error
-                    colNo = parseTokens.get(index + 2);
-                    errorLocation.add(colNo);
+//                    errorsFound.add("Trying to assign "
+//                            + tempType + " to "
+//                            + finalType);
+//                    //add line no corresponding to error
+//                    lineNo = parseTokens.get(index + 1);
+//                    errorLocation.add(lineNo);
+//
+//                    //add col no corresponding to error
+//                    colNo = parseTokens.get(index + 2);
+//                    errorLocation.add(colNo);
                 }
                 break;
             case 1:

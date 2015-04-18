@@ -1,32 +1,17 @@
 MOV SP D0
 ADD SP #1 SP
-ADD SP #3 SP
-RD 3(D0)                   ;N
-PUSH #0
-POP 2(D0)                   ;I
-PUSH #0
-POP 1(D0)                   ;Sum
-L1:
-PUSH 1(D0)                   ;Sum
-PUSH 2(D0)                   ;I
-ADDS
-POP 1(D0)                   ;Sum
-PUSH 2(D0)                   ;I
+ADD SP #2 SP
+ADD SP #1 SP
+RD 2(D0)                   ;N
 PUSH #1
-ADDS
-POP 2(D0)                   ;I
-WRT 2(D0)                   ;I
-WRT 1(D0)                   ;Sum
-PUSH 2(D0)                   ;I
-PUSH 3(D0)                   ;N
-CMPGTS
-PUSH 2(D0)                   ;I
-PUSH #100
-CMPLES
-ANDS
-BRTS L2
-BR L1
-L2:
+POP 1(D0)                   ;I
+L1:
+WRT 1(D0)                   ;I
+ADD 1(D0) #1 1(D0)
+PUSH 1(D0)                   ;I
+PUSH 2(D0)                   ;N
+CMPNES
+BRTS L1
 WRTLN #""
 POP D0
 HLT
