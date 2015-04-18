@@ -1,3 +1,15 @@
+/**
+ * @title c_a = compiler_awesome
+ * @version 0.1
+ * @author monica, tabetha, kaleb
+ * @team ∀wesome
+ *
+ * A finite state automaton that is responsible for reading in identifiers. The FSA
+ * returns the longest lexeme that matches any of the valid identifiers, as well 
+ * as the column and line number, and the appropriate token.
+ *
+ */
+
 package c_a;
 
 import java.io.FileNotFoundException;

@@ -1,3 +1,12 @@
+/* 
+ * A finite state automaton that is responsible for reading in a
+ * string, demarcated by ''. The FSA
+ * returns the longest lexeme that is a string, as well as the column and line 
+ * number, and the appropriate token. If two '' are encountered in a row, they
+ * are transformed into one literal apostrophe (i.e. it's) and there is error
+ * checking for run-on strings. 
+ */
+
 package c_a;
 
 import java.io.FileNotFoundException;
@@ -12,7 +21,6 @@ public class string_FSA extends mp {
     char character;
 
     //Flags to keep track of certain program states
-//    Boolean loop;
     Boolean eof = false;
 
     public enum State {
@@ -119,9 +127,6 @@ public class string_FSA extends mp {
                  * in Micro Pascal.
                  */
                 case STRINGACCEPT:
-                    //stop looping, as we are in an accept state
-//                    loop = false;
-//                    MPscanner.pbr.unread(character);
 
                     token = "MP_STRING_LIT";
 
@@ -134,7 +139,6 @@ public class string_FSA extends mp {
                  * the end of line
                  */
                 case RUNONSTRING:
-//                    loop = false;
                     token = "MP_RUN_STRING";
                     return token;
 

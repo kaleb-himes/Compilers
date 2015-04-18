@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author monica, tabetha, kaleb
  * @team ∀wesome
  *
- * A finite state automaton, that is responsible for reading in either an
+ * A finite state automaton that is responsible for reading in either an
  * integer value, a fixed point number or a floating point number. The FSA
  * returns the longest lexeme that matches any of the 3 previously mentioned
  * types, as well as the column and line number, and the appropriate token.

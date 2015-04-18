@@ -1,13 +1,3 @@
-package c_a;
-
-/**
- *
- * @author mthornton
- */
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Arrays;
-
 /**
  * @title c_a = compiler_awesome
  * @version 0.1
@@ -19,6 +9,18 @@ import java.util.Arrays;
  * column and line number, and the appropriate token.
  *
  */
+
+package c_a;
+
+/**
+ *
+ * @author mthornton
+ */
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Arrays;
+
+
 public class symbol_FSA extends mp {
     /* Initializes the State variable to the START state */
 

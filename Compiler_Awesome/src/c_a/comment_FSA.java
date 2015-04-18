@@ -1,12 +1,4 @@
 package c_a;
-
-/**
- *
- * @author khimes
- */
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 /**
  * @title c_a = compiler_awesome
  * @version 0.1
@@ -14,7 +6,17 @@ import java.io.IOException;
  * @team ∀wesome
  *
  * A finite state automaton, that is responsible for reading in a comment.
+ * Includes error checking, for when a run on comment (an opening { is read, 
+ * but no closing } is read).
  */
+/**
+ *
+ * @author khimes
+ */
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+
 public class comment_FSA extends mp {
 
     String lexeme;
@@ -26,7 +28,8 @@ public class comment_FSA extends mp {
     //Flags to keep track of certain program states
     Boolean closedComment;
     Boolean runOnDetector;
-//    Boolean loop;
+
+    //Boolean variable that determines if an EOF character has been read
     Boolean eof = false;
     
     public enum State {
@@ -61,10 +64,9 @@ public class comment_FSA extends mp {
         runOnDetector = false;
         returnLineTally = 0;
         state = State.START;
-//        loop = true;
         int c;
 
-        while (eof == false /*&& loop == true*/) {
+        while (eof == false ) {
             c = MPscanner.pbr.read();
             if (c == -1) {
                 eof = true;
@@ -144,7 +146,6 @@ public class comment_FSA extends mp {
                  */
                 case COMMENTACCEPT:
                     //stop looping, as we are in an accept state
-//                    loop = false;
 
                     //unread the last character, to get the reader in the right place
                     MPscanner.pbr.unread(character);
@@ -178,5 +179,6 @@ public class comment_FSA extends mp {
         }
         return token;
     }
+    //because comments often span multiple lines, this variable accounts for that
     public static int returnLineTally;
 }

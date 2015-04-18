@@ -1,3 +1,17 @@
+/**
+ * @title c_a = compiler_awesome
+ * @version 0.1
+ * @author monica, tabetha, kaleb
+ * @team ∀wesome
+ *
+ * The scanner scans an input file (a program), and the input file is converted 
+ * into a list of tokens, lexemes, line and colNums that the parser will use in 
+ * order to determine if the program follows the rules specified for this 
+ * particular version of microPascal.
+ *
+ */
+
+
 package c_a;
 
 import static c_a.fileReader.file_reader.outFile;
