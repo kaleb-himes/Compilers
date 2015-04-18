@@ -1,3 +1,8 @@
+    /* 
+     * Kicks off the file scanning, given an argument from the command line.
+     * 
+     */
+
 package c_a;
 
 import java.io.IOException;
@@ -30,7 +35,6 @@ public class mp {
         argument = args[0];
 
         final MPscanner scanner = new MPscanner();
-        scanner.scanFile();
-
+        MPscanner.scanFile();
     }
 }
