@@ -7,6 +7,10 @@ somestuff: Integer;
 x, y, balloon, legcramp: String;
 
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
+        procedure embedded;
+            begin
+                read(someBool);
+            end;
     begin
         read(somestuff);
     end;

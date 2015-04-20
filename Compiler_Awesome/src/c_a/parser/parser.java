@@ -418,6 +418,7 @@ public class parser {
 //##############################################################################
                     if (In_Proc_Func_Flag == 0) {
                         for (int i = 0; i < listIDs.size(); i++) {
+//                            Size += 1;
                             CurrLexeme = listIDs.get(i);
                             s_table.Insert_Row(TableName, CurrLexeme,
                                     CurrToken, Type, Kind, Mode,
@@ -495,18 +496,23 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
+                int sizeGoingIn = Size;
                 for (int i = 0; i < listIDs.size(); i++) {
                     CurrLexeme = listIDs.get(i);
                     if (listIDs.size() > 1) {
+                        Size += 1;
                         s_table.Insert_Row(TableName, CurrLexeme,
                                 CurrToken, Type, Kind, Mode,
                                 Integer.toString(Size), Parameters);
                     } else {
+                        Size += 1;
                         s_table.Insert_Row(TableName, CurrLexeme,
                                 CurrToken, Type, Kind, Mode,
                                 Integer.toString(Size), Parameters);
                     }
                 }
+                int sizeComingOut = sizeGoingIn + listIDs.size() - 1;
+                Size = sizeComingOut;
                 listIDs.clear();
 //##############################################################################
                 break;
@@ -547,7 +553,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size++;
+                Size+=1;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
@@ -562,7 +568,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size++;
+                Size+=1;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
@@ -577,7 +583,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size++;
+                Size+=1;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
@@ -592,7 +598,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size++;
+                Size+=1;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
@@ -687,12 +693,12 @@ public class parser {
                     // of incoming parameters
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
-                            tempSize++;
+                            tempSize+=1;
                         }
                     }
                     Size = tempSize;
                     Convert_To_String_Array(dynamicParams);
-                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                    s_table.Insert_Row(TableName, ProcName, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
                 }
 //##############################################################################
@@ -781,19 +787,19 @@ public class parser {
                             && dynamicParams.get(checkLast - 2).contains("MP_")) {
                         Mode = "in / out";
                         // offset for the return variable 
-                        tempSize++;
+                        tempSize+=1;
                     } else {
                         Mode = "in";
                     }
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
                             // offsets for the number of parameters
-                            tempSize++;
+                            tempSize+=1;
                         }
                     }
                     Size = tempSize;
                     Convert_To_String_Array(dynamicParams);
-                    s_table.Insert_Row(TableName, CurrLexeme, CurrToken, Type, Kind,
+                    s_table.Insert_Row(TableName, FuncName, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
                 }
 //##############################################################################
@@ -874,7 +880,7 @@ public class parser {
                 parserWriter.println("rule #19 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #19 : expanding");
-                Proc_Id();
+                ProcName = Proc_Id();
                 parserWriter.println("rule #19 : expanding");
                 Opt_Formal_Param_List();
                 break;
@@ -904,7 +910,7 @@ public class parser {
                 parserWriter.println("rule #20 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #20 : expanding");
-                Func_Id();
+                FuncName = Func_Id();
                 parserWriter.println("rule #20 : expanding");
                 Opt_Formal_Param_List();
                 G_Check = Match("MP_COLON");
@@ -1153,7 +1159,8 @@ public class parser {
                         // and the token is non-empty
                         if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
                             s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                    Type, Kind, Mode, "1", Parameters);
+                                    Type, Kind, Mode, Integer.toString(Size), Parameters);
+                            Size += 1;
                         }
                     }
                     //reset procedure name to null
@@ -1179,7 +1186,8 @@ public class parser {
                         String tempToken = dynamicParams.get(tempi);
                         if (!tempLexeme.contains("MP_")) {
                             s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                    Type, Kind, Mode, "1", Parameters);
+                                    Type, Kind, Mode, Integer.toString(Size), Parameters);
+                            Size += 1;
                         }
                     }
                     //reset function name to null
@@ -2746,7 +2754,7 @@ public class parser {
 
 // rule 109
 // <editor-fold defaultstate="collapsed" desc="Proc_Id">
-    public static void Proc_Id() {
+    public static String Proc_Id() {
         // 109. Proc_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
@@ -2775,12 +2783,13 @@ public class parser {
             colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
         }
+        return CurrLexeme;
     }
 // </editor-fold>
 
 // rule 110
 // <editor-fold defaultstate="collapsed" desc="Function_Id">
-    public static void Func_Id() {
+    public static String Func_Id() {
         // 110. Function_Id -> MP_IDENTIFIER
         G_Check = Match("MP_IDENTIFIER");
         if (G_Check == 1) {
@@ -2805,6 +2814,7 @@ public class parser {
             colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
         }
+        return CurrLexeme;
     }
 // </editor-fold>            lineOfAssemblyCode.add("PUSH ");
 
