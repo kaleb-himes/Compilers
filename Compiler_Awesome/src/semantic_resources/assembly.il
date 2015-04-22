@@ -1,17 +1,24 @@
 MOV SP D0
 ADD SP #1 SP
 ADD SP #2 SP
+ADD SP #1 SP
+ADD SP #1 SP
+ADD SP #1 SP
 ADD SP #2 SP
-RD 4(D0)                   ;N
+ADD SP #0 SP
+ADD SP #0 SP
+PUSH 4(D1)                   ;b
+EQUALS
+PUSH #0
+BRFS L1
 PUSH #1
-POP 2(D0)                   ;I
+POP DEFAULT_GET_OFFSET(D1)                   ;DEFAULT
+BR L2
 L1:
-WRT 2(D0)                   ;I
-ADD 2(D0) #1 2(D0)
-PUSH 2(D0)                   ;I
-PUSH 4(D0)                   ;N
-CMPNES
-BRTS L1
+PUSH 4(D1)                   ;b
+MULS
+POP DEFAULT_GET_OFFSET(D1)                   ;DEFAULT
+L2:
 WRTLN #""
 POP D0
 HLT

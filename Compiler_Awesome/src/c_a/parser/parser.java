@@ -15,9 +15,6 @@
  * associated lexeme. 
  * 
  */
-
-
-
 //HEY DUMMIES!!!!!!!!!!!!!!!!(*!#(#@*&$(!&@#$(&!*@)(*)(!$*$!$)!*@$&)*!_@#(_!(@$!
 //GET VARIABLES DECLARED INSIDE FUNCTIONS AND PROCEDURES WORKING!!!
 package c_a.parser;
@@ -553,7 +550,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size+=1;
+                Size += 1;
 //##############################################################################
                 parserWriter.println("rule #10 : TERMINAL");
                 Advance_Pointer();
@@ -568,7 +565,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size+=1;
+                Size += 1;
 //##############################################################################
                 parserWriter.println("rule #11 : TERMINAL");
                 Advance_Pointer();
@@ -583,7 +580,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size+=1;
+                Size += 1;
 //##############################################################################
                 parserWriter.println("rule #12 : TERMINAL");
                 Advance_Pointer();
@@ -598,7 +595,7 @@ public class parser {
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrToken);
                 }
-                Size+=1;
+                Size += 1;
 //##############################################################################
                 parserWriter.println("rule #13 : TERMINAL");
                 Advance_Pointer();
@@ -628,7 +625,7 @@ public class parser {
         //precondition
         switch (lookAhead) {
             case "MP_PROCEDURE":
-                assemblyWriter.println("BR L" + Integer.toString(labelCounter+1));
+                assemblyWriter.println("BR L" + Integer.toString(labelCounter + 1));
                 //drop a label
                 assemblyWriter.println("L" + labelCounter + ":");
                 labelCounter++;
@@ -693,7 +690,7 @@ public class parser {
                     // of incoming parameters
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
-                            tempSize+=1;
+                            tempSize += 1;
                         }
                     }
                     Size = tempSize;
@@ -701,6 +698,49 @@ public class parser {
                     s_table.Insert_Row(TableName, ProcName, CurrToken, Type, Kind,
                             Mode, Integer.toString(Size), Parameters);
                 }
+//##############################################################################
+//##############################################################################
+//###### SYMBOL TABLE STUFF ####################################################
+//##############################################################################
+
+                //update the Label
+                String Label = Label_1.concat(Integer.toString(Label_2));
+                Label_2++;
+                //update the nesting level
+                int Nlvl = NestingLevel;
+                NestingLevel++;
+                TableName = ProcName;
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                //add the Tablename to lookuparray so we can iterate over the
+                //tables later in symantic analysis and see if any of the
+                //existing tables contain our variable
+                lookUpArray.add(TableName);
+                //increment the destroyPointer
+                destroyPointer = lookUpArray.indexOf(TableName);
+
+                Parameters = init;
+                for (int i = 1; i < dynamicParams.size(); i++) {
+                    // get the current lexeme for row creation
+                    String tempLexeme = dynamicParams.get(i - 1);
+
+                    int tempi = i;
+                    String tempToken = "DEFAULT_TEMP_TOKEN";
+                    while (!dynamicParams.get(tempi).contains("MP_")) {
+                        tempi += 1;
+                        tempToken = dynamicParams.get(tempi);
+                    }
+                    //String tempToken = dynamicParams.get(tempi);
+                    //if tempLexeme is not the token then insert row
+                    // and the token is non-empty
+                    if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
+                        s_table.Insert_Row(TableName, tempLexeme, tempToken,
+                                Type, Kind, Mode, Integer.toString(Size), Parameters);
+                        Size += 1;
+                    }
+                }
+                //reset procedure name to null
+                ProcName = "";
+                dynamicParams.clear();
 //##############################################################################
                 parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
@@ -787,14 +827,14 @@ public class parser {
                             && dynamicParams.get(checkLast - 2).contains("MP_")) {
                         Mode = "in / out";
                         // offset for the return variable 
-                        tempSize+=1;
+                        tempSize += 1;
                     } else {
                         Mode = "in";
                     }
                     for (int i = 0; i < dynamicParams.size(); i++) {
                         if (!dynamicParams.get(i).contains("MP_")) {
                             // offsets for the number of parameters
-                            tempSize+=1;
+                            tempSize += 1;
                         }
                     }
                     Size = tempSize;
@@ -803,6 +843,43 @@ public class parser {
                             Mode, Integer.toString(Size), Parameters);
                 }
 //##############################################################################
+//##############################################################################
+//############ SYMBOL TABLE STUFF ##############################################
+//############################################################################## 
+                //update the Label
+                String Label = Label_1.concat(Integer.toString(Label_2));
+                Label_2++;
+                //update the nesting level
+                int Nlvl = NestingLevel;
+                NestingLevel++;
+                //insert Table info using s_table API name, nesting, label
+                TableName = FuncName;
+                s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                destroyPointer++;
+                    //add the Tablename to lookuparray so we can iterate of the
+                //tables later in symantic analysis and see if any of the
+                //existing tables contain our variable
+                lookUpArray.add(TableName);
+                Parameters = init;
+                for (int i = 0; i < dynamicParams.size(); i++) {
+                    // get the current lexeme for row creation
+                    String tempLexeme = dynamicParams.get(i);
+
+                    int tempi = i;
+                    while (!dynamicParams.get(tempi).contains("MP_")) {
+                        tempi++;
+                    }
+                    String tempToken = dynamicParams.get(tempi);
+                    if (!tempLexeme.contains("MP_")) {
+                        s_table.Insert_Row(TableName, tempLexeme, tempToken,
+                                Type, Kind, Mode, Integer.toString(Size), Parameters);
+                        Size += 1;
+                    }
+                }
+                //reset function name to null
+                FuncName = "";
+                dynamicParams.clear();
+//##############################################################################                     
                 parserWriter.println("rule #18 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #18 : expanding");
@@ -1124,79 +1201,6 @@ public class parser {
         G_Check = Match("MP_BEGIN");
         switch (G_Check) {
             case 1:
-//##############################################################################
-//############ SYMBOL TABLE STUFF ##############################################
-//##############################################################################
-                //update the Label
-                String Label = Label_1.concat(Integer.toString(Label_2));
-                Label_2++;
-                //update the nesting level
-                int Nlvl = NestingLevel;
-                NestingLevel++;
-                //insert Table info using s_table API name, nesting, label
-                if (!ProcName.equals("")) {
-                    TableName = ProcName;
-                    s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-                    //increment the destroyPointer
-                    destroyPointer++;
-                    //add the Tablename to lookuparray so we can iterate over the
-                    //tables later in symantic analysis and see if any of the
-                    //existing tables contain our variable
-                    lookUpArray.add(TableName);
-                    Parameters = init;
-                    for (int i = 1; i < dynamicParams.size(); i++) {
-                        // get the current lexeme for row creation
-                        String tempLexeme = dynamicParams.get(i-1);
-
-                        int tempi = i;
-                        String tempToken = "DEFAULT_TEMP_TOKEN";
-                        while (!dynamicParams.get(tempi).contains("MP_")) {
-                            tempi += 1;
-                            tempToken = dynamicParams.get(tempi);
-                        }
-                        //String tempToken = dynamicParams.get(tempi);
-                        //if tempLexeme is not the token then insert row
-                        // and the token is non-empty
-                        if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
-                            s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                    Type, Kind, Mode, Integer.toString(Size), Parameters);
-                            Size += 1;
-                        }
-                    }
-                    //reset procedure name to null
-                    ProcName = "";
-                    dynamicParams.clear();
-                } else if (!FuncName.equals("")) {
-                    TableName = FuncName;
-                    s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-                    destroyPointer++;
-                    //add the Tablename to lookuparray so we can iterate of the
-                    //tables later in symantic analysis and see if any of the
-                    //existing tables contain our variable
-                    lookUpArray.add(TableName);
-                    Parameters = init;
-                    for (int i = 0; i < dynamicParams.size(); i++) {
-                        // get the current lexeme for row creation
-                        String tempLexeme = dynamicParams.get(i);
-
-                        int tempi = i;
-                        while (!dynamicParams.get(tempi).contains("MP_")) {
-                            tempi++;
-                        }
-                        String tempToken = dynamicParams.get(tempi);
-                        if (!tempLexeme.contains("MP_")) {
-                            s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                    Type, Kind, Mode, Integer.toString(Size), Parameters);
-                            Size += 1;
-                        }
-                    }
-                    //reset function name to null
-                    FuncName = "";
-                    dynamicParams.clear();
-                } else {
-                    potentialError = "ProcName or FuncName May not be set";
-                }
-//##############################################################################
                 parserWriter.println("rule #30 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #30 : expanding");
@@ -1307,7 +1311,7 @@ public class parser {
             comingFromWriteLn = 0;
             comingFromWrite = 0;
         } // 38. Statement -> Assign_Statement
-        else if (lookAhead.equals("MP_IDENTIFIER") && !Procedures.contains(parseTokens.get(index+ 3))) {
+        else if (lookAhead.equals("MP_IDENTIFIER") && !Procedures.contains(parseTokens.get(index + 3))) {
             parserWriter.println("rule #38 : expanding");
             Assign_Statement();
         } // 39. Statement -> If_Statement
@@ -1333,7 +1337,7 @@ public class parser {
             parserWriter.println("rule #42 : expanding");
             For_Statement();
         } // 43. Statement -> Procedure_Statement
-        else if (lookAhead.equals("MP_PROCEDURE") || Procedures.contains(parseTokens.get(index+3))) {
+        else if (lookAhead.equals("MP_PROCEDURE") || Procedures.contains(parseTokens.get(index + 3))) {
             parserWriter.println("rule #43 : expanding");
             Proc_Statement();
         } // 34. Statement -> Empty_Statement (post condition)
@@ -2605,12 +2609,18 @@ public class parser {
         } else {
             //use a flag of some sort?
             String peekID = parseTokens.get(index + 3);
-            if (Functions.contains(peekID)) {
+//            System.out.println("peekID set 1: " + peekID);
+            peekID = s_table.Get_Lexeme(TableName, peekID);
+//            System.out.println("peekID set 2: " + peekID);
+            String peekToken = s_table.Get_Token(TableName, peekID);
+//            System.out.println("peekToken set: " + peekToken);
+            String peekType = s_table.Get_Type(TableName, peekID);
+            if (peekToken.equals("MP_FUNCTION")) {
                 parserWriter.println("rule #106: expanding");
                 Func_Id();
                 parserWriter.println("rule #106: expanding");
                 Opt_Actual_Param_List();
-            } else if (Variables.contains(peekID)) {
+            } else if (peekToken.contains("MP_")) {
                 parserWriter.println("rule #116: expanding");
                 String[] tempString;
                 tempString = Var_Id();

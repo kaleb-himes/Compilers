@@ -6,11 +6,11 @@ program lab1;
 		booleanValue: boolean;
 		float_MathTest: string;
 		bob, fred: boolean;
-b : integer;
+{b : integer;
 finish: integer;
 start:integer;
 otherthing, x, y, chicken: float;
-intConverter: integer;
+intConverter: integer;}
 
 	function factorial( b: integer):integer;
 	var x: integer;

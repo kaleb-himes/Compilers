@@ -23,7 +23,6 @@ public class s_table extends c_a.parser.parser {
     }
 
     //create a new table to take on values.
-
     public static void New_Table(String TableName,
             String NestingLevel, String Label) {
         //HEY DUMMIES HERE IS YOUR ISSUE, DESTROY POINTER ISN"T POINTING
@@ -66,7 +65,7 @@ public class s_table extends c_a.parser.parser {
                 Size = null;
             }
             tables.get(TableName).add(Size);
-        //add Parameters
+            //add Parameters
             //need to remember how many were added as we iterate over this later
             for (int i = 0; i < Parameters.length; i++) {
                 if (i < Parameters.length - 1) {
@@ -110,8 +109,8 @@ public class s_table extends c_a.parser.parser {
             System.out.println(name + " " + value);
         }
     }
-    
-    public static String Get_Offset(String TableName, String Variable){
+
+    public static String Get_Offset(String TableName, String Variable) {
 //        System.out.println("TableName = " + TableName);
 //        System.out.println("Variable = " + Variable);
         String result = "DEFAULT_GET_OFFSET";
@@ -119,16 +118,16 @@ public class s_table extends c_a.parser.parser {
             int getVal = tables.get(TableName).indexOf(Variable);
 //            System.out.println("getVal = " + getVal);
             if (getVal != -1) {
-                result = tables.get(TableName).get(getVal+5);
+                result = tables.get(TableName).get(getVal + 5);
             }
 //            System.out.println("result = " + result);
         }
         return result;
     }
-    
-       public static String Get_NestingLevel(String TableName){
+
+    public static String Get_NestingLevel(String TableName) {
         String getVal = "DEFAULT";
-        
+
         if (tables.containsKey(TableName)) {
             getVal = tables.get(TableName).get(0);
 
@@ -136,17 +135,44 @@ public class s_table extends c_a.parser.parser {
 
         return getVal;
     }
-       public static String Get_Token(String TableName, String Variable){
+
+    public static String Get_Token(String TableName, String Variable) {
         String result = "DEFAULT";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Variable);
 //            System.out.println("getVal = " + getVal);
             if (getVal != -1) {
-                result = tables.get(TableName).get(getVal+1);
+                result = tables.get(TableName).get(getVal + 1);
+            }
+//            System.out.println("result = " + result);
+        }
+        return result;
+    }
+
+    
+    public static String Get_Lexeme(String TableName, String Lexeme){
+        String result = "DEFAULT";
+        if (tables.containsKey(TableName)) {
+            int getVal = tables.get(TableName).indexOf(Lexeme);
+//            System.out.println("getVal = " + getVal);
+            if (getVal != -1) {
+                result = tables.get(TableName).get(getVal);
             }
 //            System.out.println("result = " + result);
         }
         return result;
     }
     
+    public static String Get_Type(String TableName, String Lexeme){
+        String result = "DEFAULT_TYPE";
+        if (tables.containsKey(TableName)) {
+            int getVal = tables.get(TableName).indexOf(Lexeme);
+//            System.out.println("getVal = " + getVal);
+            if (getVal != -1) {
+                result = tables.get(TableName).get(getVal+4);
+            }
+//            System.out.println("result = " + result);
+        }
+        return result;
+    }
 }

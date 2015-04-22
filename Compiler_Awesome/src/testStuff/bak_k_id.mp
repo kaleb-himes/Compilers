@@ -13,6 +13,7 @@ x, y, balloon, legcramp: String;
             end;
     begin
         read(somestuff);
+        {embedded();}
     end;
 
     function junk2 (test:Float; garbage:Boolean) : Boolean;
@@ -55,7 +56,7 @@ commented with MP_INTEGER this line out from a previous test file}
         If I <= -6 then
             Write ( 'this stuff');
 
-        I := junk2(someFloat, someBool);
+        {I := junk2(someFloat, someBool);}
 
     While (I <> 20) do
         I := I + 1;
