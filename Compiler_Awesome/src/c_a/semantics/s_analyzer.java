@@ -122,8 +122,12 @@ public class s_analyzer extends c_a.parser.parser {
                     alreadyChecked.add(CurrLexeme);
                     int typeLocation = tempList2.indexOf(CurrLexeme);
                     String getType = tempList2.get(typeLocation + 1);
+                    getType = getType.trim();
+                    rememberFunctionType = rememberFunctionType.trim();
 //                    System.out.println("We want to compare to: " + getType);
-                    if (!rememberFunctionType.equals(getType)) {
+//                    boolean tempCheck = rememberFunctionType.equals(getType);
+//                    System.out.println(tempCheck);
+                    if (rememberFunctionType.compareTo(getType) != 0) {
                         errorsFound.add("Function " + rememberFunctionName + 
                                 " returns a " + rememberFunctionType + 
                                 " you tried to assign this to the variable " + CurrLexeme +
@@ -213,8 +217,21 @@ public class s_analyzer extends c_a.parser.parser {
 
                 if (rememberTableName.equals("NO_TABLE") && tempList.contains(CurrLexeme)) {
                     rememberFunctionName = CurrLexeme;
-                    int getPosition = tempList.indexOf(CurrLexeme);
-                    rememberFunctionType = tempList.get(getPosition + 1);
+                    int getPosition = tempList.indexOf(CurrLexeme) + 7;
+                    int foundEnd = 0;
+                    while (foundEnd == 0) {
+                        String check = tempList.get(getPosition);
+                        if (check.contains("MP_")) {
+                            getPosition += 1;
+                            check = tempList.get(getPosition);
+                                if (check.contains("MP_")) {
+                                    foundEnd = 1;
+                                    break;
+                                }
+                        }
+                        getPosition += 1;
+                    }
+                    rememberFunctionType = tempList.get(getPosition);
                     rememberTableName = lookUpArray.get(i);
 //                    System.out.println("rememberTableName = " + rememberTableName);
 //                    System.out.println("rememberFunctionName = " + rememberFunctionName);

@@ -497,12 +497,12 @@ public class parser {
                 for (int i = 0; i < listIDs.size(); i++) {
                     CurrLexeme = listIDs.get(i);
                     if (listIDs.size() > 1) {
-                        Size += 1;
+                        
                         s_table.Insert_Row(TableName, CurrLexeme,
                                 CurrToken, Type, Kind, Mode,
                                 Integer.toString(Size), Parameters);
-                    } else {
                         Size += 1;
+                    } else {
                         s_table.Insert_Row(TableName, CurrLexeme,
                                 CurrToken, Type, Kind, Mode,
                                 Integer.toString(Size), Parameters);
@@ -819,6 +819,7 @@ public class parser {
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
                 if (In_Proc_Func_Flag == 1) {
+                    CurrToken = "MP_FUNCTION";
                     int tempSize = 0;
                     Type = "null";
                     Kind = "null";
