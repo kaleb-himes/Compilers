@@ -5,7 +5,6 @@
  */
 package c_a.semantics;
 
-import static c_a.semantics.assembly_builder.assemblyWriter;
 import java.util.ArrayList;
 import symbol_tables.s_table;
 
@@ -267,22 +266,5 @@ public class s_analyzer extends c_a.parser.parser {
             colNo = parseTokens.get(index + 2);
             errorLocation.add(colNo);
         }
-
-//            if (finalType.compareTo(tempType) != 0) {
-//                System.out.println("lineNo: " + parseTokens.get(index + 1));
-//                System.out.println("colNo: " + parseTokens.get(index + 2));
-//                System.out.println("ERROR: finalType = " + finalType);
-//                System.out.println("ERROR: tempType = " + tempType);
-//                errorsFound.add("Trying to assign "
-//                        + tempType + " to "
-//                        + finalType);
-//                // add line no corresponding to error
-//                lineNo = parseTokens.get(index + 1);
-//                errorLocation.add(lineNo);
-//
-//                // add col no corresponding to error
-//                colNo = parseTokens.get(index + 2);
-//                errorLocation.add(colNo);
-//            }
     }
 }

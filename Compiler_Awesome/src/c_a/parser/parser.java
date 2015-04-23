@@ -497,7 +497,7 @@ public class parser {
                 for (int i = 0; i < listIDs.size(); i++) {
                     CurrLexeme = listIDs.get(i);
                     if (listIDs.size() > 1) {
-                        
+
                         s_table.Insert_Row(TableName, CurrLexeme,
                                 CurrToken, Type, Kind, Mode,
                                 Integer.toString(Size), Parameters);
@@ -726,10 +726,14 @@ public class parser {
 //                    System.out.print("[" + dynamicParams.get(i) + "], ");
                     // get the current lexeme for row creation
                     String tempLexeme = dynamicParams.get(i - 1);
+                    tempToken = dynamicParams.get(i);
                     int tempi = i;
-                    while (!dynamicParams.get(tempi).contains("MP_")) {
-                        tempi += 1;
-                        tempToken = dynamicParams.get(tempi);
+                    if (!tempToken.contains("MP_")) {
+                        while (!dynamicParams.get(tempi).contains("MP_")
+                                && !tempToken.contains("MP_")) {
+                            tempi += 1;
+                            tempToken = dynamicParams.get(tempi);
+                        }
                     }
                     //String tempToken = dynamicParams.get(tempi);
                     //if tempLexeme is not the token then insert row
@@ -860,7 +864,7 @@ public class parser {
                 TableName = FuncName;
                 s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
                 destroyPointer++;
-                    //add the Tablename to lookuparray so we can iterate of the
+                //add the Tablename to lookuparray so we can iterate of the
                 //tables later in symantic analysis and see if any of the
                 //existing tables contain our variable
                 lookUpArray.add(TableName);

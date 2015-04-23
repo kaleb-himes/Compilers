@@ -9,7 +9,10 @@ x, y, balloon, legcramp: String;
     procedure junk1 (VAR test:Float; VAR garbage,blob,plop:Boolean);
         procedure embedded(newTest: Integer; newType:float);
             begin
-                read(someBool);
+                
+                read(newTest);
+                newTest := {newTest} + 5;
+                {write(newTest);}
             end;
     begin
         read(somestuff);
