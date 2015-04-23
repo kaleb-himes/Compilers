@@ -11,6 +11,8 @@ ADD SP #0 SP
 ADD SP #0 SP
 BR L3
 L2:
+ADD SP #0 SP
+ADD SP #0 SP
 RD 3(D2)                   ;someBool
 BR L4
 L3:

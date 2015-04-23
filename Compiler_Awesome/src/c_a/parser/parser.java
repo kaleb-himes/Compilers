@@ -719,12 +719,14 @@ public class parser {
                 destroyPointer = lookUpArray.indexOf(TableName);
 
                 Parameters = init;
+                Size = 1;
+                Mode = "null";
+                String tempToken = "DEFAULTTOKEN";
                 for (int i = 1; i < dynamicParams.size(); i++) {
+//                    System.out.print("[" + dynamicParams.get(i) + "], ");
                     // get the current lexeme for row creation
                     String tempLexeme = dynamicParams.get(i - 1);
-
                     int tempi = i;
-                    String tempToken = "DEFAULT_TEMP_TOKEN";
                     while (!dynamicParams.get(tempi).contains("MP_")) {
                         tempi += 1;
                         tempToken = dynamicParams.get(tempi);
@@ -738,6 +740,7 @@ public class parser {
                         Size += 1;
                     }
                 }
+//                System.out.println();
                 //reset procedure name to null
                 ProcName = "";
                 dynamicParams.clear();
@@ -862,6 +865,7 @@ public class parser {
                 //existing tables contain our variable
                 lookUpArray.add(TableName);
                 Parameters = init;
+                Size = 1;
                 for (int i = 0; i < dynamicParams.size(); i++) {
                     // get the current lexeme for row creation
                     String tempLexeme = dynamicParams.get(i);
