@@ -677,6 +677,9 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Proc_Dec"> 
     public static void Proc_Dec() {
         // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
+        String getLabel = s_table.Get_Label(TableName);
+        getLabel = getLabel.trim();
+        assemblyWriter.println("BR " + getLabel);
         parserWriter.println("rule #17 : expanding");
         Proc_Head();
         G_Check = Match("MP_SCOLON");
@@ -708,7 +711,7 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-
+                
                 //update the Label
                 Label = Label_1.concat(Integer.toString(Label_2));
                 Label_2+=1;

@@ -1,6 +1,7 @@
 MOV SP D0
 ADD SP #1 SP
 ADD SP #1 SP
+BR L0
 PUSH 1(D0)                   ;N
 PUSH #1
 ADDS

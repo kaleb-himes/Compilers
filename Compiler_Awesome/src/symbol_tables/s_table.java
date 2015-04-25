@@ -153,8 +153,7 @@ public class s_table extends c_a.parser.parser {
         return result;
     }
 
-    
-    public static String Get_Lexeme(String TableName, String Lexeme){
+    public static String Get_Lexeme(String TableName, String Lexeme) {
         String result = "DEFAULT_LEXEME";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Lexeme);
@@ -166,16 +165,26 @@ public class s_table extends c_a.parser.parser {
         }
         return result;
     }
-    
-    public static String Get_Type(String TableName, String Lexeme){
+
+    public static String Get_Type(String TableName, String Lexeme) {
         String result = "DEFAULT_TYPE";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Lexeme);
 //            System.out.println("getVal = " + getVal);
             if (getVal != -1) {
-                result = tables.get(TableName).get(getVal+4);
+                result = tables.get(TableName).get(getVal + 4);
             }
 //            System.out.println("result = " + result);
+        }
+        return result;
+    }
+
+    public static String Get_Label(String TableName) {
+        String result = "DEFAULT_LABEL";
+        if (tables.containsKey(TableName)) {
+//            System.out.println("getVal = " + getVal);
+            result = tables.get(TableName).get(1);
+//            System.out.println("result Label = " + result);
         }
         return result;
     }
