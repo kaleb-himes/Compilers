@@ -784,11 +784,6 @@ public class parser {
 
 //##############################################################################
                         parserWriter.println("rule #17 : TERMINAL");
-                        //branch to where function ends when it was called
-                        assemblyWriter.println("BR L" + Integer.toString(labelCounter + 1));
-                        //drop a label
-                        assemblyWriter.println("L" + labelCounter + ":");
-                        labelCounter+=1;
                         Advance_Pointer();
                         break;
 
@@ -868,11 +863,11 @@ public class parser {
                 Label_2+=1; 
                 //update the nesting level
                 int Nlvl = NestingLevel;
-                NestingLevel++;
+                NestingLevel+=1;
                 //insert Table info using s_table API name, nesting, label
                 TableName = FuncName;
                 s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-                destroyPointer++;
+                destroyPointer+=1;
                 //add the Tablename to lookuparray so we can iterate of the
                 //tables later in symantic analysis and see if any of the
                 //existing tables contain our variable
@@ -918,8 +913,8 @@ public class parser {
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
 //                        System.out.println("Destroyed table: " +TableName);
-                        destroyPointer--;
-                        NestingLevel--;
+                        destroyPointer-=1;
+                        NestingLevel-=1;
                         TableName = lookUpArray.get(destroyPointer);
 
                         Mode = "";
