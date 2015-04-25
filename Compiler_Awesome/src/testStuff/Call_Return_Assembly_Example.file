@@ -1,0 +1,22 @@
+MOV SP D0
+ADD SP #1 SP
+ADD SP #1 SP
+PUSH #3
+POP 0(D0)
+BR L1
+L0:
+MOV SP D1
+ADD SP #1 SP
+PUSH #4
+POP 0(D1)
+WRT #"D1 = "
+WRTS
+WRTLN #""
+RET
+L1:
+WRT #"D0 = "
+WRT 0(D0)
+WRTLN #""
+CALL L0
+WRTLN #"third"
+HLT

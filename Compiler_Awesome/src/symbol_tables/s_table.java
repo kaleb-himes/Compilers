@@ -47,7 +47,7 @@ public class s_table extends c_a.parser.parser {
      * Example of values: (lexeme)  null, function, null, null, (a, b, c, mary)
      */
     public static void Insert_Row(String TableName, String Lexeme, String Token,
-            String Type, String Kind, String Mode, String Size,
+            String Type, String Kind, String Mode, String Size, String Label,
             String[] Parameters) {
         if (!Lexeme.equals("")) {
             //add the lexeme
@@ -65,6 +65,8 @@ public class s_table extends c_a.parser.parser {
                 Size = null;
             }
             tables.get(TableName).add(Size);
+            //add the Label
+            tables.get(TableName).add(Label);
             //add Parameters
             //need to remember how many were added as we iterate over this later
             for (int i = 0; i < Parameters.length; i++) {
@@ -137,7 +139,9 @@ public class s_table extends c_a.parser.parser {
     }
 
     public static String Get_Token(String TableName, String Variable) {
-        String result = "DEFAULT";
+        String result = "DEFAULT_TOKEN";
+//        TableName = TableName.trim();
+//        Variable = Variable.trim();
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Variable);
 //            System.out.println("getVal = " + getVal);
@@ -151,7 +155,7 @@ public class s_table extends c_a.parser.parser {
 
     
     public static String Get_Lexeme(String TableName, String Lexeme){
-        String result = "DEFAULT";
+        String result = "DEFAULT_LEXEME";
         if (tables.containsKey(TableName)) {
             int getVal = tables.get(TableName).indexOf(Lexeme);
 //            System.out.println("getVal = " + getVal);

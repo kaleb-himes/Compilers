@@ -1,9 +1,15 @@
-program Program2;
-    var I, J: Integer;
-       N, K: Integer;
-  begin
-     Read(N);
-     for I := 1 to N do
-       Write(I);
-   end.
+program Program1;    
+  var N : Integer;
+  
+  procedure Fred;
+    begin
+      N := N + 1
+    end;
+    
+  begin     
+    Read(N);
+    Writeln(N);
+    Fred;
+    Write(N)
+  end.
 
