@@ -1683,11 +1683,11 @@ public class parser {
     public static void Assign_Statement() {
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
-        System.out.print("Variables: ");
-        for (int i = 0; i < Variables.size(); i++) {
-            System.out.print("[" + Variables.get(i) + "], ");
-        }
-        System.out.println();
+//        System.out.print("Variables: ");
+//        for (int i = 0; i < Variables.size(); i++) {
+//            System.out.print("[" + Variables.get(i) + "], ");
+//        }
+//        System.out.println();
         comingFromAssignStatement = 1;
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index + 3);
