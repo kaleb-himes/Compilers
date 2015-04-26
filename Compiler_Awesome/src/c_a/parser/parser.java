@@ -96,6 +96,8 @@ public class parser {
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
     static int comingFromRepeat = 0;
+    static int comingFromProcDec = 0;
+    static int comingFromFuncDec = 0;
     static int sawAnd = 0, sawOr = 0;
     public static int comingFromAssignStatement = 0;
     public static int comingFromFactor_NotFuncOrVar = 0;
@@ -414,6 +416,11 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
+                    System.out.print("listIDs: ");
+                    for (int i = 0; i < listIDs.size(); i++) {
+                        System.out.print("[" + listIDs.get(i) + "], ");
+                    }
+                    System.out.println();
                     if (In_Proc_Func_Flag == 0) {
                         String tempLabel = "null";
                         for (int i = 0; i < listIDs.size(); i++) {
@@ -501,6 +508,7 @@ public class parser {
                     CurrLexeme = listIDs.get(i);
                     CurrLexeme = CurrLexeme.trim();
                     String tempLabel = "null";
+                    
                     if (listIDs.size() > 1) {
 
                         s_table.Insert_Row(TableName, CurrLexeme,
@@ -630,10 +638,6 @@ public class parser {
         //precondition
         switch (lookAhead) {
             case "MP_PROCEDURE":
-//                assemblyWriter.println("BR L" + Integer.toString(labelCounter + 1));
-//                //drop a label
-//                assemblyWriter.println("L" + labelCounter + ":");
-//                labelCounter++;
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
@@ -677,6 +681,7 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Proc_Dec"> 
     public static void Proc_Dec() {
         // 17. Proc_Dec -> Proc_Head MP_SCOLON Block MP_SCOLON
+        //set the label for the function begin
         String getLabel = s_table.Get_Label(TableName);
         getLabel = getLabel.trim();
         assemblyWriter.println("BR " + getLabel);
@@ -711,15 +716,24 @@ public class parser {
 //##############################################################################
 //###### SYMBOL TABLE STUFF ####################################################
 //##############################################################################
-                
+
                 //update the Label
                 Label = Label_1.concat(Integer.toString(Label_2));
-                Label_2+=1;
+                Label_2 += 1;
                 //update the nesting level
                 int Nlvl = NestingLevel;
                 NestingLevel++;
                 TableName = ProcName;
                 s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
+                //drop a label, we are about to begin a procedure
+                getLabel = s_table.Get_Label(TableName);
+                getLabel = getLabel.trim();
+                assemblyWriter.println(getLabel.concat(":"));
+                
+                //move a new SP onto the stack
+                assemblyWriter.println("MOV SP D" + s_table.Get_NestingLevel(TableName));
+                //add a default offset for the procedure itself
+                assemblyWriter.println("ADD SP #1 SP");
                 //add the Tablename to lookuparray so we can iterate over the
                 //tables later in symantic analysis and see if any of the
                 //existing tables contain our variable
@@ -728,9 +742,9 @@ public class parser {
                 destroyPointer += 1; //lookUpArray.indexOf(ProcName);
 
                 Parameters = init;
-                Size = 1;
+                Size = 0;
                 Mode = "null";
-                String tempToken = "DEFAULTTOKEN";
+                String tempToken = "DEFAULT_TOKEN";
                 String tempLabel = "null";
                 for (int i = 1; i < dynamicParams.size(); i++) {
 //                    System.out.print("[" + dynamicParams.get(i) + "], ");
@@ -748,10 +762,15 @@ public class parser {
                     //String tempToken = dynamicParams.get(tempi);
                     //if tempLexeme is not the token then insert row
                     // and the token is non-empty
-                    if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")) {
+                    if (!tempLexeme.contains("MP_") && !tempLexeme.equals("") 
+                            && (!Type.equals("null") && !Kind.equals("null") 
+                            && !Mode.equals("null") 
+                            && !Integer.toString(Size).equals("null") 
+                            && !tempLabel.equals("null"))
+                            ) {
                         s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                Type, Kind, Mode, Integer.toString(Size), 
-                                                         tempLabel, Parameters);
+                                Type, Kind, Mode, Integer.toString(Size),
+                                tempLabel, Parameters);
                         Size += 1;
                     }
                 }
@@ -763,10 +782,20 @@ public class parser {
                 parserWriter.println("rule #17 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #17 : expanding");
+                //let block know it's expanding a procedure. This flag gets
+                //checked in StatementPart to know if it should drop a label
+                //for the main program body or not
+                comingFromProcDec = 1;
                 Block();
+                comingFromProcDec = 0;
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+                        //move the SP off the stack
+                        assemblyWriter.println("POP D" + s_table.Get_NestingLevel(TableName));
+                        //do a default RET, this works with CALL and branches
+                        //to whichever label is on top of the stack.
+                        assemblyWriter.println("RET");
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
@@ -779,9 +808,10 @@ public class parser {
 //                        if (!TableName.equals("Tester"))
 //                        System.out.println("Destroyed table: " +TableName);
                         if (destroyPointer > 0) {
-                            destroyPointer-=1;
+                            destroyPointer -= 1;
                         }
-                        NestingLevel-=1;
+                        NestingLevel -= 1;
+                        //reset the tablename
                         TableName = lookUpArray.get(destroyPointer);
 //                        System.out.println("Table is now: " +TableName);
 
@@ -823,6 +853,10 @@ public class parser {
 // <editor-fold defaultstate="collapsed" desc="Func_Dec"> 
     public static void Func_Dec() {
         // 18. Func_Dec -> Func_Head MP_SCOLON Block MP_SCOLON
+        //set the label for the function begin
+        String getLabel = s_table.Get_Label(TableName);
+        getLabel = getLabel.trim();
+        assemblyWriter.println("BR " + getLabel);
         parserWriter.println("rule #18 : expanding");
         Func_Head();
         G_Check = Match("MP_SCOLON");
@@ -863,33 +897,38 @@ public class parser {
 //############################################################################## 
                 //update the Label
                 Label = Label_1.concat(Integer.toString(Label_2));
-                Label_2+=1; 
+                Label_2 += 1;
                 //update the nesting level
                 int Nlvl = NestingLevel;
-                NestingLevel+=1;
+                NestingLevel += 1;
                 //insert Table info using s_table API name, nesting, label
                 TableName = FuncName;
                 s_table.New_Table(TableName, Integer.toString(Nlvl), Label);
-                destroyPointer+=1;
+                //drop a label
+                getLabel = s_table.Get_Label(TableName);
+                getLabel = getLabel.trim();
+                assemblyWriter.println(getLabel.concat(":"));
+                destroyPointer += 1;
                 //add the Tablename to lookuparray so we can iterate of the
                 //tables later in symantic analysis and see if any of the
                 //existing tables contain our variable
                 lookUpArray.add(TableName);
                 Parameters = init;
-                Size = 1;
+                Size = 0;
                 String tempLabel = "null";
                 for (int i = 0; i < dynamicParams.size(); i++) {
                     // get the current lexeme for row creation
                     String tempLexeme = dynamicParams.get(i);
 
                     int tempi = i;
-                    while (!dynamicParams.get(tempi).contains("MP_")) {
+                    while (!dynamicParams.get(tempi).contains("MP_")
+                            && tempi < dynamicParams.size() - 1) {
                         tempi++;
                     }
                     String tempToken = dynamicParams.get(tempi);
                     if (!tempLexeme.contains("MP_")) {
                         s_table.Insert_Row(TableName, tempLexeme, tempToken,
-                                Type, Kind, Mode, Integer.toString(Size), 
+                                Type, Kind, Mode, Integer.toString(Size),
                                 tempLabel, Parameters);
                         Size += 1;
                     }
@@ -901,10 +940,18 @@ public class parser {
                 parserWriter.println("rule #18 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #18 : expanding");
+                //let block know it's expanding a function. This flag gets
+                //checked in StatementPart to know if it should drop a label
+                //for the main program body or not
+                comingFromFuncDec = 1;
                 Block();
+                comingFromFuncDec = 0;
                 G_Check = Match("MP_SCOLON");
                 switch (G_Check) {
                     case 1:
+                        //do a default RET, this works with CALL and branches
+                        //to whichever label is on top of the stack.
+                        assemblyWriter.println("RET");
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
@@ -916,8 +963,8 @@ public class parser {
                         //uncomment this if statement to see main table at end
 //                        if (!TableName.equals("Tester"))
 //                        System.out.println("Destroyed table: " +TableName);
-                        destroyPointer-=1;
-                        NestingLevel-=1;
+                        destroyPointer -= 1;
+                        NestingLevel -= 1;
                         TableName = lookUpArray.get(destroyPointer);
 
                         Mode = "";
@@ -1208,6 +1255,12 @@ public class parser {
     public static void Statement_Part() {
         // 29. Statement_Part -> Compound_Statement
         parserWriter.println("rule #29 : expanding");
+        //drop the label for Main if not procedure or function expansion
+        if (comingFromProcDec == 0 && comingFromFuncDec == 0) {
+            String tempLabel = s_table.Get_Label(TableName);
+            tempLabel = tempLabel.trim();
+            assemblyWriter.println(tempLabel.concat(":"));
+        }
         Compound_Statement();
     }
 // </editor-fold>
@@ -1480,10 +1533,13 @@ public class parser {
         lineOfAssemblyCode.add("RD ");
         String offset = s_table.Get_Offset(TableName, tempString[0]);
         int tempDestroyPointer = destroyPointer;
-        while (offset.equals("DEFAULT_GET_OFFSET") && tempDestroyPointer >= 0) {
-            tempDestroyPointer -= 1;
-            String tempTableName = lookUpArray.get(tempDestroyPointer);
-            offset = s_table.Get_Offset(tempTableName, tempString[0]);
+        try {
+            while (offset.equals("DEFAULT_GET_OFFSET") && tempDestroyPointer >= 0) {
+                tempDestroyPointer -= 1;
+                String tempTableName = lookUpArray.get(tempDestroyPointer);
+                offset = s_table.Get_Offset(tempTableName, tempString[0]);
+            }
+        } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
         }
         lineOfAssemblyCode.add(offset);
         lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
@@ -1627,6 +1683,11 @@ public class parser {
     public static void Assign_Statement() {
         // 54. Assign_Statement -> Var_Id MP_ASSIGN Expression
         // 55. Assign_Statement -> Func_Id MP_ASSIGN Expression
+        System.out.print("Variables: ");
+        for (int i = 0; i < Variables.size(); i++) {
+            System.out.print("[" + Variables.get(i) + "], ");
+        }
+        System.out.println();
         comingFromAssignStatement = 1;
         String whichRule = "rule # NOT_A_RULE"; //default
         String peekID = parseTokens.get(index + 3);
@@ -1665,8 +1726,13 @@ public class parser {
                         tempDestroyPointer -= 1;
                     }
                     lineOfAssemblyCode.add(offset);
-                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(tempTableName) + ")");
+                    String NestingLevel = s_table.Get_NestingLevel(tempTableName);
+                    if (NestingLevel.equals("DEFAULT_NESTING_LEVEL")) {
+                        NestingLevel = s_table.Get_NestingLevel(TableName);
+                    }
+                    lineOfAssemblyCode.add("(D" + NestingLevel + ")");
                     lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
+//                    assemblyWriter.println("HERE++++++++++++++++++++");
                     for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
@@ -1682,9 +1748,17 @@ public class parser {
                         offset = s_table.Get_Offset(tempTableName, tempString[0]);
                         tempDestroyPointer -= 1;
                     }
+                    //if offset is still DEFAULT_GET_OFFSET then we need to pop
+                    //into the variable that called function Fred in the first place
+                    //so call POP into FunctionResultVariable
                     lineOfAssemblyCode.add(offset);
-                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(tempTableName) + ")");
+                    String NestingLevel = s_table.Get_NestingLevel(tempTableName);
+                    if (NestingLevel.equals("DEFAULT_NESTING_LEVEL")) {
+                        NestingLevel = s_table.Get_NestingLevel(TableName);
+                    }
+                    lineOfAssemblyCode.add("(D" + NestingLevel + ")");
                     lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
+//                    assemblyWriter.println("HERE_____________________");
                     for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
@@ -1974,6 +2048,7 @@ public class parser {
                         lineOfAssemblyCode.add(offset);
                         lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                         lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
+                        
                         for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                             assemblyWriter.print(lineOfAssemblyCode.get(i));
                         }
@@ -2019,6 +2094,7 @@ public class parser {
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                                 lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
+                                
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
@@ -2029,6 +2105,7 @@ public class parser {
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                                 lineOfAssemblyCode.add("                   ;" + FinalValLexeme + "\n");
+                                
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
@@ -2637,10 +2714,14 @@ public class parser {
             String peekToken = s_table.Get_Token(TableName, peekID);
             String tempTableName = TableName;
             int tempDestroyPointer = destroyPointer;
+            try {
             while (peekToken.equals("DEFAULT_TOKEN") && tempDestroyPointer >= 0) {
                 tempDestroyPointer -= 1;
                 tempTableName = lookUpArray.get(tempDestroyPointer);
                 peekToken = s_table.Get_Token(tempTableName, peekID);
+            }
+            } catch (java.lang.ArrayIndexOutOfBoundsException ex ) {
+                
             }
 //            System.out.println("peekToken set: " + peekToken);
 //            String peekType = s_table.Get_Type(TableName, peekID);
@@ -2666,6 +2747,7 @@ public class parser {
                     lineOfAssemblyCode.add(offset);
                     lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(tempTableName) + ")");
                     lineOfAssemblyCode.add("                   ;" + expressionsVarId + "\n");
+//                    assemblyWriter.println("HERE------------------");
                     for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
@@ -2689,6 +2771,7 @@ public class parser {
                     lineOfAssemblyCode.add(offset);
                     lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                     lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
+
                     for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
@@ -2728,7 +2811,7 @@ public class parser {
             //put tablename in as key1 for tables
             //update the Label
             Label = Label_1.concat(Integer.toString(Label_2));
-            Label_2+=1;
+            Label_2 += 1;
             //update the nesting level
             int Nlvl = NestingLevel;
             NestingLevel++;
@@ -2813,9 +2896,17 @@ public class parser {
 //            System.out.println("Set ProcName: " + ProcName);
 //##############################################################################
             parserWriter.println("rule #109: TERMINAL");
-
-            lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName) + ")");
-            lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
+            try {
+                if (!Offset.isEmpty()) {
+                    lineOfAssemblyCode.add("PUSH " + Offset + "(D" + s_table.Get_NestingLevel(TableName) + ")");
+                    lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
+                }
+            } catch (java.lang.NullPointerException ex) {
+                String tempLabel = s_table.Get_Label(ProcName);
+                tempLabel = tempLabel.trim();
+                lineOfAssemblyCode.add("CALL " + tempLabel);
+                lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
+            }
             Advance_Pointer();
         } else {
             sourceOfError = "Proc_Id, Expected MP_IDENTIFIER found: " + lookAhead;
@@ -2907,10 +2998,17 @@ public class parser {
                 CurrLexeme = parseTokens.get(index + 3);
                 if (In_Proc_Func_Flag == 1) {
                     dynamicParams.add(CurrLexeme);
+                    if (!Variables.contains(CurrLexeme)) {
+                        Variables.add(CurrLexeme);
+                        //just added this, may cause issues later, beware
+                        listIDs.add(CurrLexeme);
+                    }
                 } else {
 //                    System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                     listIDs.add(CurrLexeme);
-                    Variables.add(CurrLexeme);
+                    if (!Variables.contains(CurrLexeme)) {
+                        Variables.add(CurrLexeme);
+                    }
                 }
 //##############################################################################
 
@@ -2955,10 +3053,17 @@ public class parser {
 //##############################################################################
                         if (In_Proc_Func_Flag == 1) {
                             dynamicParams.add(CurrLexeme);
+                            if (!Variables.contains(CurrLexeme)) {
+                                Variables.add(CurrLexeme);
+                                //just added this may cause issues later beware
+                                listIDs.add(CurrLexeme);
+                            }
                         } else {
 //                            System.out.println("Adding: " + parseTokens.get(index + 3) + " to the listIDs array");
                             listIDs.add(CurrLexeme);
-                            Variables.add(CurrLexeme);
+                            if (!Variables.contains(CurrLexeme)) {
+                                Variables.add(CurrLexeme);
+                            }
                         }
 //##############################################################################
 
@@ -3055,6 +3160,7 @@ public class parser {
                 System.out.print("\033[31m" + (errorsFound.size()) + " ERRORS"
                         + " FOUND, PLEASE CORRECT BEFORE PROGRAM CAN BE COMPILED. \n");
                 System.out.println("****************************************************************\033[0m");
+                s_table.Print_Tables();
             }
         } else {
             System.out.println(message);

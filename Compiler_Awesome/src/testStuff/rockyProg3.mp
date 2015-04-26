@@ -2,8 +2,13 @@ program Program1;
   var N : Integer;
   
   procedure Fred;
+    var I: Integer;
+        J: Integer;
     begin
-      N := N + 1
+      J := 5;
+      I := N;
+      I := I + 1 + J;
+      N := I;
     end;
     
   begin     
@@ -12,4 +17,3 @@ program Program1;
     Fred;
     Write(N)
   end.
-

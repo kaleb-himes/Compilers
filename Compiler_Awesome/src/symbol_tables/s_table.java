@@ -128,8 +128,7 @@ public class s_table extends c_a.parser.parser {
     }
 
     public static String Get_NestingLevel(String TableName) {
-        String getVal = "DEFAULT";
-
+        String getVal = "DEFAULT_NESTING_LEVEL";
         if (tables.containsKey(TableName)) {
             getVal = tables.get(TableName).get(0);
 

@@ -21,7 +21,7 @@ public class s_analyzer extends c_a.parser.parser {
     static int ArgCompare = 0;
     static int compareToArg = 0;
     //grabs offset out of S-table and registers the nesting level
-    public static String Offset;  
+    public static String Offset;
     static ArrayList<String> alreadyChecked = new ArrayList<>();
 
     public static void analyze_variable() {
@@ -30,7 +30,9 @@ public class s_analyzer extends c_a.parser.parser {
 //##############################################################################
         if (!Functions.contains(parseTokens.get(index + 3))) {
             CurrLexeme = parseTokens.get(index + 3);
-            Variables.add(CurrLexeme);
+            if (!Variables.contains(CurrLexeme)) {
+                Variables.add(CurrLexeme);
+            }
 //                System.out.println("Set VarID: " + CurrLexeme);
         }
 //##############################################################################
@@ -127,10 +129,10 @@ public class s_analyzer extends c_a.parser.parser {
 //                    boolean tempCheck = rememberFunctionType.equals(getType);
 //                    System.out.println(tempCheck);
                     if (rememberFunctionType.compareTo(getType) != 0) {
-                        errorsFound.add("Function " + rememberFunctionName + 
-                                " returns a " + rememberFunctionType + 
-                                " you tried to assign this to the variable " + CurrLexeme +
-                               " which is of type " + getType);
+                        errorsFound.add("Function " + rememberFunctionName
+                                + " returns a " + rememberFunctionType
+                                + " you tried to assign this to the variable " + CurrLexeme
+                                + " which is of type " + getType);
                         //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
                         errorLocation.add(lineNo);
@@ -155,7 +157,7 @@ public class s_analyzer extends c_a.parser.parser {
 //                    System.out.println("We want to compare to: " + compareTo);
                     if (!compareTo.equals(getType)) {
                         errorsFound.add("Trying to pass argument of type "
-                                + getType + " to function " + rememberFunctionName 
+                                + getType + " to function " + rememberFunctionName
                                 + " which wanted a " + rememberFunctionType);
                         //add line no corresponding to error
                         lineNo = parseTokens.get(index + 1);
@@ -218,15 +220,15 @@ public class s_analyzer extends c_a.parser.parser {
                     rememberFunctionName = CurrLexeme;
                     int getPosition = tempList.indexOf(CurrLexeme) + 7;
                     int foundEnd = 0;
-                    while (foundEnd == 0) {
+                    while (foundEnd == 0 && getPosition < tempList.size() - 1) {
                         String check = tempList.get(getPosition);
                         if (check.contains("MP_")) {
                             getPosition += 1;
                             check = tempList.get(getPosition);
-                                if (check.contains("MP_")) {
-                                    foundEnd = 1;
-                                    break;
-                                }
+                            if (check.contains("MP_")) {
+                                foundEnd = 1;
+                                break;
+                            }
                         }
                         getPosition += 1;
                     }
