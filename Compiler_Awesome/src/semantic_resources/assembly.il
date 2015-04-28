@@ -20,11 +20,14 @@ POP 1(D1)                   ;I
 PUSH 1(D1)                   ;I
 POP 1(D0)                   ;N
 POP D1
-RET
+MOV SP D0
+BR L501
 L0:
 RD 1(D0)                   ;N
-WRTLN 1(D0)                   ;N
-CALL L1                   ;Fred
+WRT 1(D0)                   ;N
+WRT #" \n"
+BR L1                   ;Fred
+L501:
 WRT 1(D0)                   ;N
 WRTLN #""
 POP D0

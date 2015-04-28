@@ -69,7 +69,7 @@ public class parser {
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
     public static String TableName, ProcName, FuncName, Label_1 = "L";
-    static int NestingLevel, Label_2;
+    static int NestingLevel, Label_2, ProcedureCounter = 500, FunctionCounter = 750;
     public static String CurrLexeme, Type, Kind, Mode, Label, CurrToken;
     static String[] Parameters;
     static int Size;
@@ -793,9 +793,11 @@ public class parser {
                     case 1:
                         //move the SP off the stack
                         assemblyWriter.println("POP D" + s_table.Get_NestingLevel(TableName));
+                        int stackPointer = Integer.parseInt(s_table.Get_NestingLevel(TableName));
+                        assemblyWriter.println("MOV SP D" + Integer.toString(stackPointer - 1));
                         //do a default RET, this works with CALL and branches
                         //to whichever label is on top of the stack.
-                        assemblyWriter.println("RET");
+                        assemblyWriter.println("BR L" + Integer.toString(ProcedureCounter));
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
@@ -951,7 +953,7 @@ public class parser {
                     case 1:
                         //do a default RET, this works with CALL and branches
                         //to whichever label is on top of the stack.
-                        assemblyWriter.println("RET");
+                        assemblyWriter.println("BR L" + Integer.toString(FunctionCounter));
 //##############################################################################
 //############ SYMBOL TABLE STUFF ##############################################
 //##############################################################################
@@ -2646,7 +2648,7 @@ public class parser {
                     String temp2 = temp1.replace("'''", "");
                     temp1 = temp2;
                 }
-                assemblyWriter.print(temp1 + " ");
+                assemblyWriter.print(temp1);
             }
             assemblyWriter.println("\"");
         } else if (lookAhead.equals("MP_TRUE")) {
@@ -2904,8 +2906,11 @@ public class parser {
             } catch (java.lang.NullPointerException ex) {
                 String tempLabel = s_table.Get_Label(ProcName);
                 tempLabel = tempLabel.trim();
-                lineOfAssemblyCode.add("CALL " + tempLabel);
+                lineOfAssemblyCode.add("BR " + tempLabel);
                 lineOfAssemblyCode.add("                   ;" + CurrLexeme + "\n");
+                //drop a procedure label
+                lineOfAssemblyCode.add("L" + ProcedureCounter + ":\n");
+                ProcedureCounter++;
             }
             Advance_Pointer();
         } else {

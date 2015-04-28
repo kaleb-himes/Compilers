@@ -13,7 +13,8 @@ program Program1;
     
   begin     
     Read(N);
-    Writeln(N);
+    Write(N);
+    Write('\n');
     Fred;
     Write(N)
   end.

@@ -3,8 +3,8 @@ ADD SP #1 SP
 ADD SP #1 SP
 PUSH #3
 POP 0(D0)
-BR L1
-L0:
+BR L0
+L1:
 MOV SP D1
 ADD SP #1 SP
 PUSH #4
@@ -13,10 +13,10 @@ WRT #"D1 = "
 WRTS
 WRTLN #""
 RET
-L1:
+L0:
 WRT #"D0 = "
 WRT 0(D0)
 WRTLN #""
-CALL L0
+CALL L1
 WRTLN #"third"
 HLT
