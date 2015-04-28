@@ -1,34 +1,37 @@
 MOV SP D0
 ADD SP #1 SP
 ADD SP #1 SP
-BR L0
-L1:
-MOV SP D1
 ADD SP #1 SP
 ADD SP #1 SP
-ADD SP #1 SP
-PUSH #5
-POP 2(D1)                   ;J
-PUSH 1(D0)                   ;N
-POP 1(D1)                   ;I
-PUSH 1(D1)                   ;I
-PUSH #1
-PUSH 2(D1)                   ;J
-ADDS
-ADDS
-POP 1(D1)                   ;I
-PUSH 1(D1)                   ;I
-POP 1(D0)                   ;N
-POP D1
-MOV SP D0
-BR L501
 L0:
-RD 1(D0)                   ;N
-WRT 1(D0)                   ;N
-WRT #" \n"
-BR L1                   ;Fred
-L501:
-WRT 1(D0)                   ;N
+RD 3(D0)                   ;N
+PUSH #1
+POP 2(D0)                   ;I
+PUSH #0
+POP 1(D0)                   ;Sum
+L589:
+PUSH 2(D0)                   ;I
+PUSH 3(D0)                   ;N
+CMPLES
+PUSH 2(D0)                   ;I
+PUSH #100
+CMPGTS
+ORS
+BRTS L590
+BR L591
+L590:
+PUSH 1(D0)                   ;Sum
+PUSH 2(D0)                   ;I
+ADDS
+POP 1(D0)                   ;Sum
+PUSH 2(D0)                   ;I
+PUSH #1
+ADDS
+POP 2(D0)                   ;I
+WRT 2(D0)                   ;I
+WRT 1(D0)                   ;Sum
+BR L589
+L591:
 WRTLN #""
 POP D0
 HLT

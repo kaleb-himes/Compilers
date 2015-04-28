@@ -69,7 +69,8 @@ public class parser {
 //######### BEGIN Symbol table resources #######################################
 //##############################################################################
     public static String TableName, ProcName, FuncName, Label_1 = "L";
-    static int NestingLevel, Label_2, ProcedureCounter = 500, FunctionCounter = 750;
+    static int NestingLevel, Label_2, ProcedureCounter = 148, FunctionCounter = 295,
+               forCounter = 442, whileCounter = 589, ifCounter = 736, repeatCounter = 833;
     public static String CurrLexeme, Type, Kind, Mode, Label, CurrToken;
     static String[] Parameters;
     static int Size;
@@ -1796,8 +1797,8 @@ public class parser {
                 parserWriter.println("rule #56: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #56: expanding");
-                Boolean_Expression();
-                String tempString = ("BRFS L" + labelCounter);
+                Boolean_Expression(ifCounter);
+                String tempString = ("BRFS L" + ifCounter);
                 assemblyWriter.println(tempString);
                 G_Check = Match("MP_THEN");
                 //we do want to fall through here, to evaluate second G_Check 
@@ -1876,17 +1877,17 @@ public class parser {
             switch (G_Check) {
                 case 1:
                     // terminate the previous if part with a branch to...
-                    String tempString = "BR L" + Integer.toString(labelCounter + 1);
+                    String tempString = "BR L" + Integer.toString(ifCounter + 1);
                     assemblyWriter.println(tempString);
                     //drop a label
-                    assemblyWriter.println("L" + labelCounter + ":");
-                    labelCounter++;
-//                    System.out.println("labelCounter = " + labelCounter);
+                    assemblyWriter.println("L" + ifCounter + ":");
+                    ifCounter+=1;
+//                    System.out.println("ifCounter = " + ifCounter);
                     Advance_Pointer();
                     parserWriter.println("rule #57: expanding");
                     Statement();
                     // end by adding the branch to label from 8 lines up
-                    assemblyWriter.println("L" + labelCounter + ":");
+                    assemblyWriter.println("L" + ifCounter + ":");
                     break;
 
                 default:
@@ -1906,8 +1907,8 @@ public class parser {
         switch (G_Check) {
             case 1:
                 //drop a label
-                assemblyWriter.println("L" + labelCounter + ":");
-                labelCounter++;
+                assemblyWriter.println("L" + repeatCounter + ":");
+                repeatCounter+=1;
                 parserWriter.println("rule #59: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #59: expanding");
@@ -1919,12 +1920,12 @@ public class parser {
                         parserWriter.println("rule #59: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #59: expanding");
-                        Boolean_Expression();
+                        Boolean_Expression(repeatCounter);
                         // write the default branch-to statement
-                        assemblyWriter.println("BR L" + Integer.toString(labelCounter - 1));
+                        assemblyWriter.println("BR L" + Integer.toString(repeatCounter - 1));
                         //and drop label 2
-                        assemblyWriter.println("L" + labelCounter + ":");
-                        labelCounter++;
+                        assemblyWriter.println("L" + repeatCounter + ":");
+                        repeatCounter+=1;
                         break;
 
                     default:
@@ -1965,18 +1966,18 @@ public class parser {
         switch (G_Check) {
             case 1:
                 //drop label 1 and save it for later
-                int beginningLabel = labelCounter;
-                assemblyWriter.println("L" + labelCounter + ":");
-                labelCounter++;
+                int beginningLabel = whileCounter;
+                assemblyWriter.println("L" + whileCounter + ":");
+                whileCounter+=1;
                 parserWriter.println("rule #60: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #60: expanding");
-                Boolean_Expression();
+                Boolean_Expression(whileCounter);
                 // write the default branch-to statement
-                assemblyWriter.println("BR L" + Integer.toString(labelCounter + 1));
+                assemblyWriter.println("BR L" + Integer.toString(whileCounter + 1));
                 //and drop label 2
-                assemblyWriter.println("L" + labelCounter + ":");
-                labelCounter++;
+                assemblyWriter.println("L" + whileCounter + ":");
+                whileCounter+=1;
 
                 G_Check = Match("MP_DO");
                 switch (G_Check) {
@@ -1988,8 +1989,8 @@ public class parser {
                         //finished the statement now let's loop back to the beginning;
                         assemblyWriter.println("BR L" + Integer.toString(beginningLabel));
                         //and finally drop the exit the while loop label
-                        assemblyWriter.println("L" + labelCounter + ":");
-                        labelCounter++;
+                        assemblyWriter.println("L" + whileCounter + ":");
+                        whileCounter+=1;
                         break;
 
                     default:
@@ -2067,9 +2068,9 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 //drop a label
-                                assemblyWriter.println("L" + labelCounter + ":");
-                                int rememberLabelCounter = labelCounter;
-                                labelCounter++;
+                                assemblyWriter.println("L" + forCounter + ":");
+                                int rememberLabelCounter = forCounter;
+                                forCounter+=1;
                                 parserWriter.println("rule #61: TERMINAL");
                                 Advance_Pointer();
                                 parserWriter.println("rule #61: expanding");
@@ -2962,17 +2963,17 @@ public class parser {
 
 // rule 111
 // <editor-fold defaultstate="collapsed" desc="Boolean_Expression">
-    public static void Boolean_Expression() {
+    public static void Boolean_Expression(int incomingCounter) {
         // 111. Boolean_Expression -> Expression
         parserWriter.println("rule #111: expanding");
         Expression();
         if (sawAnd == 1) {
             assemblyWriter.println("ANDS");
-            String tempString = ("BRTS L" + labelCounter);
+            String tempString = ("BRTS L" + incomingCounter);
             assemblyWriter.println(tempString);
         } else if (sawOr == 1) {
             assemblyWriter.println("ORS");
-            String tempString = ("BRTS L" + labelCounter);
+            String tempString = ("BRTS L" + incomingCounter);
             assemblyWriter.println(tempString);
         }
         sawOr = 0;
