@@ -70,7 +70,7 @@ public class parser {
 //##############################################################################
     public static String TableName, ProcName, FuncName, Label_1 = "L";
     static int NestingLevel, Label_2, ProcedureCounter = 148, FunctionCounter = 295,
-               forCounter = 442, whileCounter = 589, ifCounter = 736, repeatCounter = 833;
+            forCounter = 442, whileCounter = 589, ifCounter = 736, repeatCounter = 833;
     public static String CurrLexeme, Type, Kind, Mode, Label, CurrToken;
     static String[] Parameters;
     static int Size;
@@ -91,8 +91,9 @@ public class parser {
     public static int checkFuncArgs = 0;            //alert Var_Id to check function types
     public static String rememberTableName = "NO_TABLE";
     public static int comingFromRead = 0;
-    public static int comingFromWrite = 0;
+    public static int comingFromWrite = 0, printStringLit = 0;
     public static int comingFromWriteLn = 0;
+    static int optionalSignInPlay = 0;
     static int isNumeric = 0;
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
@@ -228,7 +229,7 @@ public class parser {
             index += 3;
             int i = 0;
             String peek = parseTokens.get(index);
-            writeStatementStringArray.add(peek);
+            writeStatementStringArray.add(peek.concat(" "));
             writeStatementStringArray.set(i, " " + writeStatementStringArray.get(i));
             //as long as we are not at the last part of the string
             while (!peek.contains("'''")) {
@@ -242,7 +243,7 @@ public class parser {
                     break;
                 }
                 peek = parseTokens.get(index);
-                writeStatementStringArray.add(peek);
+                writeStatementStringArray.add(peek.concat(" "));
             }
 
             //if we are at the last part of the string, update parseTokens to 
@@ -509,7 +510,7 @@ public class parser {
                     CurrLexeme = listIDs.get(i);
                     CurrLexeme = CurrLexeme.trim();
                     String tempLabel = "null";
-                    
+
                     if (listIDs.size() > 1) {
 
                         s_table.Insert_Row(TableName, CurrLexeme,
@@ -730,7 +731,7 @@ public class parser {
                 getLabel = s_table.Get_Label(TableName);
                 getLabel = getLabel.trim();
                 assemblyWriter.println(getLabel.concat(":"));
-                
+
                 //move a new SP onto the stack
                 assemblyWriter.println("MOV SP D" + s_table.Get_NestingLevel(TableName));
                 //add a default offset for the procedure itself
@@ -763,12 +764,11 @@ public class parser {
                     //String tempToken = dynamicParams.get(tempi);
                     //if tempLexeme is not the token then insert row
                     // and the token is non-empty
-                    if (!tempLexeme.contains("MP_") && !tempLexeme.equals("") 
-                            && (!Type.equals("null") && !Kind.equals("null") 
-                            && !Mode.equals("null") 
-                            && !Integer.toString(Size).equals("null") 
-                            && !tempLabel.equals("null"))
-                            ) {
+                    if (!tempLexeme.contains("MP_") && !tempLexeme.equals("")
+                            && (!Type.equals("null") && !Kind.equals("null")
+                            && !Mode.equals("null")
+                            && !Integer.toString(Size).equals("null")
+                            && !tempLabel.equals("null"))) {
                         s_table.Insert_Row(TableName, tempLexeme, tempToken,
                                 Type, Kind, Mode, Integer.toString(Size),
                                 tempLabel, Parameters);
@@ -1597,6 +1597,11 @@ public class parser {
                         G_Check = Match("MP_RPAREN");
                         switch (G_Check) {
                             case 1:
+                                assemblyWriter.println("WRTS");
+                                if (comingFromWriteLn == 1) {
+                                    assemblyWriter.println("PUSH #\"\\n\"");
+                                    assemblyWriter.println("WRTS");
+                                }
                                 if (whichWrite == 1) {
                                     parserWriter.println("rule #49 : TERMINAL");
                                 } else {
@@ -1656,6 +1661,19 @@ public class parser {
         G_Check = Match("MP_COMMA");
         switch (G_Check) {
             case 1:
+                if (optionalSignInPlay == 1) {
+                    assemblyWriter.println("PUSH #1");
+                    assemblyWriter.println("MULS");
+                    optionalSignInPlay = 0;
+                } else if (optionalSignInPlay == -1) {
+                    assemblyWriter.println("PUSH #-1");
+                    assemblyWriter.println("MULS");
+                    optionalSignInPlay = 0;
+                } else {
+                    optionalSignInPlay = 0;
+                }
+                assemblyWriter.println("WRTS");
+                OperationsCounter = 0;
                 parserWriter.println("rule #51 : TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #51 : expanding");
@@ -1710,14 +1728,26 @@ public class parser {
         G_Check = Match("MP_ASSIGN");
         switch (G_Check) {
             case 1:
-                lineOfAssemblyCode.add("MOV ");
+//                lineOfAssemblyCode.add("MOV ");
 
                 parserWriter.println(whichRule + ": TERMINAL");
                 Advance_Pointer();
                 parserWriter.println(whichRule + ": expanding");
 
                 ExpressionCounter = Expression();
+
                 if (ExpressionCounter == 1 && OperationsCounter == 0) {
+                    if (optionalSignInPlay == 1) {
+                        assemblyWriter.println("PUSH #1");
+                        assemblyWriter.println("MULS");
+                        optionalSignInPlay = 0;
+                    } else if (optionalSignInPlay == -1) {
+                        assemblyWriter.println("PUSH #-1");
+                        assemblyWriter.println("MULS");
+                        optionalSignInPlay = 0;
+                    } else {
+                        optionalSignInPlay = 0;
+                    }
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("POP ");
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
@@ -1741,7 +1771,26 @@ public class parser {
                     }
                     lineOfAssemblyCode.clear();
                 } else {
+                    if (optionalSignInPlay == 1) {
+                        assemblyWriter.println("PUSH #1");
+                        assemblyWriter.println("MULS");
+                        optionalSignInPlay = 0;
+                    } else if (optionalSignInPlay == -1) {
+                        assemblyWriter.println("PUSH #-1");
+                        assemblyWriter.println("MULS");
+                        optionalSignInPlay = 0;
+                    } else {
+                        optionalSignInPlay = 0;
+                    }
                     lineOfAssemblyCode.clear();
+                    if (sawOr == 1) {
+                        assemblyWriter.println("ORS");
+                        sawOr = 0;
+                    }
+                    if (sawAnd == 1) {
+                        assemblyWriter.println("ANDS");
+                        sawAnd = 0;
+                    }
                     lineOfAssemblyCode.add("POP ");
                     String offset = s_table.Get_Offset(TableName, tempString[0]);
                     int tempDestroyPointer = destroyPointer;
@@ -1881,13 +1930,14 @@ public class parser {
                     assemblyWriter.println(tempString);
                     //drop a label
                     assemblyWriter.println("L" + ifCounter + ":");
-                    ifCounter+=1;
+                    ifCounter += 1;
 //                    System.out.println("ifCounter = " + ifCounter);
                     Advance_Pointer();
                     parserWriter.println("rule #57: expanding");
                     Statement();
                     // end by adding the branch to label from 8 lines up
                     assemblyWriter.println("L" + ifCounter + ":");
+                    ifCounter += 1;
                     break;
 
                 default:
@@ -1908,7 +1958,7 @@ public class parser {
             case 1:
                 //drop a label
                 assemblyWriter.println("L" + repeatCounter + ":");
-                repeatCounter+=1;
+                repeatCounter += 1;
                 parserWriter.println("rule #59: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #59: expanding");
@@ -1925,7 +1975,7 @@ public class parser {
                         assemblyWriter.println("BR L" + Integer.toString(repeatCounter - 1));
                         //and drop label 2
                         assemblyWriter.println("L" + repeatCounter + ":");
-                        repeatCounter+=1;
+                        repeatCounter += 1;
                         break;
 
                     default:
@@ -1968,7 +2018,7 @@ public class parser {
                 //drop label 1 and save it for later
                 int beginningLabel = whileCounter;
                 assemblyWriter.println("L" + whileCounter + ":");
-                whileCounter+=1;
+                whileCounter += 1;
                 parserWriter.println("rule #60: TERMINAL");
                 Advance_Pointer();
                 parserWriter.println("rule #60: expanding");
@@ -1977,7 +2027,7 @@ public class parser {
                 assemblyWriter.println("BR L" + Integer.toString(whileCounter + 1));
                 //and drop label 2
                 assemblyWriter.println("L" + whileCounter + ":");
-                whileCounter+=1;
+                whileCounter += 1;
 
                 G_Check = Match("MP_DO");
                 switch (G_Check) {
@@ -1990,7 +2040,7 @@ public class parser {
                         assemblyWriter.println("BR L" + Integer.toString(beginningLabel));
                         //and finally drop the exit the while loop label
                         assemblyWriter.println("L" + whileCounter + ":");
-                        whileCounter+=1;
+                        whileCounter += 1;
                         break;
 
                     default:
@@ -2051,7 +2101,7 @@ public class parser {
                         lineOfAssemblyCode.add(offset);
                         lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                         lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
-                        
+
                         for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                             assemblyWriter.print(lineOfAssemblyCode.get(i));
                         }
@@ -2070,7 +2120,7 @@ public class parser {
                                 //drop a label
                                 assemblyWriter.println("L" + forCounter + ":");
                                 int rememberLabelCounter = forCounter;
-                                forCounter+=1;
+                                forCounter += 1;
                                 parserWriter.println("rule #61: TERMINAL");
                                 Advance_Pointer();
                                 parserWriter.println("rule #61: expanding");
@@ -2097,7 +2147,7 @@ public class parser {
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                                 lineOfAssemblyCode.add("                   ;" + ControlVarLexeme + "\n");
-                                
+
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
@@ -2108,7 +2158,7 @@ public class parser {
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
                                 lineOfAssemblyCode.add("                   ;" + FinalValLexeme + "\n");
-                                
+
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
@@ -2367,12 +2417,10 @@ public class parser {
         // 80. Relational_Op -> MP_GEQUAL
         // 81. Relational_Op -> MP_NEQUAL
         int ret = -1; //our return value
-        //call match for the graders pleasure, switch statements too gross here
-        //made for ugly code, and logic was difficult to trace.
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
-            assemblyWriter.println("EQUALS");
+            assemblyWriter.println("CMPEQS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
@@ -2442,6 +2490,7 @@ public class parser {
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
+                optionalSignInPlay = 1;
                 parserWriter.println("rule #85: TERMINAL");
                 Advance_Pointer();
                 break;
@@ -2450,6 +2499,7 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
+                        optionalSignInPlay = -1;
                         parserWriter.println("rule #86: TERMINAL");
                         Advance_Pointer();
                         break;
@@ -2471,6 +2521,12 @@ public class parser {
         G_Check = Match("MP_PLUS");
         switch (G_Check) {
             case 1:
+                //--------------------------------------------------
+                if (operationsArray.size() > 0) {
+                    assemblyWriter.println(operationsArray.get(0));
+                    operationsArray.remove(0);
+                }
+                //--------------------------------------------------
                 OperationsCounter++;
                 operationsArray.add("ADDS");
                 parserWriter.println("rule #88: TERMINAL");
@@ -2480,6 +2536,12 @@ public class parser {
                 G_Check = Match("MP_MINUS");
                 switch (G_Check) {
                     case 1:
+                        //--------------------------------------------------
+                        if (operationsArray.size() > 0) {
+                            assemblyWriter.println(operationsArray.get(0));
+                            operationsArray.remove(0);
+                        }
+                        //--------------------------------------------------
                         OperationsCounter++;
                         operationsArray.add("SUBS");
                         parserWriter.println("rule #89: TERMINAL");
@@ -2490,6 +2552,7 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 sawOr = 1;
+
                                 OperationsCounter++;
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
@@ -2543,6 +2606,12 @@ public class parser {
         G_Check = Match("MP_TIMES");
         switch (G_Check) {
             case 1:
+                //--------------------------------------------------
+                if (operationsArray.size() > 0) {
+                    assemblyWriter.println(operationsArray.get(0));
+                    operationsArray.remove(0);
+                }
+                //--------------------------------------------------
                 OperationsCounter++;
                 operationsArray.add("MULS");
                 parserWriter.println("rule #94: TERMINAL");
@@ -2552,6 +2621,12 @@ public class parser {
                 G_Check = Match("MP_FLOAT_DIVIDE");
                 switch (G_Check) {
                     case 1:
+                        //--------------------------------------------------
+                        if (operationsArray.size() > 0) {
+                            assemblyWriter.println(operationsArray.get(0));
+                            operationsArray.remove(0);
+                        }
+                        //--------------------------------------------------
                         OperationsCounter++;
                         operationsArray.add("DIVS");
                         parserWriter.println("rule #95: TERMINAL");
@@ -2561,6 +2636,12 @@ public class parser {
                         G_Check = Match("MP_DIV");
                         switch (G_Check) {
                             case 1:
+                                //--------------------------------------------------
+                                if (operationsArray.size() > 0) {
+                                    assemblyWriter.println(operationsArray.get(0));
+                                    operationsArray.remove(0);
+                                }
+                                //--------------------------------------------------
                                 OperationsCounter++;
                                 operationsArray.add("DIVS");
                                 parserWriter.println("rule #96: TERMINAL");
@@ -2570,6 +2651,12 @@ public class parser {
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
                                     case 1:
+                                        //--------------------------------------------------
+                                        if (operationsArray.size() > 0) {
+                                            assemblyWriter.println(operationsArray.get(0));
+                                            operationsArray.remove(0);
+                                        }
+                                        //--------------------------------------------------
                                         OperationsCounter++;
                                         operationsArray.add("MODS");
                                         parserWriter.println("rule #97: TERMINAL");
@@ -2638,11 +2725,12 @@ public class parser {
             comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
         } else if (lookAhead.equals("MP_STRING_LIT")) {
+            printStringLit = 1;
             parserWriter.println("rule #101: TERMINAL");
             comingFromFactor_NotFuncOrVar = 1;
             writeStatementStringArray.clear();
             Advance_Pointer();
-            assemblyWriter.print("WRT #\"");
+            assemblyWriter.print("PUSH #\"");
             for (int i = 0; i < writeStatementStringArray.size(); i++) {
                 String temp1 = writeStatementStringArray.get(i);
                 if (temp1.contains("'''")) {
@@ -2683,6 +2771,7 @@ public class parser {
             comingFromFactor_NotFuncOrVar = 1;
             Advance_Pointer();
             Factor();
+            assemblyWriter.println("NOTS");
         } else if (lookAhead.equals("MP_LPAREN")) {
             parserWriter.println("rule #105: TERMINAL");
             Advance_Pointer();
@@ -2718,13 +2807,13 @@ public class parser {
             String tempTableName = TableName;
             int tempDestroyPointer = destroyPointer;
             try {
-            while (peekToken.equals("DEFAULT_TOKEN") && tempDestroyPointer >= 0) {
-                tempDestroyPointer -= 1;
-                tempTableName = lookUpArray.get(tempDestroyPointer);
-                peekToken = s_table.Get_Token(tempTableName, peekID);
-            }
-            } catch (java.lang.ArrayIndexOutOfBoundsException ex ) {
-                
+                while (peekToken.equals("DEFAULT_TOKEN") && tempDestroyPointer >= 0) {
+                    tempDestroyPointer -= 1;
+                    tempTableName = lookUpArray.get(tempDestroyPointer);
+                    peekToken = s_table.Get_Token(tempTableName, peekID);
+                }
+            } catch (java.lang.ArrayIndexOutOfBoundsException ex) {
+
             }
 //            System.out.println("peekToken set: " + peekToken);
 //            String peekType = s_table.Get_Type(TableName, peekID);
@@ -2739,11 +2828,12 @@ public class parser {
                 tempString = Var_Id();
 //                System.out.println("VarID returned: " + tempString[0] + " and " + tempString[1]);
                 expressionsVarId = tempString[0];
-                if ((comingFromAssignStatement == 1
+                if (comingFromAssignStatement == 1
                         || comingFromIf == 1
                         || comingFromWhile == 1
-                        || comingFromRepeat == 1)
-                        && comingFromWrite == 0) {
+                        || comingFromRepeat == 1
+                        || comingFromWrite == 1
+                        || comingFromWriteLn == 1) {
                     lineOfAssemblyCode.clear();
                     lineOfAssemblyCode.add("PUSH ");
                     String offset = s_table.Get_Offset(tempTableName, expressionsVarId);
@@ -2751,30 +2841,6 @@ public class parser {
                     lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(tempTableName) + ")");
                     lineOfAssemblyCode.add("                   ;" + expressionsVarId + "\n");
 //                    assemblyWriter.println("HERE------------------");
-                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                        assemblyWriter.print(lineOfAssemblyCode.get(i));
-                    }
-                    lineOfAssemblyCode.clear();
-                } else if (comingFromWrite == 1 || comingFromWriteLn == 1) {
-                    lineOfAssemblyCode.clear();
-                    if (comingFromWrite == 1) {
-                        lineOfAssemblyCode.add("WRT ");
-                    } else {
-                        lineOfAssemblyCode.add("WRTLN ");
-                    }
-                    String offset = s_table.Get_Offset(TableName, tempString[0]);
-                    tempDestroyPointer = destroyPointer;
-//                    System.out.println("destroyPointer: " + destroyPointer);
-                    while (offset.equals("DEFAULT_GET_OFFSET") && tempDestroyPointer >= 0) {
-                        tempTableName = lookUpArray.get(tempDestroyPointer);
-                        System.out.println("tempTableName: " + tempTableName);
-                        offset = s_table.Get_Offset(tempTableName, tempString[0]);
-                        tempDestroyPointer -= 1;
-                    }
-                    lineOfAssemblyCode.add(offset);
-                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                    lineOfAssemblyCode.add("                   ;" + tempString[0] + "\n");
-
                     for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                         assemblyWriter.print(lineOfAssemblyCode.get(i));
                     }
