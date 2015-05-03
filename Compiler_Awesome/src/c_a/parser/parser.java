@@ -2420,7 +2420,7 @@ public class parser {
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
-            assemblyWriter.println("CMPEQS");
+            operationsArray.add("CMPEQS");
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
