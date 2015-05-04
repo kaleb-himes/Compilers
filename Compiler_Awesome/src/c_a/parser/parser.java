@@ -107,6 +107,7 @@ public class parser {
     public static int comingFromFactor_NotFuncOrVar = 0;
     public static ArrayList<String> lineOfAssemblyCode = new ArrayList<>();
     public static ArrayList<String> operationsArray = new ArrayList<>();
+    static ArrayList<String> parensOperationsArray = new ArrayList<>();
     public static ArrayList<String> writeStatementStringArray = new ArrayList<>();
     public static int ExpressionCounter = 0;
     public static int OperationsCounter = 0;
@@ -1859,7 +1860,7 @@ public class parser {
                 //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
-                        
+
                         parserWriter.println("rule #56: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #56: expanding");
@@ -2143,52 +2144,23 @@ public class parser {
                                 lineOfAssemblyCode.clear();
                                 //check if is to (which needs to be added), or 
                                 //downto (which needs to be subtracted)
-                                if (toFlag == 1 && comingFromFor != 1) {
+                                if (downToFlag == 0) {
                                     lineOfAssemblyCode.add("ADD ");
-                                    toFlag = 0;
-                                    //lineOfAssemblyCode.add("ADD ");
-                                    offset = s_table.Get_Offset(TableName, ControlVarLexeme);
-                                    lineOfAssemblyCode.add(offset);
-                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                    lineOfAssemblyCode.add(" #1 ");
-                                    lineOfAssemblyCode.add(offset);
-                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                                        assemblyWriter.print(lineOfAssemblyCode.get(i));
-                                    }
-                                    assemblyWriter.println();
-                                    lineOfAssemblyCode.clear();
-
-                                } else if (downToFlag == 1 && comingFromFor != 1) {
+                                } else {
                                     lineOfAssemblyCode.add("SUB ");
-                                    downToFlag = 0;
-                                    //lineOfAssemblyCode.add("ADD ");
-                                    offset = s_table.Get_Offset(TableName, ControlVarLexeme);
-                                    lineOfAssemblyCode.add(offset);
-                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                    lineOfAssemblyCode.add(" #1 ");
-                                    lineOfAssemblyCode.add(offset);
-                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                                        assemblyWriter.print(lineOfAssemblyCode.get(i));
-                                    }
-                                    assemblyWriter.println();
-                                    lineOfAssemblyCode.clear();
                                 }
-
-//                                //lineOfAssemblyCode.add("ADD ");
-//                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
-//                                lineOfAssemblyCode.add(offset);
-//                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-//                                lineOfAssemblyCode.add(" #1 ");
-//                                lineOfAssemblyCode.add(offset);
-//                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-//                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-//                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-//                                }
-//                                assemblyWriter.println();
-//                                lineOfAssemblyCode.clear();
-                                //control variable
+                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add(" #1 ");
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                }
+                                assemblyWriter.println();
+                                lineOfAssemblyCode.clear();
+//                                control variable
                                 lineOfAssemblyCode.clear();
                                 lineOfAssemblyCode.add("PUSH ");
                                 offset = s_table.Get_Offset(TableName, ControlVarLexeme);
@@ -2419,7 +2391,7 @@ public class parser {
 // rule 73
 // <editor-fold defaultstate="collapsed" desc="Expression">
     public static int Expression() {
-        operationsArray.clear();
+//        operationsArray.clear();
         ExpressionCounter++;
 //        System.out.println("Expression Iteration = " + ExpressionCounter);
         // 73. Expression -> Simple_Expression Opt_Relational_Part
@@ -2894,10 +2866,21 @@ public class parser {
             parserWriter.println("rule #105: TERMINAL");
             Advance_Pointer();
             parserWriter.println("rule #105: expanding");
+            for (int i = 0; i < operationsArray.size(); i++) {
+                String move = operationsArray.get(i);
+                parensOperationsArray.add(move);
+                operationsArray.remove(i);
+            }
             Expression();
             G_Check = Match("MP_RPAREN");
             switch (G_Check) {
                 case 1:
+                    for (int i = parensOperationsArray.size() -1 ; i > -1; i--) {
+                        String move = parensOperationsArray.get(i);
+                        assemblyWriter.println(move);
+                        parensOperationsArray.remove(i);
+//                        operationsArray.add(move);
+                    }
                     parserWriter.println("rule #105: TERMINAL");
                     Advance_Pointer();
                     break;
