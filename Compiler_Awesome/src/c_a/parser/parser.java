@@ -1853,21 +1853,22 @@ public class parser {
                 Advance_Pointer();
                 parserWriter.println("rule #56: expanding");
                 Boolean_Expression(ifCounter);
-                //I changed this, was this a horrible mistake?
-                String tempString = ("BRTS L" + ifCounter);
-                //String tempString = ("BRFS L" + ifCounter);
+                //I changed this
+                String tempString = ("BRFS L" + ifCounter);
                 assemblyWriter.println(tempString);
                 G_Check = Match("MP_THEN");
                 //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
-
                         parserWriter.println("rule #56: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #56: expanding");
                         Statement();
                         parserWriter.println("rule #56: expanding");
-                        //drop a label
+                        // terminate the previous if part with a branch to...
+                        tempString = "BR L" + Integer.toString(ifCounter + 1);
+                        assemblyWriter.println(tempString);
+//                      //drop a label to jump to if "if" part evaluates to false
                         assemblyWriter.println("L" + ifCounter + ":");
                         ifCounter += 1;
                         //branch to next label
@@ -1939,13 +1940,6 @@ public class parser {
             G_Check = Match("MP_ELSE");
             switch (G_Check) {
                 case 1:
-                    // terminate the previous if part with a branch to...
-                    String tempString = "BR L" + Integer.toString(ifCounter + 1);
-                    assemblyWriter.println(tempString);
-                    //drop a label
-                    assemblyWriter.println("L" + ifCounter + ":");
-                    ifCounter += 1;
-//                    System.out.println("ifCounter = " + ifCounter);
                     Advance_Pointer();
                     parserWriter.println("rule #57: expanding");
                     Statement();
@@ -2465,7 +2459,7 @@ public class parser {
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
                 operationsArray.add("CMPNES");
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
@@ -2479,7 +2473,7 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
                 operationsArray.add("CMPGES");
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
@@ -2493,7 +2487,7 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
                 operationsArray.add("CMPLES");
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
@@ -2507,7 +2501,7 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
                 operationsArray.add("CMPGTS");
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
@@ -2535,7 +2529,7 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
                 operationsArray.add("CMPEQS");
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
@@ -2659,9 +2653,8 @@ public class parser {
                         switch (G_Check) {
                             case 1:
                                 sawOr = 1;
-
                                 OperationsCounter++;
-                                operationsArray.add("ORS");
+//                                operationsArray.add("ORS");
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
@@ -2780,7 +2773,7 @@ public class parser {
                                             case 1:
                                                 sawAnd = 1;
                                                 OperationsCounter++;
-                                                operationsArray.add("ANDS");
+//                                                operationsArray.add("ANDS");
                                                 parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
                                                 return 0;
@@ -3163,10 +3156,12 @@ public class parser {
             assemblyWriter.println("ANDS");
             String tempString = ("BRTS L" + incomingCounter);
             assemblyWriter.println(tempString);
+            sawAnd = 0;
         } else if (sawOr == 1) {
             assemblyWriter.println("ORS");
             String tempString = ("BRTS L" + incomingCounter);
             assemblyWriter.println(tempString);
+            sawOr = 0;
         }
         sawOr = 0;
         sawAnd = 0;
