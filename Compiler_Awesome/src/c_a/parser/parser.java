@@ -2541,6 +2541,7 @@ public class parser {
                 if (operationsArray.size() > 0) {
                     assemblyWriter.println(operationsArray.get(0));
                     operationsArray.remove(0);
+                    operationsArray.trimToSize();
                 }
                 //--------------------------------------------------
                 OperationsCounter++;
@@ -2556,6 +2557,7 @@ public class parser {
                         if (operationsArray.size() > 0) {
                             assemblyWriter.println(operationsArray.get(0));
                             operationsArray.remove(0);
+                            operationsArray.trimToSize();
                         }
                         //--------------------------------------------------
                         OperationsCounter++;
@@ -2626,6 +2628,7 @@ public class parser {
                 if (operationsArray.size() > 0) {
                     assemblyWriter.println(operationsArray.get(0));
                     operationsArray.remove(0);
+                    operationsArray.trimToSize();
                 }
                 //--------------------------------------------------
                 OperationsCounter++;
@@ -2641,6 +2644,7 @@ public class parser {
                         if (operationsArray.size() > 0) {
                             assemblyWriter.println(operationsArray.get(0));
                             operationsArray.remove(0);
+                            operationsArray.trimToSize();
                         }
                         //--------------------------------------------------
                         OperationsCounter++;
@@ -2656,6 +2660,7 @@ public class parser {
                                 if (operationsArray.size() > 0) {
                                     assemblyWriter.println(operationsArray.get(0));
                                     operationsArray.remove(0);
+                                    operationsArray.trimToSize();
                                 }
                                 //--------------------------------------------------
                                 OperationsCounter++;
@@ -2671,6 +2676,7 @@ public class parser {
                                         if (operationsArray.size() > 0) {
                                             assemblyWriter.println(operationsArray.get(0));
                                             operationsArray.remove(0);
+                                            operationsArray.trimToSize();
                                         }
                                         //--------------------------------------------------
                                         OperationsCounter++;
