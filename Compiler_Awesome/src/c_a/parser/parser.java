@@ -98,6 +98,8 @@ public class parser {
     static int comingFromIf = 0;
     static int comingFromWhile = 0;
     static int comingFromRepeat = 0;
+    static int comingFromUntil = 0;
+    static int comingFromFor = 0;
     static int comingFromProcDec = 0;
     static int comingFromFuncDec = 0;
     static int sawAnd = 0, sawOr = 0;
@@ -1849,18 +1851,26 @@ public class parser {
                 Advance_Pointer();
                 parserWriter.println("rule #56: expanding");
                 Boolean_Expression(ifCounter);
-                String tempString = ("BRFS L" + ifCounter);
+                //I changed this, was this a horrible mistake?
+                String tempString = ("BRTS L" + ifCounter);
+                //String tempString = ("BRFS L" + ifCounter);
                 assemblyWriter.println(tempString);
                 G_Check = Match("MP_THEN");
                 //we do want to fall through here, to evaluate second G_Check 
                 switch (G_Check) {
                     case 1:
+                        
                         parserWriter.println("rule #56: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #56: expanding");
                         Statement();
                         parserWriter.println("rule #56: expanding");
+                        //drop a label
+                        assemblyWriter.println("L" + ifCounter + ":");
+                        ifCounter += 1;
                         //branch to next label
+
+                        //MT - ADD LABEL FOR ELSE?????????????????????????????
                         Opt_Else_Part();
 
                         break;
@@ -1969,6 +1979,7 @@ public class parser {
                 //we do want to fall through here, to evaluate second G_Check
                 switch (G_Check) {
                     case 1:
+                        comingFromUntil = 1;
                         parserWriter.println("rule #59: TERMINAL");
                         Advance_Pointer();
                         parserWriter.println("rule #59: expanding");
@@ -2026,7 +2037,7 @@ public class parser {
                 parserWriter.println("rule #60: expanding");
                 Boolean_Expression(whileCounter);
                 // write the default branch-to statement
-                assemblyWriter.println("BR L" + Integer.toString(whileCounter + 1));
+                assemblyWriter.println("BRTS L" + Integer.toString(whileCounter + 1));
                 //and drop label 2
                 assemblyWriter.println("L" + whileCounter + ":");
                 whileCounter += 1;
@@ -2080,6 +2091,7 @@ public class parser {
     public static void For_Statement() {
         // 61. For_Statement -> MP_FOR_WORD Control_Var MP_ASSIGN Init_Val Step_Val Final_Val MP_DO Statement
         G_Check = Match("MP_FOR");
+        comingFromFor = 1;
         String ControlVarLexeme = "DEFAULT_CONTROL_VAR_LEXEME";
         String FinalValLexeme = "DEFAULT_FINAL_VAL_LEXEME";
         switch (G_Check) {
@@ -2131,29 +2143,51 @@ public class parser {
                                 lineOfAssemblyCode.clear();
                                 //check if is to (which needs to be added), or 
                                 //downto (which needs to be subtracted)
-                                if (toFlag == 1) {
+                                if (toFlag == 1 && comingFromFor != 1) {
                                     lineOfAssemblyCode.add("ADD ");
                                     toFlag = 0;
-                                }
+                                    //lineOfAssemblyCode.add("ADD ");
+                                    offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                                    lineOfAssemblyCode.add(offset);
+                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                    lineOfAssemblyCode.add(" #1 ");
+                                    lineOfAssemblyCode.add(offset);
+                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                        assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                    }
+                                    assemblyWriter.println();
+                                    lineOfAssemblyCode.clear();
 
-                                if (downToFlag == 1) {
+                                } else if (downToFlag == 1 && comingFromFor != 1) {
                                     lineOfAssemblyCode.add("SUB ");
                                     downToFlag = 0;
+                                    //lineOfAssemblyCode.add("ADD ");
+                                    offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+                                    lineOfAssemblyCode.add(offset);
+                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                    lineOfAssemblyCode.add(" #1 ");
+                                    lineOfAssemblyCode.add(offset);
+                                    lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                    for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                        assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                    }
+                                    assemblyWriter.println();
+                                    lineOfAssemblyCode.clear();
                                 }
 
-                                //lineOfAssemblyCode.add("ADD ");
-                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
-                                lineOfAssemblyCode.add(offset);
-                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                lineOfAssemblyCode.add(" #1 ");
-                                lineOfAssemblyCode.add(offset);
-                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
-                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
-                                }
-                                assemblyWriter.println();
-                                lineOfAssemblyCode.clear();
-
+//                                //lineOfAssemblyCode.add("ADD ");
+//                                offset = s_table.Get_Offset(TableName, ControlVarLexeme);
+//                                lineOfAssemblyCode.add(offset);
+//                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+//                                lineOfAssemblyCode.add(" #1 ");
+//                                lineOfAssemblyCode.add(offset);
+//                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+//                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+//                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+//                                }
+//                                assemblyWriter.println();
+//                                lineOfAssemblyCode.clear();
                                 //control variable
                                 lineOfAssemblyCode.clear();
                                 lineOfAssemblyCode.add("PUSH ");
@@ -2436,43 +2470,87 @@ public class parser {
         G_Check = Match("MP_EQUAL");
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
-            operationsArray.add("CMPEQS");
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+                operationsArray.add("CMPNES");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 1) {
+                    comingFromFor = 0;
+                }
+            } else {
+                operationsArray.add("CMPEQS");
+            }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            if (comingFromRepeat == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
                 operationsArray.add("CMPGES");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 1) {
+                    comingFromFor = 0;
+                }
             } else {
                 operationsArray.add("CMPLTS");
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
-            if (comingFromRepeat == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
                 operationsArray.add("CMPLES");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 0) {
+                    comingFromFor = 0;
+                }
             } else {
                 operationsArray.add("CMPGTS");
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            if (comingFromRepeat == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
                 operationsArray.add("CMPGTS");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 1) {
+                    comingFromFor = 0;
+                }
             } else {
                 operationsArray.add("CMPLES");
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            if (comingFromRepeat == 1) {
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
                 operationsArray.add("CMPLTS");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 1) {
+                    comingFromFor = 0;
+                }
             } else {
                 operationsArray.add("CMPGES");
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
-            operationsArray.add("CMPNES");
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
+                operationsArray.add("CMPEQS");
+                if (comingFromUntil == 1) {
+                    comingFromUntil = 0;
+                }
+                if (comingFromFor == 1) {
+                    comingFromFor = 0;
+                }
+            } else {
+                operationsArray.add("CMPNES");
+            }
             Advance_Pointer();
         } else {
             return -1;
@@ -2588,6 +2666,7 @@ public class parser {
                                 sawOr = 1;
 
                                 OperationsCounter++;
+                                operationsArray.add("ORS");
                                 parserWriter.println("rule #90: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
@@ -2706,6 +2785,7 @@ public class parser {
                                             case 1:
                                                 sawAnd = 1;
                                                 OperationsCounter++;
+                                                operationsArray.add("ANDS");
                                                 parserWriter.println("rule #98: TERMINAL");
                                                 Advance_Pointer();
                                                 return 0;
