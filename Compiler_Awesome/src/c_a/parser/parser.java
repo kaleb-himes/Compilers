@@ -100,6 +100,7 @@ public class parser {
     static int comingFromRepeat = 0;
     static int comingFromUntil = 0;
     static int comingFromFor = 0;
+    static int finalValSet = 0;
     static int comingFromProcDec = 0;
     static int comingFromFuncDec = 0;
     static int sawAnd = 0, sawOr = 0;
@@ -2132,6 +2133,26 @@ public class parser {
                         //we do want to fall through here, to evaluate third G_Check
                         switch (G_Check) {
                             case 1:
+                                ArrayList tempList = s_table.tables.get(TableName);
+                                int tempInt = tempList.size();
+                                String oldOffSet = (String) tempList.get(tempInt - 3);
+                                int newOffSet = Integer.parseInt(oldOffSet) + 1;
+                                System.out.println(newOffSet);
+                                assemblyWriter.println("ADD SP #1 SP");
+                                lineOfAssemblyCode.add("PUSH ");
+                                offset = s_table.Get_Offset(TableName, FinalValLexeme);
+                                lineOfAssemblyCode.add(offset);
+                                lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                lineOfAssemblyCode.add("                   ;" + FinalValLexeme + "\n");
+
+                                for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
+                                    assemblyWriter.print(lineOfAssemblyCode.get(i));
+                                }
+                                lineOfAssemblyCode.clear();
+                                assemblyWriter.print("POP " + newOffSet + 
+                                        "(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                assemblyWriter.println("                   ;" + "temp_" + FinalValLexeme);
+//                                
                                 //drop a label
                                 assemblyWriter.println("L" + forCounter + ":");
                                 int rememberLabelCounter = forCounter;
@@ -2160,7 +2181,7 @@ public class parser {
                                 }
                                 assemblyWriter.println();
                                 lineOfAssemblyCode.clear();
-//                                control variable
+                                //control variable
                                 lineOfAssemblyCode.clear();
                                 lineOfAssemblyCode.add("PUSH ");
                                 offset = s_table.Get_Offset(TableName, ControlVarLexeme);
@@ -2174,10 +2195,10 @@ public class parser {
                                 lineOfAssemblyCode.clear();
                                 //final value
                                 lineOfAssemblyCode.add("PUSH ");
-                                offset = s_table.Get_Offset(TableName, FinalValLexeme);
-                                lineOfAssemblyCode.add(offset);
+//                                offset = s_table.Get_Offset(TableName, FinalValLexeme);
+                                lineOfAssemblyCode.add(Integer.toString(newOffSet));
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
-                                lineOfAssemblyCode.add("                   ;" + FinalValLexeme + "\n");
+                                lineOfAssemblyCode.add("                   ;" + "temp_" + FinalValLexeme + "\n");
 
                                 for (int i = 0; i < lineOfAssemblyCode.size(); i++) {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
@@ -2297,7 +2318,9 @@ public class parser {
     public static void Final_Val() {
         // 66. Final_Val -> Ordinal_Expression
         parserWriter.println("rule #66: expanding");
+        finalValSet = 1;
         Ordinal_Expression();
+        finalValSet = 0;
     }
 // </editor-fold>
 
@@ -2875,7 +2898,7 @@ public class parser {
             G_Check = Match("MP_RPAREN");
             switch (G_Check) {
                 case 1:
-                    for (int i = parensOperationsArray.size() -1 ; i > -1; i--) {
+                    for (int i = parensOperationsArray.size() - 1; i > -1; i--) {
                         String move = parensOperationsArray.get(i);
                         assemblyWriter.println(move);
                         parensOperationsArray.remove(i);
@@ -2929,6 +2952,7 @@ public class parser {
                 tempString = Var_Id();
 //                System.out.println("VarID returned: " + tempString[0] + " and " + tempString[1]);
                 expressionsVarId = tempString[0];
+
                 if (comingFromAssignStatement == 1
                         || comingFromIf == 1
                         || comingFromWhile == 1
@@ -2936,6 +2960,7 @@ public class parser {
                         || comingFromWrite == 1
                         || comingFromWriteLn == 1) {
                     lineOfAssemblyCode.clear();
+
                     lineOfAssemblyCode.add("PUSH ");
                     String offset = s_table.Get_Offset(tempTableName, expressionsVarId);
                     lineOfAssemblyCode.add(offset);

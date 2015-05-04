@@ -59,7 +59,7 @@ begin
 	    Write(d);
 	    Write(c);
             {changed from c:= c + 1, bc would be infinite loop otherwise}
-            d := d + 1;
+            c := c + 1;
 	 end;
 
 	write(c);
