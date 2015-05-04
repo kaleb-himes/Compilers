@@ -43,7 +43,7 @@ public class parser {
     static String lookAhead = "";
     static String previous = "";
     public static int index, sColonMark, procIdFound, frmlParamState, stmntSeqMark,
-            expMark, simpExpMark, G_Check, whichWrite;
+            expMark, simpExpMark, G_Check, whichWrite, toFlag, downToFlag;
     public static List<String> parseTokens;
 
     //keep track of all errors found while parsing program
@@ -157,7 +157,9 @@ public class parser {
         init[0] = "NO_PARAMS";
         Parameters = init;
         Label = Label_1.concat(Integer.toString(Label_2));
-
+        toFlag = 0;
+        downToFlag = 0;
+        
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
@@ -2127,7 +2129,19 @@ public class parser {
                                 Statement();
                                 //add 1 to the control variable
                                 lineOfAssemblyCode.clear();
-                                lineOfAssemblyCode.add("ADD ");
+                                //check if is to (which needs to be added), or 
+                                //downto (which needs to be subtracted)
+                                if (toFlag == 1) {
+                                  lineOfAssemblyCode.add("ADD ");
+                                  toFlag = 0;
+                                }
+                                
+                                if (downToFlag == 1) {
+                                    lineOfAssemblyCode.add("SUB ");
+                                    downToFlag = 0;
+                                }
+                                
+                                //lineOfAssemblyCode.add("ADD ");
                                 offset = s_table.Get_Offset(TableName, ControlVarLexeme);
                                 lineOfAssemblyCode.add(offset);
                                 lineOfAssemblyCode.add("(D" + s_table.Get_NestingLevel(TableName) + ")");
@@ -2240,11 +2254,13 @@ public class parser {
         G_Check = Match("MP_TO");
         switch (G_Check) {
             case 1:
+                toFlag = 1;
                 parserWriter.println("rule #64: TERMINAL");
                 Advance_Pointer();
                 break;
             default:
                 G_Check = Match("MP_DOWNTO");
+                downToFlag = 1;
                 switch (G_Check) {
                     case 1:
                         parserWriter.println("rule #65: TERMINAL");
