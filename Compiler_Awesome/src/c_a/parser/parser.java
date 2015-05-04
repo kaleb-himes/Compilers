@@ -159,7 +159,7 @@ public class parser {
         Label = Label_1.concat(Integer.toString(Label_2));
         toFlag = 0;
         downToFlag = 0;
-        
+
         //read in one line at a time from the output file
         while ((line = reader.readLine()) != null) {
             //replace all of our nice formatted spacing with a single space
@@ -1974,7 +1974,7 @@ public class parser {
                         parserWriter.println("rule #59: expanding");
                         Boolean_Expression(repeatCounter);
                         // write the default branch-to statement
-                        assemblyWriter.println("BR L" + Integer.toString(repeatCounter - 1));
+                        assemblyWriter.println("BRTS L" + Integer.toString(repeatCounter - 1));
                         //and drop label 2
                         assemblyWriter.println("L" + repeatCounter + ":");
                         repeatCounter += 1;
@@ -2132,15 +2132,15 @@ public class parser {
                                 //check if is to (which needs to be added), or 
                                 //downto (which needs to be subtracted)
                                 if (toFlag == 1) {
-                                  lineOfAssemblyCode.add("ADD ");
-                                  toFlag = 0;
+                                    lineOfAssemblyCode.add("ADD ");
+                                    toFlag = 0;
                                 }
-                                
+
                                 if (downToFlag == 1) {
                                     lineOfAssemblyCode.add("SUB ");
                                     downToFlag = 0;
                                 }
-                                
+
                                 //lineOfAssemblyCode.add("ADD ");
                                 offset = s_table.Get_Offset(TableName, ControlVarLexeme);
                                 lineOfAssemblyCode.add(offset);
@@ -2440,19 +2440,35 @@ public class parser {
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
-            operationsArray.add("CMPLTS");
+            if (comingFromRepeat == 1) {
+                operationsArray.add("CMPGES");
+            } else {
+                operationsArray.add("CMPLTS");
+            }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
-            operationsArray.add("CMPGTS");
+            if (comingFromRepeat == 1) {
+                operationsArray.add("CMPLES");
+            } else {
+                operationsArray.add("CMPGTS");
+            }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
-            operationsArray.add("CMPLES");
+            if (comingFromRepeat == 1) {
+                operationsArray.add("CMPGTS");
+            } else {
+                operationsArray.add("CMPLES");
+            }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            operationsArray.add("CMPGES");
+            if (comingFromRepeat == 1) {
+                operationsArray.add("CMPLTS");
+            } else {
+                operationsArray.add("CMPGES");
+            }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
