@@ -1,0 +1,153 @@
+program lab1;
+
+var 	bob, fred, george	: InteGer;
+	floatTest1, floatTest2, floatTest3	: FLOat;
+
+  begin
+  {testing float read}
+  WriteLn('Testing float read, Enter a float');
+  Read(floatTest1);
+  Read(floatTest2);
+  WriteLn(floatTest1);
+  WriteLn(floatTest2); 
+    
+  floatTest3 := floatTest1 + floatTest2; 
+  Write('Float Sum is ');
+  WriteLn(floatTest3);
+  floatTest3 := floatTest1 - floatTest2; 
+  Write('Float Difference is ');
+  WriteLn(floatTest3);  
+
+  floatTest3 := floatTest1 * floatTest2;  
+  Write('Float Product is ');
+  WriteLn(floatTest3);
+  floatTest3 := floatTest1 / floatTest2;  
+  Write('Float Quotient (using /) is ');
+  WriteLn(floatTest3);
+  {Write('This next test will fail');  
+  Write('Float Quotient (using div) is ');
+  floatTest3 := floatTest1 div floatTest2; 
+  WriteLn(floatTest3);}
+ {Write('This next test will fail');  
+  Write('Float Mod is ');
+  floatTest3 := floatTest1 mod floatTest2; 
+  WriteLn(floatTest3);  
+
+
+
+
+
+   {check cmpeqsf}
+   if (floatTest1 = floatTest2) then 
+     writeLn ('CMPEQS test. You should only see this if your float1 and float2 values are equal.')  
+   else 
+     writeLn ('CMPEQS test. You should see this if your float1 and float2 values are NOT equal.');      
+    {end check cmpeqsf}
+
+   {check cmpnesf}
+   if (floatTest1 <> floatTest2) then 
+     writeLn ('CMPNES test. You should only see this if your float1 and float2 values are NOT equal.')  
+   else 
+     writeLn ('CMPNES test. You should see this if your float1 and float2 values are equal.');      
+    {end check cmpeqsf}
+
+   {check cmpgesf}
+   if (floatTest1 >= floatTest2) then 
+     writeLn ('CMPGES test. You should only see this if your float1 value >= float2 value.')  
+   else 
+     writeLn ('CMPGES test. You should only see this if your float1 value < float2 value.');      
+    {end check cmpgesf}
+
+   {check cmpgtsf}
+   if (floatTest1 > floatTest2) then 
+     writeLn ('CMPGTS test. You should only see this if your float1 value > float2 value.')  
+   else 
+     writeLn ('CMPGTS test. You should only see this if your float1 value <= float2 value.');      
+    {end check cmpgesf}
+
+   {check cmplesf}
+   if (floatTest1 <= floatTest2) then 
+     writeLn ('CMPLES test. You should only see this if your float1 value <= float2 value.')  
+   else 
+     writeLn ('CMPLES test. You should only see this if your float1 value > float2 value.');      
+    {end check cmplesf}
+
+   {check cmpltsf}
+   if (floatTest1 < floatTest2) then 
+     writeLn ('CMPLTS test. You should only see this if your float1 value < float2 value.')  
+   else 
+     writeLn ('CMPLTS test. You should only see this if your float1 value >= float2 value.');      
+    {end check cmpgesf}
+
+
+  {testing int read}
+  WriteLn('Testing Integer Read, Enter an integer');
+  Read(bob);
+  Read(fred);
+  WriteLn(bob);
+  WriteLn(fred);
+
+  george := bob + fred; 
+  Write('Int Sum is ');
+  WriteLn(george);
+  george := bob - fred; 
+  Write('Int Difference is ');
+  WriteLn(george);
+  george := bob * fred;  
+  Write('Int Product is ');  
+  WriteLn(george);
+  george := bob div fred;  
+  Write('Int Quotient (using div) is ');  
+  WriteLn(george);
+  {Write('This next test will fail');  
+  Write('Int Quotient (using /) is ');  
+  george := bob / fred; 
+  WriteLn(george);}
+  george := bob mod fred;  
+  Write('Int Mod is ');  
+  WriteLn(george);
+
+   {check cmpeqs}
+   if (bob = fred) then 
+     writeLn ('CMPEQ test. You should only see this if your bob and fred values are equal.')  
+    else 
+     writeLn ('CMPEQ test. You should see this if your bob and fred values are NOT equal.');      
+   {end check cmpeqs} 
+
+   {check cmpnes}
+   if (bob <> fred) then 
+     writeLn ('CMPNES test. You should only see this if your bob and fred values are NOT equal.')  
+    else 
+     writeLn ('CMPNES test. You should see this if your bob and fred values are equal.');      
+   {end check cmpnes}  
+
+   {check cmpges}
+   if (bob >= fred) then 
+     writeLn ('CMPGES test. You should only see this if your bob value >= fred value.')  
+   else 
+     writeLn ('CMPGES test. You should only see this if your bob value < fred value.');      
+    {end check cmpgesf}
+
+   {check cmpgts}
+   if (bob > fred) then 
+     writeLn ('CMPGTS test. You should only see this if your bob value > fred value.')  
+   else 
+     writeLn ('CMPGTS test. You should only see this if your bob value <= fred value.');      
+   {end check cmpgts}
+
+   {check cmples}
+   if (bob <= fred) then 
+     writeLn ('CMPLES test. You should only see this if your bob value <= fred value.')  
+   else 
+     writeLn ('CMPLES test. You should only see this if your bob value > fred value.');      
+    {end check cmpgesf}
+
+
+   {check cmplts}
+   if (bob < fred) then 
+     writeLn ('CMPLTS test. You should only see this if your bob value < fred value.')  
+   else 
+     writeLn ('CMPLTS test. You should only see this if your bob value >= fred value.');      
+   {end check cmpgts}
+
+end.

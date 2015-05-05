@@ -1539,7 +1539,10 @@ public class parser {
         tempString = Var_Id();
         parserWriter.println("rule #48 : expanding");
         lineOfAssemblyCode.clear();
+
         int check = checkIfFloat();
+
+        //lets us handle read or read float
         if (check == 1) {
             lineOfAssemblyCode.add("RDF ");
         } else {
@@ -2461,7 +2464,9 @@ public class parser {
         // 80. Relational_Op -> MP_GEQUAL
         // 81. Relational_Op -> MP_NEQUAL
         int ret = -1; //our return value
+        int check = checkIfFloat();
         G_Check = Match("MP_EQUAL");
+
         if (lookAhead.equals("MP_EQUAL")) {
             parserWriter.println("rule #76: TERMINAL");
             if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
@@ -2473,13 +2478,22 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPEQS");
+
+                if (check == 1) {
+                    operationsArray.add("CMPEQSF");
+                } else {
+                    operationsArray.add("CMPEQS");
+                }
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LTHAN")) {
             parserWriter.println("rule #77: TERMINAL");
             if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
-                operationsArray.add("CMPGES");
+                if (check == 1) {
+                    operationsArray.add("CMPGESF");
+                } else {
+                    operationsArray.add("CMPGES");
+                }
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
                 }
@@ -2487,13 +2501,21 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPLTS");
+                if (check == 1) {
+                    operationsArray.add("CMPLTSF");
+                } else {
+                    operationsArray.add("CMPLTS");
+                }
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GTHAN")) {
             parserWriter.println("rule #78: TERMINAL");
             if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
-                operationsArray.add("CMPLES");
+                if (check == 1) {
+                    operationsArray.add("CMPLESF");
+                } else {
+                    operationsArray.add("CMPLES");
+                }
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
                 }
@@ -2501,13 +2523,22 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPGTS");
+                if (check == 1) {
+                    operationsArray.add("CMPGTSF");
+                } else {
+                    operationsArray.add("CMPGTS");
+                }
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_LEQUAL")) {
             parserWriter.println("rule #79: TERMINAL");
             if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
-                operationsArray.add("CMPGTS");
+                if (check == 1) {
+                    operationsArray.add("CMPGTSF");
+                } else {
+                    operationsArray.add("CMPGTS");
+                }
+
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
                 }
@@ -2515,13 +2546,21 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPLES");
+                if (check == 1) {
+                    operationsArray.add("CMPLESF");
+                } else {
+                    operationsArray.add("CMPLES");
+                }
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_GEQUAL")) {
             parserWriter.println("rule #80: TERMINAL");
-            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 || comingFromIf == 1) {
-                operationsArray.add("CMPLTS");
+            if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
+                if (check == 1) {
+                    operationsArray.add("CMPLTSF");
+                } else {
+                    operationsArray.add("CMPLTS");
+                }
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
                 }
@@ -2529,13 +2568,21 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPGES");
+                if (check == 1) {
+                    operationsArray.add("CMPGESF");
+                } else {
+                    operationsArray.add("CMPGES");
+                }
             }
             Advance_Pointer();
         } else if (lookAhead.equals("MP_NEQUAL")) {
             parserWriter.println("rule #81: TERMINAL");
             if (comingFromUntil == 1 || comingFromWhile == 1 || comingFromFor == 1 /*|| comingFromIf == 1*/) {
-                operationsArray.add("CMPEQS");
+                if (check == 1) {
+                    operationsArray.add("CMPEQSF");
+                } else {
+                    operationsArray.add("CMPEQS");
+                }
                 if (comingFromUntil == 1) {
                     comingFromUntil = 0;
                 }
@@ -2543,7 +2590,11 @@ public class parser {
                     comingFromFor = 0;
                 }
             } else {
-                operationsArray.add("CMPNES");
+                if (check == 1) {
+                    operationsArray.add("CMPNESF");
+                } else {
+                    operationsArray.add("CMPNES");
+                }
             }
             Advance_Pointer();
         } else {
@@ -2633,9 +2684,31 @@ public class parser {
                 }
                 //--------------------------------------------------
                 OperationsCounter++;
-                if (previous.equals("MP_")) {
-                    operationsArray.add("ADDS");
+                //changed this from equals
+
+                if (previous.contains("MP_")) {
+                    int check = checkIfFloat();
+                    int boolCheck = checkIfBoolean();
+
+                    if (boolCheck == 1) {
+                        sourceOfError = "You cannot add Boolean variables";
+                        errorsFound.add(sourceOfError);
+
+                        lineNo = parseTokens.get(index + 1);
+                        errorLocation.add(lineNo);
+
+                        //add col no corresponding to error
+                        colNo = parseTokens.get(index + 2);
+                        errorLocation.add(colNo);
+                    } else {
+                        if (check == 1) {
+                            operationsArray.add("ADDSF");
+                        } else {
+                            operationsArray.add("ADDS");
+                        }
+                    }
                 }
+
                 parserWriter.println("rule #88: TERMINAL");
                 Advance_Pointer();
                 return 0;
@@ -2651,10 +2724,30 @@ public class parser {
                         }
                         //--------------------------------------------------
                         OperationsCounter++;
-                        operationsArray.add("SUBS");
+
+                        int check = checkIfFloat();
+                        int boolCheck = checkIfBoolean();
+                        if (boolCheck == 1) {
+                            sourceOfError = "You cannot subtract Boolean variables";
+                            errorsFound.add(sourceOfError);
+
+                            lineNo = parseTokens.get(index + 1);
+                            errorLocation.add(lineNo);
+
+                            //add col no corresponding to error
+                            colNo = parseTokens.get(index + 2);
+                            errorLocation.add(colNo);
+                        } else {
+                            if (check == 1) {
+                                operationsArray.add("SUBSF");
+                            } else {
+                                operationsArray.add("SUBS");
+                            }
+                        }
                         parserWriter.println("rule #89: TERMINAL");
                         Advance_Pointer();
                         return 0;
+
                     default:
                         G_Check = Match("MP_OR");
                         switch (G_Check) {
@@ -2722,7 +2815,27 @@ public class parser {
                 }
                 //--------------------------------------------------
                 OperationsCounter++;
-                operationsArray.add("MULS");
+                int check = checkIfFloat();
+                int boolCheck = checkIfBoolean();
+                if (boolCheck == 1) {
+                    sourceOfError = "You cannot multiply Boolean variables";
+                    errorsFound.add(sourceOfError);
+
+                    lineNo = parseTokens.get(index + 1);
+                    errorLocation.add(lineNo);
+
+                    //add col no corresponding to error
+                    colNo = parseTokens.get(index + 2);
+                    errorLocation.add(colNo);
+                } else {
+                    //lets us handle float cases
+                    if (check == 1) {
+                        operationsArray.add("MULSF");
+                    } else {
+                        operationsArray.add("MULS");
+                    }
+                }
+
                 parserWriter.println("rule #94: TERMINAL");
                 Advance_Pointer();
                 return 0;
@@ -2738,32 +2851,40 @@ public class parser {
                         }
                         //--------------------------------------------------
                         OperationsCounter++;
-                        operationsArray.add("DIVS");
+                        int boolCheck2 = checkIfBoolean();
+                        if (boolCheck2 == 1) {
+                            sourceOfError = "You cannot float divide Boolean variables";
+                            errorsFound.add(sourceOfError);
+
+                            lineNo = parseTokens.get(index + 1);
+                            errorLocation.add(lineNo);
+
+                            //add col no corresponding to error
+                            colNo = parseTokens.get(index + 2);
+                            errorLocation.add(colNo);
+                        } else {
+                            int check2 = checkIfFloat();
+                            if (check2 == 1) {
+                                operationsArray.add("DIVSF");
+                            } else {
+                                sourceOfError = "You cannot use float division (/) with integer values";
+                                errorsFound.add(sourceOfError);
+
+                                lineNo = parseTokens.get(index + 1);
+                                errorLocation.add(lineNo);
+
+                                //add col no corresponding to error
+                                colNo = parseTokens.get(index + 2);
+                                errorLocation.add(colNo);
+                            }
+                        }
                         parserWriter.println("rule #95: TERMINAL");
                         Advance_Pointer();
-                        checkIfIntegers();
-//                        String Lex1 = parseTokens.get(index + 3);
-//                        String Lex2 = parseTokens.get(index - 5);
-//                        String type1 = s_table.Get_Token(TableName, Lex1);
-//                        String type2 = s_table.Get_Token(TableName, Lex2);
-//                        System.out.println("-----------------");
-//                        System.out.println(type1);
-//                        System.out.println(type2);
-//                        if (type1.equals("MP_INTEGER") || type2.equals("MP_INTEGER")) {
-//                            sourceOfError = "Trying to use MP_FLOAT_DEVIDE with two INTEGERS."
-//                                    + " TRY AGAIN DUMB DUMB: " + lookAhead;
-//                            errorsFound.add(sourceOfError);
-//
-//                            lineNo = parseTokens.get(index + 1);
-//                            errorLocation.add(lineNo);
-//
-//                            //add col no corresponding to error
-//                            colNo = parseTokens.get(index + 2);
-//                            errorLocation.add(colNo);
-//                        }
+
                         return 0;
                     default:
                         G_Check = Match("MP_DIV");
+                        //only for integer division
                         switch (G_Check) {
                             case 1:
                                 //--------------------------------------------------
@@ -2774,10 +2895,37 @@ public class parser {
                                 }
                                 //--------------------------------------------------
                                 OperationsCounter++;
-                                operationsArray.add("DIVS");
+                                int boolCheck3 = checkIfBoolean();
+                                if (boolCheck3 == 1) {
+                                    sourceOfError = "You cannot divide Boolean variables";
+                                    errorsFound.add(sourceOfError);
+
+                                    lineNo = parseTokens.get(index + 1);
+                                    errorLocation.add(lineNo);
+
+                                    //add col no corresponding to error
+                                    colNo = parseTokens.get(index + 2);
+                                    errorLocation.add(colNo);
+                                } else {
+                                    int check4 = checkIfFloat();
+                                    if (check4 == 1) {
+                                        sourceOfError = "You cannot use the div operation with float values";
+                                        errorsFound.add(sourceOfError);
+
+                                        lineNo = parseTokens.get(index + 1);
+                                        errorLocation.add(lineNo);
+
+                                        //add col no corresponding to error
+                                        colNo = parseTokens.get(index + 2);
+                                        errorLocation.add(colNo);
+                                    } else {
+                                        operationsArray.add("DIVS");
+                                    }
+                                }
                                 parserWriter.println("rule #96: TERMINAL");
                                 Advance_Pointer();
                                 return 0;
+
                             default:
                                 G_Check = Match("MP_MOD");
                                 switch (G_Check) {
@@ -2790,10 +2938,51 @@ public class parser {
                                         }
                                         //--------------------------------------------------
                                         OperationsCounter++;
-                                        operationsArray.add("MODS");
+                                        int check5 = checkIfFloat();
+                                        int boolCheck5 = checkIfFloat();
+                                        if (boolCheck5 == 1) {
+                                            sourceOfError = "You cannot mod Boolean variables";
+                                            errorsFound.add(sourceOfError);
+
+                                            lineNo = parseTokens.get(index + 1);
+                                            errorLocation.add(lineNo);
+
+                                            //add col no corresponding to error
+                                            colNo = parseTokens.get(index + 2);
+                                            errorLocation.add(colNo);
+                                        } else {
+                                            if (check5 == 1) {
+                                                sourceOfError = "You cannot use the mod operation with float values";
+                                                errorsFound.add(sourceOfError);
+
+                                                lineNo = parseTokens.get(index + 1);
+                                                errorLocation.add(lineNo);
+
+                                                //add col no corresponding to error
+                                                colNo = parseTokens.get(index + 2);
+                                                errorLocation.add(colNo);
+                                            } else {
+                                                int boolCheck6 = checkIfBoolean();
+                                                if (boolCheck6 == 1) {
+                                                    sourceOfError = "You cannot mod Boolean variables";
+                                                    errorsFound.add(sourceOfError);
+
+                                                    lineNo = parseTokens.get(index + 1);
+                                                    errorLocation.add(lineNo);
+
+                                                    //add col no corresponding to error
+                                                    colNo = parseTokens.get(index + 2);
+                                                    errorLocation.add(colNo);
+                                                } else {
+                                                    operationsArray.add("MODS");
+                                                }
+                                            }
+                                        }
+
                                         parserWriter.println("rule #97: TERMINAL");
                                         Advance_Pointer();
                                         return 0;
+
                                     default:
                                         G_Check = Match("MP_AND");
                                         switch (G_Check) {
@@ -3459,35 +3648,42 @@ public class parser {
     }
 
     static int checkIfFloat() {
-        String Lex1 = parseTokens.get(index + 3);
-        String type1 = s_table.Get_Token(TableName, Lex1);
-        System.out.println("-----------------");
-        System.out.println(Lex1);
-        if (type1.equals("MP_FLOAT")) {
+        String varType = s_table.Get_Token(TableName, CurrLexeme);
+
+        if (varType.equals("MP_FLOAT") || varType.equals("MP_FIXED")) {
             return 1;
         }
         return 0;
     }
-    
-    static void checkIfIntegers() {
-        String Lex1 = parseTokens.get(index + 3);
-        String Lex2 = parseTokens.get(index - 5);
-        String type1 = s_table.Get_Token(TableName, Lex1);
-        String type2 = s_table.Get_Token(TableName, Lex2);
-        System.out.println("-----------------");
-        System.out.println(type1);
-        System.out.println(type2);
-        if (type1.equals("MP_INTEGER") || type2.equals("MP_INTEGER")) {
-            sourceOfError = "Trying to use MP_FLOAT_DEVIDE with two INTEGERS."
-                    + " TRY AGAIN DUMB DUMB: " + lookAhead;
-            errorsFound.add(sourceOfError);
 
-            lineNo = parseTokens.get(index + 1);
-            errorLocation.add(lineNo);
+    static int checkIfBoolean() {
+        String varType = s_table.Get_Token(TableName, CurrLexeme);
 
-            //add col no corresponding to error
-            colNo = parseTokens.get(index + 2);
-            errorLocation.add(colNo);
+        if (varType.equals("MP_BOOLEAN")) {
+            return 1;
         }
+        return 0;
     }
+
+//    static void checkIfIntegers() {
+//        String Lex1 = parseTokens.get(index + 3);
+//        String Lex2 = parseTokens.get(index - 5);
+//        String type1 = s_table.Get_Token(TableName, Lex1);
+//        String type2 = s_table.Get_Token(TableName, Lex2);
+//        System.out.println("-----------------");
+//        System.out.println(type1);
+//        System.out.println(type2);
+//        if (type1.equals("MP_INTEGER") || type2.equals("MP_INTEGER")) {
+//            sourceOfError = "Trying to use MP_FLOAT_DIVIDE with two INTEGERS."
+//                    + " TRY AGAIN DUMB DUMB: " + lookAhead;
+//            errorsFound.add(sourceOfError);
+//
+//            lineNo = parseTokens.get(index + 1);
+//            errorLocation.add(lineNo);
+//
+//            //add col no corresponding to error
+//            colNo = parseTokens.get(index + 2);
+//            errorLocation.add(colNo);
+//        }
+    //   }
 }
