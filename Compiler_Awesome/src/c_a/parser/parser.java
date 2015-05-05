@@ -1539,7 +1539,12 @@ public class parser {
         tempString = Var_Id();
         parserWriter.println("rule #48 : expanding");
         lineOfAssemblyCode.clear();
-        lineOfAssemblyCode.add("RD ");
+        int check = checkIfFloat();
+        if (check == 1) {
+            lineOfAssemblyCode.add("RDF ");
+        } else {
+            lineOfAssemblyCode.add("RD ");
+        }
         String offset = s_table.Get_Offset(TableName, tempString[0]);
         int tempDestroyPointer = destroyPointer;
         try {
@@ -2143,8 +2148,8 @@ public class parser {
                                     assemblyWriter.print(lineOfAssemblyCode.get(i));
                                 }
                                 lineOfAssemblyCode.clear();
-                                assemblyWriter.print("POP " + newOffSet + 
-                                        "(D" + s_table.Get_NestingLevel(TableName) + ")");
+                                assemblyWriter.print("POP " + newOffSet
+                                        + "(D" + s_table.Get_NestingLevel(TableName) + ")");
                                 assemblyWriter.println("                   ;" + "temp_" + FinalValLexeme);
 //                                
                                 //drop a label
@@ -2628,7 +2633,9 @@ public class parser {
                 }
                 //--------------------------------------------------
                 OperationsCounter++;
-                operationsArray.add("ADDS");
+                if (previous.equals("MP_")) {
+                    operationsArray.add("ADDS");
+                }
                 parserWriter.println("rule #88: TERMINAL");
                 Advance_Pointer();
                 return 0;
@@ -2734,6 +2741,26 @@ public class parser {
                         operationsArray.add("DIVS");
                         parserWriter.println("rule #95: TERMINAL");
                         Advance_Pointer();
+                        checkIfIntegers();
+//                        String Lex1 = parseTokens.get(index + 3);
+//                        String Lex2 = parseTokens.get(index - 5);
+//                        String type1 = s_table.Get_Token(TableName, Lex1);
+//                        String type2 = s_table.Get_Token(TableName, Lex2);
+//                        System.out.println("-----------------");
+//                        System.out.println(type1);
+//                        System.out.println(type2);
+//                        if (type1.equals("MP_INTEGER") || type2.equals("MP_INTEGER")) {
+//                            sourceOfError = "Trying to use MP_FLOAT_DEVIDE with two INTEGERS."
+//                                    + " TRY AGAIN DUMB DUMB: " + lookAhead;
+//                            errorsFound.add(sourceOfError);
+//
+//                            lineNo = parseTokens.get(index + 1);
+//                            errorLocation.add(lineNo);
+//
+//                            //add col no corresponding to error
+//                            colNo = parseTokens.get(index + 2);
+//                            errorLocation.add(colNo);
+//                        }
                         return 0;
                     default:
                         G_Check = Match("MP_DIV");
@@ -3429,5 +3456,38 @@ public class parser {
             assemblyWriter.print(lineOfAssemblyCode.get(j));
         }
         lineOfAssemblyCode.clear();
+    }
+
+    static int checkIfFloat() {
+        String Lex1 = parseTokens.get(index + 3);
+        String type1 = s_table.Get_Token(TableName, Lex1);
+        System.out.println("-----------------");
+        System.out.println(Lex1);
+        if (type1.equals("MP_FLOAT")) {
+            return 1;
+        }
+        return 0;
+    }
+    
+    static void checkIfIntegers() {
+        String Lex1 = parseTokens.get(index + 3);
+        String Lex2 = parseTokens.get(index - 5);
+        String type1 = s_table.Get_Token(TableName, Lex1);
+        String type2 = s_table.Get_Token(TableName, Lex2);
+        System.out.println("-----------------");
+        System.out.println(type1);
+        System.out.println(type2);
+        if (type1.equals("MP_INTEGER") || type2.equals("MP_INTEGER")) {
+            sourceOfError = "Trying to use MP_FLOAT_DEVIDE with two INTEGERS."
+                    + " TRY AGAIN DUMB DUMB: " + lookAhead;
+            errorsFound.add(sourceOfError);
+
+            lineNo = parseTokens.get(index + 1);
+            errorLocation.add(lineNo);
+
+            //add col no corresponding to error
+            colNo = parseTokens.get(index + 2);
+            errorLocation.add(colNo);
+        }
     }
 }

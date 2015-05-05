@@ -1,87 +1,146 @@
 MOV SP D0
 ADD SP #1 SP
+ADD SP #1 SP
+ADD SP #2 SP
+ADD SP #1 SP
 ADD SP #2 SP
 L0:
-RD 1(D0)                   ;a
-RD 2(D0)                   ;b
-PUSH 1(D0)                   ;a
+PUSH #" This is test 7 of level C  "
 WRTS
 PUSH #"\n"
 WRTS
-L589:
-CMPGTS
-BRTS L591
-L590:
-PUSH 1(D0)                   ;a
-PUSH #1
-SUBS
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+PUSH #" This will further test reading and math  "
 WRTS
 PUSH #"\n"
 WRTS
-BR L589
-L591:
-PUSH #20
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+PUSH #"  "
 WRTS
 PUSH #"\n"
 WRTS
-L592:
-CMPGES
-BRTS L594
-L593:
-PUSH 1(D0)                   ;a
-PUSH #1
-SUBS
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+PUSH #" Please enter 2 integers  "
+POP 1(D0)                   ;aString
+PUSH #"  "
+WRTS
+PUSH 1(D0)                   ;aString
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
 WRTS
 PUSH #"\n"
 WRTS
-BR L592
-L594:
-PUSH #0
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+RD 2(D0)                   ;int1
+RD 3(D0)                   ;int2
+PUSH 2(D0)                   ;int1
+WRTS
+PUSH #" *  "
+WRTS
+PUSH 3(D0)                   ;int2
+WRTS
+PUSH #" =  "
+WRTS
+PUSH 2(D0)                   ;int1
+PUSH 3(D0)                   ;int2
+MULS
 WRTS
 PUSH #"\n"
 WRTS
-L595:
-CMPLTS
-BRTS L597
-L596:
-PUSH 1(D0)                   ;a
-PUSH #1
-ADDS
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+PUSH #"  "
 WRTS
 PUSH #"\n"
 WRTS
-BR L595
-L597:
-PUSH #0
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+PUSH #" Please enter 2 floats  "
+POP 1(D0)                   ;aString
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"  "
+WRTS
+PUSH 1(D0)                   ;aString
 WRTS
 PUSH #"\n"
 WRTS
-L598:
-CMPLES
-BRTS L600
-L599:
-PUSH 1(D0)                   ;a
-PUSH #1
-ADDS
-POP 1(D0)                   ;a
-PUSH 1(D0)                   ;a
+RD 5(D0)                   ;f1
+RD 6(D0)                   ;f2
+PUSH 5(D0)                   ;f1
+WRTS
+PUSH #" *  "
+WRTS
+PUSH 6(D0)                   ;f2
+WRTS
+PUSH #" =  "
+WRTS
+PUSH 5(D0)                   ;f1
+PUSH 6(D0)                   ;f2
+MULS
 WRTS
 PUSH #"\n"
 WRTS
-BR L598
-L600:
+PUSH #"  "
+WRTS
+PUSH #"\n"
+WRTS
+PUSH #" Now to double your first flaot and integer  "
+WRTS
+PUSH #"\n"
+WRTS
+PUSH 5(D0)                   ;f1
+PUSH 5(D0)                   ;f1
+MULS
+POP 5(D0)                   ;f1
+PUSH 2(D0)                   ;int1
+PUSH 2(D0)                   ;int1
+MULS
+POP 2(D0)                   ;int1
+PUSH 5(D0)                   ;f1
+WRTS
+PUSH #" and  "
+WRTS
+PUSH 2(D0)                   ;int1
+WRTS
+PUSH #"\n"
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"\n"
+WRTS
+PUSH #" Now to increase your second integer by your second float and vice versa  "
+WRTS
+PUSH #" (should come out the same value)  "
+WRTS
+PUSH #"\n"
+WRTS
+PUSH 3(D0)                   ;int2
+PUSH 6(D0)                   ;f2
+MULS
+POP 2(D0)                   ;int1
+PUSH 3(D0)                   ;int2
+PUSH 6(D0)                   ;f2
+MULS
+POP 6(D0)                   ;f2
+PUSH 2(D0)                   ;int1
+POP 3(D0)                   ;int2
+PUSH 6(D0)                   ;f2
+WRTS
+PUSH #" and  "
+WRTS
+PUSH 3(D0)                   ;int2
+WRTS
+PUSH #"  "
+WRTS
+PUSH #"\n"
+WRTS
 WRTLN #""
 POP D0
 HLT
